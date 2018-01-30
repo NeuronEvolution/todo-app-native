@@ -1,0 +1,101 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "",
+    "title": "Oauth Private API",
+    "contact": {
+      "name": "mars"
+    },
+    "version": "v1"
+  },
+  "basePath": "/api-private/v1/oauth",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Basic": {
+      "type": "basic"
+    }
+  },
+  "parameters": {
+  },
+  "paths": {
+    "/authorize": {
+      "post": {
+        "summary": "",
+        "operationId": "Authorize",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "accountJwt",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "response_type",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "client_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "redirect_uri",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "scope",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/AuthorizationCode"
+            }
+          }
+        }
+      }
+    },
+    "/clients": {
+    },
+    "/scopes": {
+    }
+  },
+  "definitions": {
+    "AuthorizationCode": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "expiresSeconds": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    }
+  }
+}
