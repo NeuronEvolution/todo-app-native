@@ -38,7 +38,11 @@ class RootView extends React.Component<Props, State> {
             }}>
                 <TimedComponent
                     timestamp={this.props.rootState.globalToast.timestamp}
-                    contentElement={<Text>{this.props.rootState.globalToast.text}</Text>}
+                    contentElement={
+                        <Text style={{fontSize: 16}}>
+                            {this.props.rootState.globalToast.text}
+                        </Text>
+                    }
                     intervalMillSec={1000}
                 />
             </View>

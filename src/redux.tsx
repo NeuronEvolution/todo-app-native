@@ -58,7 +58,6 @@ function onApiError(err: any): Dispatchable {
 }
 
 function  onAccountLoginSuccess(jwt: string): Dispatchable {
-    console.error('onAccountLoginSuccess');
     return (dispatch: Dispatch<StandardAction>) => {
         return userPrivateApi.oauthState('fromApp')
             .then((state: string) => {
