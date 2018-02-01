@@ -251,7 +251,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                     if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     } else {
-                        return response.json().then((data: {}) => {throw JSON.stringify(data); });
+                        return response.json().then((data: {}) => {throw data; });
                     }
                 });
             };
@@ -277,7 +277,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                     if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     } else {
-                        return response.json().then((data: {}) => {throw JSON.stringify(data); });
+                        return response.json().then((data: {}) => {throw data; });
                     }
                 });
             };

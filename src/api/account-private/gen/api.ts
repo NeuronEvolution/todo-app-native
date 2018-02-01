@@ -161,6 +161,56 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 
+         * @param {string} phone 
+         * @param {string} smsCode 
+         * @param {string} newPassword 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetPassword(phone: string, smsCode: string, newPassword: string, options: any = {}): FetchArgs {
+            // verify required parameter 'phone' is not null or undefined
+            if (phone === null || phone === undefined) {
+                throw new RequiredError('phone','Required parameter phone was null or undefined when calling resetPassword.');
+            }
+            // verify required parameter 'smsCode' is not null or undefined
+            if (smsCode === null || smsCode === undefined) {
+                throw new RequiredError('smsCode','Required parameter smsCode was null or undefined when calling resetPassword.');
+            }
+            // verify required parameter 'newPassword' is not null or undefined
+            if (newPassword === null || newPassword === undefined) {
+                throw new RequiredError('newPassword','Required parameter newPassword was null or undefined when calling resetPassword.');
+            }
+            const localVarPath = `/resetPassword`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'POST' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (phone !== undefined) {
+                localVarQueryParameter['phone'] = phone;
+            }
+
+            if (smsCode !== undefined) {
+                localVarQueryParameter['smsCode'] = smsCode;
+            }
+
+            if (newPassword !== undefined) {
+                localVarQueryParameter['newPassword'] = newPassword;
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
          * @param {string} scene 
          * @param {string} phone 
          * @param {string} [captchaId] 
@@ -324,7 +374,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                     if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     } else {
-                        return response.json().then((data: {}) => {throw JSON.stringify(data); });
+                        return response.json().then((data: {}) => {throw data; });
                     }
                 });
             };
@@ -343,7 +393,28 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                     if (response.status >= 200 && response.status < 300) {
                         return new Promise<Response>((resolve) => {return resolve(response);})
                     } else {
-                        return response.json().then((data: {}) => {throw JSON.stringify(data); });
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} phone 
+         * @param {string} smsCode 
+         * @param {string} newPassword 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetPassword(phone: string, smsCode: string, newPassword: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Response> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).resetPassword(phone, smsCode, newPassword, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return new Promise<Response>((resolve) => {return resolve(response);})
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
                     }
                 });
             };
@@ -365,7 +436,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                     if (response.status >= 200 && response.status < 300) {
                         return new Promise<Response>((resolve) => {return resolve(response);})
                     } else {
-                        return response.json().then((data: {}) => {throw JSON.stringify(data); });
+                        return response.json().then((data: {}) => {throw data; });
                     }
                 });
             };
@@ -385,7 +456,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                     if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     } else {
-                        return response.json().then((data: {}) => {throw JSON.stringify(data); });
+                        return response.json().then((data: {}) => {throw data; });
                     }
                 });
             };
@@ -406,7 +477,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                     if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     } else {
-                        return response.json().then((data: {}) => {throw JSON.stringify(data); });
+                        return response.json().then((data: {}) => {throw data; });
                     }
                 });
             };
@@ -440,6 +511,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, fetch?
          */
         logout(jwt: string, options?: any) {
             return DefaultApiFp(configuration).logout(jwt, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} phone 
+         * @param {string} smsCode 
+         * @param {string} newPassword 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetPassword(phone: string, smsCode: string, newPassword: string, options?: any) {
+            return DefaultApiFp(configuration).resetPassword(phone, smsCode, newPassword, options)(fetch, basePath);
         },
         /**
          * 
@@ -515,6 +598,20 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
+     * @param {} phone 
+     * @param {} smsCode 
+     * @param {} newPassword 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public resetPassword(phone: string, smsCode: string, newPassword: string, options?: any) {
+        return DefaultApiFp(this.configuration).resetPassword(phone, smsCode, newPassword, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary 
      * @param {} scene 
      * @param {} phone 
      * @param {} [captchaId] 
@@ -563,6 +660,11 @@ export interface loginParams {
 export interface logoutParams {
     jwt: string;
 }
+export interface resetPasswordParams {
+    phone: string;
+    smsCode: string;
+    newPassword: string;
+}
 export interface smsCodeParams {
     scene: string;
     phone: string;
@@ -585,6 +687,9 @@ export const login_SUCCESS = "login_SUCCESS";
 export const logout_REQUEST = "logout_REQUEST";
 export const logout_FAILURE = "logout_FAILURE";
 export const logout_SUCCESS = "logout_SUCCESS";
+export const resetPassword_REQUEST = "resetPassword_REQUEST";
+export const resetPassword_FAILURE = "resetPassword_FAILURE";
+export const resetPassword_SUCCESS = "resetPassword_SUCCESS";
 export const smsCode_REQUEST = "smsCode_REQUEST";
 export const smsCode_FAILURE = "smsCode_FAILURE";
 export const smsCode_SUCCESS = "smsCode_SUCCESS";

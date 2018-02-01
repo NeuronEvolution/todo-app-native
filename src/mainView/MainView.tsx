@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, Text, View } from 'react-native';
+import {Dimensions, FlatList, Text, View} from 'react-native';
 import { connect } from 'react-redux';
 import { RootState } from '../redux';
 
@@ -13,31 +13,38 @@ interface State {
 
 class MainView extends React.Component<Props, State> {
     public render() {
-        return (
-            <View style={{
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
+        return (<View style={{
+                width: Dimensions.get('window').width,
+                height: Dimensions.get('window').height,
+                backgroundColor: '#fff',
+                alignItems: 'center'
             }}>
                 <View style={{
                     flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                 }}>
-                    <FlatList
-                        data={[
-                            {key: 'a'},
-                            {key: 'a'},
-                            {key: 'a'},
-                            {key: 'a'},
-                            {key: 'a'},
-                            {key: 'a'},
-                            {key: 'a'},
-                        ]}
-                        renderItem={({item}) => {
-                            return (
-                                <Text style={{fontSize: 32, height: 48}}>{item.key}</Text>
-                            );
-                        }}
-                    />
+                    <View style={{
+                        flex: 1,
+                    }}>
+                        <FlatList
+                            data={[
+                                {key: 'a'},
+                                {key: 'b'},
+                                {key: 'c'},
+                                {key: 'd'},
+                                {key: 'e'},
+                                {key: 'f'},
+                                {key: 'g'},
+                            ]}
+                            renderItem={({item}) => {
+                                return (
+                                    <Text style={{fontSize: 32, height: 48}}>{item.key}</Text>
+                                );
+                            }}
+                        />
+                    </View>
                 </View>
             </View>
         );

@@ -1,37 +1,34 @@
 import * as React from 'react';
 import { Button, Dimensions, Text, TextInput, View } from 'react-native';
+import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import { smsCodeParams, smsSignupParams } from '../api/account-private/gen';
-import {
-    apiAccountSmsCode, apiAccountSmsSignup, onGlobalToast, renderToast,
-    RootState
-} from '../redux';
+import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
+import { apiAccountResetPassword, apiAccountSmsCode, onGlobalToast, renderToast, RootState } from '../redux';
 
-export interface Props {
+export interface Props extends NavigationScreenProps<any> {
     rootState: RootState;
-
     onGlobalToast: (text: string) => Dispatchable;
-    apiAccountSmsSignup: (p: smsSignupParams) => Dispatchable;
     apiAccountSmsCode: (p: smsCodeParams) => Dispatchable;
+    apiAccountResetPassword: (p: resetPasswordParams, navigation: NavigationScreenProps<any>) => Dispatchable;
 }
 
 interface State {
-    signupPhone: string;
-    signupSmsCode: string;
-    signupPassword: string;
+    inputPhone: string;
+    inputSmsCode: string;
+    inputNewPassword: string;
 }
 
-class SignupView extends React.Component<Props, State> {
+class ResetPasswordView extends React.Component<Props, State> {
     public static navigationOptions = {
-        title: '注册'
+        title: '找回密码'
     };
 
     public componentWillMount() {
         this.setState({
-            signupPhone: '',
-            signupSmsCode: '',
-            signupPassword: '',
+            inputPhone: '',
+            inputSmsCode: '',
+            inputNewPassword: ''
         });
     }
 
@@ -44,15 +41,10 @@ class SignupView extends React.Component<Props, State> {
                 alignItems: 'center',
                 flexDirection: 'column',
             }}>
-                <Text style={{
-                    textAlign: 'center',
-                    fontSize: 32,
-                    marginTop: 80,
-                    marginBottom: 32,
-                }}>注册火星帐号</Text>
                 <View style={{
                     flexDirection: 'row',
                     alignItems: 'center',
+                    marginTop: 80
                 }}>
                     <Text style={{fontSize: 20, width: 72}}>手机号</Text>
                     <TextInput
@@ -62,9 +54,9 @@ class SignupView extends React.Component<Props, State> {
                             height: 48,
                         }}
                         onChangeText={(text) => {
-                            this.setState({signupPhone: text});
+                            this.setState({inputPhone: text});
                         }}
-                        value={this.state.signupPhone}
+                        value={this.state.inputPhone}
                         placeholder={'请输入手机号'}
                     />
                 </View>
@@ -80,9 +72,9 @@ class SignupView extends React.Component<Props, State> {
                             height: 48,
                         }}
                         onChangeText={(text) => {
-                            this.setState({signupSmsCode: text});
+                            this.setState({inputSmsCode: text});
                         }}
-                        value={this.state.signupSmsCode}
+                        value={this.state.inputSmsCode}
                     />
                     <View style={{width: 120}}>
                         <Button
@@ -105,9 +97,9 @@ class SignupView extends React.Component<Props, State> {
                             height: 48,
                         }}
                         onChangeText={(text) => {
-                            this.setState({signupPassword: text});
+                            this.setState({inputNewPassword: text});
                         }}
-                        value={this.state.signupPassword}
+                        value={this.state.inputNewPassword}
                         placeholder={'请输入登录密码'}
                     />
                 </View>
@@ -118,9 +110,9 @@ class SignupView extends React.Component<Props, State> {
                     width: Dimensions.get('window').width
                 }}>
                     <Button
-                        title={'注册并登录'}
+                        title={'重置密码'}
                         onPress={() => {
-                            this.onSignupPressed();
+                            this.onResetPasswordPressed();
                         }}
                     />
                 </View>
@@ -132,39 +124,41 @@ class SignupView extends React.Component<Props, State> {
     }
 
     private onGetSmsCodePressed() {
-        if (this.state.signupPhone === '') {
+        if (this.state.inputPhone === '') {
             return this.props.onGlobalToast('请输入手机号');
         }
 
         this.props.apiAccountSmsCode({
-            scene: 'SMS_SIGNUP',
-            phone: this.state.signupPhone
+            scene: 'RESET_PASSWORD',
+            phone: this.state.inputPhone
         });
     }
 
-    private onSignupPressed() {
-        if (this.state.signupPhone === '') {
+    private onResetPasswordPressed() {
+        if (this.state.inputPhone === '') {
             return this.props.onGlobalToast('请输入手机号');
         }
 
-        if (this.state.signupSmsCode === '') {
-            return this.props.onGlobalToast('请输入验证码');
+        if (this.state.inputSmsCode === '') {
+            return this.props.onGlobalToast('请输入短信验证码');
         }
 
-        if (this.state.signupPassword === '') {
-            return this.props.onGlobalToast('请输入登录密码');
+        if (this.state.inputNewPassword === '') {
+            return this.props.onGlobalToast('请输入新密码');
         }
 
-        this.props.apiAccountSmsSignup({
-            phone: this.state.signupPhone,
-            smsCode: this.state.signupSmsCode,
-            password: this.state.signupPassword
-        });
+        this.props.apiAccountResetPassword(
+            {
+                phone: this.state.inputPhone,
+                smsCode: this.state.inputSmsCode,
+                newPassword: this.state.inputNewPassword
+            },
+            this.props);
     }
 }
 
 export default connect((rootState: RootState) => ({rootState}), {
     onGlobalToast,
-    apiAccountSmsSignup,
     apiAccountSmsCode,
-})(SignupView);
+    apiAccountResetPassword
+})(ResetPasswordView);

@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { Button, Dimensions, Text, TextInput, View } from 'react-native';
+import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { loginParams, smsCodeParams, smsLoginParams, smsSignupParams } from '../api/account-private/gen';
 import {
-    apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup, onGlobalToast,
+    apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup, onGlobalToast, renderToast,
     RootState
 } from '../redux';
 
-export interface Props {
+export interface Props extends NavigationScreenProps<any> {
     rootState: RootState;
 
     onGlobalToast: (text: string) => Dispatchable;
@@ -27,42 +28,67 @@ interface State {
 }
 
 class LoginView extends React.Component<Props, State> {
+    public static navigationOptions = {
+        title: '登录'
+    };
+
     public render() {
         return <View style={{
-            flexDirection: 'column',
+            width: Dimensions.get('window').width,
+            height: Dimensions.get('window').height,
             backgroundColor: '#fff',
-            maxWidth: 300,
+            alignItems: 'center',
+            flexDirection: 'column',
         }}>
-            <Text style={{
-                textAlign: 'center',
-                fontSize: 32,
-                marginBottom: 32,
-            }}>登录火星家园</Text>
-            {this.renderTabHeader()}
             <View style={{
-                width: Dimensions.get('window').width,
-                maxWidth: 300,
-                height: 2,
-                backgroundColor: '#EEE',
-            }}/>
-            {this.state.tabIndex === 0 ? this.renderAccountLogin() : null}
-            {this.state.tabIndex === 1 ? this.renderSmsLogin() : null}
-            <View style={{backgroundColor: 'gold', height: 48, justifyContent: 'center'}}>
-                <Button
-                    title={'登录'}
-                    onPress={() => {
-                        this.onLoginPressed();
-                    }}
-                />
-            </View>
-            <View style={{
-                marginTop: 12,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                marginTop: 80,
             }}>
-                <Text>忘记密码？</Text>
-                <Text>新注册用户</Text>
+                <Text style={{
+                    textAlign: 'center',
+                    fontSize: 32,
+                    marginBottom: 32,
+                }}>登录火星家园</Text>
+                {this.renderTabHeader()}
+                <View style={{
+                    width: Dimensions.get('window').width,
+                    height: 2,
+                    backgroundColor: '#EEE',
+                }}/>
+                {this.state.tabIndex === 0 ? this.renderAccountLogin() : null}
+                {this.state.tabIndex === 1 ? this.renderSmsLogin() : null}
+                <View style={{
+                    backgroundColor: 'gold',
+                    height: 48,
+                    justifyContent: 'center',
+                    width: Dimensions.get('window').width
+                }}>
+                    <Button
+                        title={'登录'}
+                        onPress={() => {
+                            this.onLoginPressed();
+                        }}
+                    />
+                </View>
+                <View style={{
+                    marginTop: 12,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                }}>
+                    <Text onPress={() => {
+                        this.onResetPasswordPressed();
+                    }}>
+                        &nbsp;&nbsp;&nbsp;&nbsp;忘记密码？
+                    </Text>
+                    <Text onPress={() => {
+                        this.onSignupPressed();
+                    }}>
+                        新注册用户&nbsp;&nbsp;&nbsp;&nbsp;
+                    </Text>
+                </View>
             </View>
+            {renderToast(
+                this.props.rootState.globalToast.text,
+                this.props.rootState.globalToast.timestamp)}
         </View>;
     }
 
@@ -200,7 +226,7 @@ class LoginView extends React.Component<Props, State> {
                         <Button
                             title={'获取验证码'}
                             onPress={() => {
-                                this.onSmsLoginGetSmsCodePressed();
+                                this.onGetSmsCodePressed();
                             }}
                         />
                     </View>
@@ -209,7 +235,7 @@ class LoginView extends React.Component<Props, State> {
         );
     }
 
-    private onSmsLoginGetSmsCodePressed(): any {
+    private onGetSmsCodePressed(): any {
         if (this.state.loginPhone === '') {
             return this.props.onGlobalToast('请输入手机号');
         }
@@ -230,10 +256,11 @@ class LoginView extends React.Component<Props, State> {
                 return this.props.onGlobalToast('请输入密码');
             }
 
-            this.props.apiAccountLogin({
-                name: this.state.loginName,
-                password: this.state.loginPassword
-            });
+            this.props.apiAccountLogin(
+                {
+                    name: this.state.loginName,
+                    password: this.state.loginPassword
+                });
         } else {
             if (this.state.loginPhone === '') {
                 return this.props.onGlobalToast('请输入手机号');
@@ -243,11 +270,20 @@ class LoginView extends React.Component<Props, State> {
                 return this.props.onGlobalToast('请输入验证码');
             }
 
-            this.props.apiAccountSmsLogin({
-                phone: this.state.loginPhone,
-                smsCode: this.state.loginSmsCode
-            });
+            this.props.apiAccountSmsLogin(
+                {
+                    phone: this.state.loginPhone,
+                    smsCode: this.state.loginSmsCode
+                });
         }
+    }
+
+    private onSignupPressed(): any {
+        this.props.navigation.navigate('Signup');
+    }
+
+    private onResetPasswordPressed(): any {
+        this.props.navigation.navigate('ResetPassword');
     }
 }
 

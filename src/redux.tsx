@@ -1,9 +1,13 @@
+import * as React from 'react';
+import { Dimensions, Text, View } from 'react-native';
+import { NavigationScreenProps } from 'react-navigation';
 import { Dispatch } from 'react-redux';
 import { combineReducers } from 'redux';
 import { Dispatchable, StandardAction } from './_common/action';
+import TimedComponent from './_react_native_common/TimedComponent';
 import {
     DefaultApiFactory as AccountApi,
-    loginParams,
+    loginParams, resetPasswordParams,
     smsCodeParams,
     smsLoginParams,
     smsSignupParams
@@ -46,13 +50,29 @@ export function onGlobalToast(text: string): Dispatchable {
     };
 }
 
+export function renderToast(text: string, timestamp: Date): JSX.Element {
+    return (
+        <View style={{
+            position: 'absolute',
+            top: Dimensions.get('window').height * 0.8,
+        }}>
+            <TimedComponent
+                timestamp={timestamp}
+                contentElement={
+                    <Text style={{fontSize: 16}}>
+                        {text}
+                    </Text>
+                }
+                intervalMillSec={1000}
+            />
+        </View>
+    );
+}
+
 function onApiError(err: any): Dispatchable {
     return (dispatch: Dispatch<StandardAction>) => {
-        let text = err.toString();
-        if (text === 'TypeError: Network request failed') {
-            text = '网络连接失败';
-        }
-
+        const text = err.toString() === 'TypeError: Network request failed'
+            ? '网络连接失败' : err.message;
         dispatch(onGlobalToast(text));
     };
 }
@@ -122,6 +142,18 @@ export function apiAccountSmsSignup(p: smsSignupParams): Dispatchable {
                 dispatch(onAccountLoginSuccess(jwt));
             })
             .catch((err) => {
+                dispatch(onApiError(err));
+            });
+    };
+}
+
+export function apiAccountResetPassword(p: resetPasswordParams, navigation: NavigationScreenProps<any>): Dispatchable {
+    return (dispatch: Dispatch<StandardAction>) => {
+        return accountApi.resetPassword(p.phone, p.smsCode, p.newPassword)
+            .then(() => {
+                dispatch(onGlobalToast('密码重置成功'));
+                navigation.navigation.navigate('Login');
+            }).catch((err) => {
                 dispatch(onApiError(err));
             });
     };

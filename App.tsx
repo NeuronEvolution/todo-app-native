@@ -9,11 +9,11 @@ import RootView from './src/RootView';
 const store = createStore(rootReducer, {}, applyMiddleware(thunk, logger));
 
 export default class App extends Component<{}> {
-  public render() {
-    return (
-        <Provider store={store}>
-            <RootView/>
-        </Provider>
-    );
-  }
+    public render() {
+        return (
+            <Provider store={store}>
+                <RootView/>
+            </Provider>
+        );
+    }
 }
