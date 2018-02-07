@@ -375,11 +375,4 @@ export interface tokenParams {
     scope?: string;
 }
 
-export const me_REQUEST = "me_REQUEST";
-export const me_FAILURE = "me_FAILURE";
-export const me_SUCCESS = "me_SUCCESS";
-export const token_REQUEST = "token_REQUEST";
-export const token_FAILURE = "token_FAILURE";
-export const token_SUCCESS = "token_SUCCESS";
-
 

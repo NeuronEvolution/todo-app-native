@@ -681,23 +681,4 @@ export interface smsSignupParams {
     password: string;
 }
 
-export const login_REQUEST = "login_REQUEST";
-export const login_FAILURE = "login_FAILURE";
-export const login_SUCCESS = "login_SUCCESS";
-export const logout_REQUEST = "logout_REQUEST";
-export const logout_FAILURE = "logout_FAILURE";
-export const logout_SUCCESS = "logout_SUCCESS";
-export const resetPassword_REQUEST = "resetPassword_REQUEST";
-export const resetPassword_FAILURE = "resetPassword_FAILURE";
-export const resetPassword_SUCCESS = "resetPassword_SUCCESS";
-export const smsCode_REQUEST = "smsCode_REQUEST";
-export const smsCode_FAILURE = "smsCode_FAILURE";
-export const smsCode_SUCCESS = "smsCode_SUCCESS";
-export const smsLogin_REQUEST = "smsLogin_REQUEST";
-export const smsLogin_FAILURE = "smsLogin_FAILURE";
-export const smsLogin_SUCCESS = "smsLogin_SUCCESS";
-export const smsSignup_REQUEST = "smsSignup_REQUEST";
-export const smsSignup_FAILURE = "smsSignup_FAILURE";
-export const smsSignup_SUCCESS = "smsSignup_SUCCESS";
-
 

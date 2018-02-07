@@ -485,17 +485,4 @@ export interface refreshTokenParams {
     refreshToken: string;
 }
 
-export const logout_REQUEST = "logout_REQUEST";
-export const logout_FAILURE = "logout_FAILURE";
-export const logout_SUCCESS = "logout_SUCCESS";
-export const oauthJump_REQUEST = "oauthJump_REQUEST";
-export const oauthJump_FAILURE = "oauthJump_FAILURE";
-export const oauthJump_SUCCESS = "oauthJump_SUCCESS";
-export const oauthState_REQUEST = "oauthState_REQUEST";
-export const oauthState_FAILURE = "oauthState_FAILURE";
-export const oauthState_SUCCESS = "oauthState_SUCCESS";
-export const refreshToken_REQUEST = "refreshToken_REQUEST";
-export const refreshToken_FAILURE = "refreshToken_FAILURE";
-export const refreshToken_SUCCESS = "refreshToken_SUCCESS";
-
 

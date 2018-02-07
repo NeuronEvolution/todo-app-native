@@ -1,36 +1,23 @@
 import * as React from 'react';
-import { StackNavigator } from 'react-navigation';
 import { connect } from 'react-redux';
-import LoginView from './loginView/LoginView';
-import ResetPasswordView from './loginView/ResetPasswordView';
-import SignupView from './loginView/SignupView';
-import MainView from './mainView/MainView';
+import { LoginViewStack } from './loginView/LoginViewStack';
+import { MainViewTabs } from './mainView/MainViewTabs';
 import { RootState } from './redux';
 
 export interface Props {
-    rootState: RootState;
+    token: string;
 }
 
-interface State {
-    s: string;
-}
-
-const LoginViewStack = StackNavigator({
-    Login: {screen: LoginView},
-    Signup: {screen: SignupView},
-    ResetPassword: {screen: ResetPasswordView}
-});
-
-class RootView extends React.Component<Props, State> {
+class RootView extends React.Component<Props> {
     public render() {
-        if (this.props.rootState.oauthJumpResponse.token == null) {
+        if (this.props.token == null) {
             return (<LoginViewStack/>);
         } else {
-            return <MainView/>;
+            return <MainViewTabs/>;
         }
     }
 }
 
-export default connect((rootState: RootState) => ({rootState}), {
+export default connect((rootState: RootState) => ({token: rootState.oauthJumpResponse.token}), {
 
 })(RootView);

@@ -101,6 +101,12 @@ export interface TodoItem {
      * @type {string}
      * @memberof TodoItem
      */
+    category?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TodoItem
+     */
     title?: string;
     /**
      * 
@@ -110,16 +116,36 @@ export interface TodoItem {
     desc?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof TodoItem
      */
-    priority?: number;
+    status?: string;
     /**
      * 
      * @type {number}
      * @memberof TodoItem
      */
-    status?: number;
+    priority?: number;
+}
+
+/**
+ * 
+ * @export
+ * @interface TodoItemGroup
+ */
+export interface TodoItemGroup {
+    /**
+     * 
+     * @type {string}
+     * @memberof TodoItemGroup
+     */
+    category?: string;
+    /**
+     * 
+     * @type {Array&lt;TodoItem&gt;}
+     * @memberof TodoItemGroup
+     */
+    todoItemList?: Array<TodoItem>;
 }
 
 
@@ -146,6 +172,14 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = Object.assign({ method: 'POST' }, options);
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -180,6 +214,14 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -193,15 +235,64 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 
+         * @param {string} [otherUserId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoList(options: any = {}): FetchArgs {
+        getTodoList(otherUserId?: string, options: any = {}): FetchArgs {
             const localVarPath = `/`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
+            if (otherUserId !== undefined) {
+                localVarQueryParameter['otherUserId'] = otherUserId;
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [otherUserId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTodoListByCategory(otherUserId?: string, options: any = {}): FetchArgs {
+            const localVarPath = `/listByCategory`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
+            if (otherUserId !== undefined) {
+                localVarQueryParameter['otherUserId'] = otherUserId;
+            }
 
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -231,6 +322,14 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = Object.assign({ method: 'DELETE' }, options);
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
 
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -265,6 +364,14 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = Object.assign({ method: 'POST' }, options);
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -330,11 +437,31 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 
+         * @param {string} [otherUserId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoList(options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<TodoItem>> {
-            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getTodoList(options);
+        getTodoList(otherUserId?: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<TodoItem>> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getTodoList(otherUserId, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [otherUserId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTodoListByCategory(otherUserId?: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<TodoItemGroup>> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getTodoListByCategory(otherUserId, options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
                     if (response.status >= 200 && response.status < 300) {
@@ -416,11 +543,22 @@ export const DefaultApiFactory = function (configuration?: Configuration, fetch?
         /**
          * 
          * @summary 
+         * @param {string} [otherUserId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoList(options?: any) {
-            return DefaultApiFp(configuration).getTodoList(options)(fetch, basePath);
+        getTodoList(otherUserId?: string, options?: any) {
+            return DefaultApiFp(configuration).getTodoList(otherUserId, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [otherUserId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTodoListByCategory(otherUserId?: string, options?: any) {
+            return DefaultApiFp(configuration).getTodoListByCategory(otherUserId, options)(fetch, basePath);
         },
         /**
          * 
@@ -480,12 +618,25 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
+     * @param {} [otherUserId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getTodoList(options?: any) {
-        return DefaultApiFp(this.configuration).getTodoList(options)(this.fetch, this.basePath);
+    public getTodoList(otherUserId?: string, options?: any) {
+        return DefaultApiFp(this.configuration).getTodoList(otherUserId, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {} [otherUserId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getTodoListByCategory(otherUserId?: string, options?: any) {
+        return DefaultApiFp(this.configuration).getTodoListByCategory(otherUserId, options)(this.fetch, this.basePath);
     }
 
     /**
@@ -521,6 +672,12 @@ export interface addTodoParams {
 export interface getTodoParams {
     todoId: string;
 }
+export interface getTodoListParams {
+    otherUserId?: string;
+}
+export interface getTodoListByCategoryParams {
+    otherUserId?: string;
+}
 export interface removeTodoParams {
     todoId: string;
 }
@@ -528,21 +685,5 @@ export interface updateTodoParams {
     todoId: string;
     todoItem: TodoItem;
 }
-
-export const addTodo_REQUEST = "addTodo_REQUEST";
-export const addTodo_FAILURE = "addTodo_FAILURE";
-export const addTodo_SUCCESS = "addTodo_SUCCESS";
-export const getTodo_REQUEST = "getTodo_REQUEST";
-export const getTodo_FAILURE = "getTodo_FAILURE";
-export const getTodo_SUCCESS = "getTodo_SUCCESS";
-export const getTodoList_REQUEST = "getTodoList_REQUEST";
-export const getTodoList_FAILURE = "getTodoList_FAILURE";
-export const getTodoList_SUCCESS = "getTodoList_SUCCESS";
-export const removeTodo_REQUEST = "removeTodo_REQUEST";
-export const removeTodo_FAILURE = "removeTodo_FAILURE";
-export const removeTodo_SUCCESS = "removeTodo_SUCCESS";
-export const updateTodo_REQUEST = "updateTodo_REQUEST";
-export const updateTodo_FAILURE = "updateTodo_FAILURE";
-export const updateTodo_SUCCESS = "updateTodo_SUCCESS";
 
 

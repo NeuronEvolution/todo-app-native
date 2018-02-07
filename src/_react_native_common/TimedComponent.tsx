@@ -22,6 +22,18 @@ export default class TimedComponent extends React.Component<Props, State> {
         });
     }
 
+    public componentWillUnmount() {
+        if (this.state.timer !== 0) {
+            clearInterval(this.state.timer);
+        }
+
+        this.setState({
+            timer: 0,
+            timestamp: this.props.timestamp,
+            visible: false
+        });
+    }
+
     public componentWillReceiveProps(nextProps: Props) {
         // may called when props not changed
         if (nextProps.timestamp === this.state.timestamp) {

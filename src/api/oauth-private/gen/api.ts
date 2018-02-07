@@ -277,8 +277,4 @@ export interface authorizeParams {
     state: string;
 }
 
-export const authorize_REQUEST = "authorize_REQUEST";
-export const authorize_FAILURE = "authorize_FAILURE";
-export const authorize_SUCCESS = "authorize_SUCCESS";
-
 

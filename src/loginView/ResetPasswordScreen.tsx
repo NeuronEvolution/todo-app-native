@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { Button, Dimensions, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
-import { apiAccountResetPassword, apiAccountSmsCode, onGlobalToast, renderToast, RootState } from '../redux';
+import { commonStyles } from '../commonStyles';
+import { apiAccountResetPassword, apiAccountSmsCode, onGlobalToast, RootState } from '../redux';
+import ToastView from '../ToastView';
 
 export interface Props extends NavigationScreenProps<any> {
     rootState: RootState;
@@ -19,11 +21,7 @@ interface State {
     inputNewPassword: string;
 }
 
-class ResetPasswordView extends React.Component<Props, State> {
-    public static navigationOptions = {
-        title: '找回密码'
-    };
-
+class ResetPasswordScreen extends React.Component<Props, State> {
     public componentWillMount() {
         this.setState({
             inputPhone: '',
@@ -34,25 +32,11 @@ class ResetPasswordView extends React.Component<Props, State> {
 
     public render() {
         return (
-            <View style={{
-                width: Dimensions.get('window').width,
-                height: Dimensions.get('window').height,
-                backgroundColor: '#FFF',
-                alignItems: 'center',
-                flexDirection: 'column',
-            }}>
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 80
-                }}>
-                    <Text style={{fontSize: 20, width: 72}}>手机号</Text>
+            <View style={[commonStyles.screenCentered]}>
+                <View style={[commonStyles.flexRowCentered, {marginTop: 80}]}>
+                    <Text style={[commonStyles.text, {width: 80}]}>手机号</Text>
                     <TextInput
-                        style={{
-                            width: 180,
-                            fontSize: 20,
-                            height: 48,
-                        }}
+                        style={[commonStyles.textInput, {width: 180}]}
                         onChangeText={(text) => {
                             this.setState({inputPhone: text});
                         }}
@@ -60,65 +44,43 @@ class ResetPasswordView extends React.Component<Props, State> {
                         placeholder={'请输入手机号'}
                     />
                 </View>
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}>
-                    <Text style={{fontSize: 20, width: 72}}>验证码</Text>
+                <View style={[commonStyles.flexRowCentered]}>
+                    <Text style={[commonStyles.text, {width: 80}]}>验证码</Text>
                     <TextInput
-                        style={{
-                            width: 60,
-                            fontSize: 20,
-                            height: 48,
-                        }}
+                        style={[commonStyles.textInput, {width: 60}]}
                         onChangeText={(text) => {
                             this.setState({inputSmsCode: text});
                         }}
                         value={this.state.inputSmsCode}
                     />
-                    <View style={{width: 120}}>
-                        <Button
-                            title={'获取验证码'}
-                            onPress={() => {
-                                this.onGetSmsCodePressed();
-                            }}
-                        />
-                    </View>
+                    <TouchableOpacity
+                        style={[commonStyles.button, {width: 120, backgroundColor: '#fff'}]}
+                        onPress={() => {
+                            this.onGetSmsCodePressed();
+                        }}>
+                        <Text style={[commonStyles.buttonText]}>获取验证码</Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}>
-                    <Text style={{fontSize: 20, width: 72}}>密码</Text>
+                <View style={[commonStyles.flexRowCentered]}>
+                    <Text style={[commonStyles.text, {width: 80}]}>新密码</Text>
                     <TextInput
-                        style={{
-                            width: 180,
-                            fontSize: 20,
-                            height: 48,
-                        }}
+                        style={[commonStyles.textInput, {width: 180}]}
                         onChangeText={(text) => {
                             this.setState({inputNewPassword: text});
                         }}
                         value={this.state.inputNewPassword}
-                        placeholder={'请输入登录密码'}
+                        placeholder={'请输入新密码'}
                     />
                 </View>
-                <View style={{
-                    backgroundColor: 'gold',
-                    height: 48,
-                    justifyContent: 'center',
-                    width: Dimensions.get('window').width
-                }}>
-                    <Button
-                        title={'重置密码'}
-                        onPress={() => {
-                            this.onResetPasswordPressed();
-                        }}
-                    />
-                </View>
-                {renderToast(
-                    this.props.rootState.globalToast.text,
-                    this.props.rootState.globalToast.timestamp)}
+                <TouchableOpacity
+                    style={[commonStyles.button, {width: 300}]}
+                    onPress={() => {
+                        this.onResetPasswordPressed();
+                    }}
+                >
+                   <Text style={[commonStyles.buttonText]}>重置密码</Text>
+                </TouchableOpacity>
+                <ToastView/>
             </View>
         );
     }
@@ -161,4 +123,4 @@ export default connect((rootState: RootState) => ({rootState}), {
     onGlobalToast,
     apiAccountSmsCode,
     apiAccountResetPassword
-})(ResetPasswordView);
+})(ResetPasswordScreen);

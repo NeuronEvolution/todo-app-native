@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { Dimensions, Text, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { Dispatch } from 'react-redux';
 import { combineReducers } from 'redux';
 import { Dispatchable, StandardAction } from './_common/action';
-import TimedComponent from './_react_native_common/TimedComponent';
 import {
     DefaultApiFactory as AccountApi,
     loginParams, resetPasswordParams,
@@ -17,14 +15,25 @@ import {
     DefaultApiFactory as OauthPrivateApi
 } from './api/oauth-private/gen/';
 import {
+    addTodoParams,
+    DefaultApiFactory as TodoPrivateApi, getTodoListParams, TodoItem, TodoItemGroup,
+} from './api/todo-private/gen';
+import {
     DefaultApiFactory as UserPrivateApi,
-    oauthJump_SUCCESS,
     OauthJumpResponse,
 } from './api/user-private/gen';
+import {TodoScreenStack} from './mainView/TodoScreenStack';
+
+let tokenString = '';
 
 const accountApi = AccountApi(undefined, fetch, 'http://127.0.0.1:8083/api-private/v1/accounts');
 const oauthPrivateApi = OauthPrivateApi(undefined, fetch, 'http://127.0.0.1:8085/api-private/v1/oauth');
 const userPrivateApi = UserPrivateApi(undefined, fetch, 'http://127.0.0.1:8086/api-private/v1/users');
+const todoPrivateApi = TodoPrivateApi(
+    {
+        apiKey: () => tokenString
+    },
+    fetch, 'http://127.0.0.1:9001/api-private/v1/todo');
 
 export interface ToastInfo {
     text: string;
@@ -36,6 +45,8 @@ const GLOBAL_TOAST_ACTION = 'GLOBAL_TOAST_ACTION';
 export interface RootState {
     globalToast: ToastInfo;
     oauthJumpResponse: OauthJumpResponse;
+    todoListByCategory: TodoItemGroup[];
+    otherTodoListByCategory: Map<string, TodoItemGroup[]>;
 }
 
 export function onGlobalToast(text: string): Dispatchable {
@@ -50,25 +61,6 @@ export function onGlobalToast(text: string): Dispatchable {
     };
 }
 
-export function renderToast(text: string, timestamp: Date): JSX.Element {
-    return (
-        <View style={{
-            position: 'absolute',
-            top: Dimensions.get('window').height * 0.8,
-        }}>
-            <TimedComponent
-                timestamp={timestamp}
-                contentElement={
-                    <Text style={{fontSize: 16}}>
-                        {text}
-                    </Text>
-                }
-                intervalMillSec={1000}
-            />
-        </View>
-    );
-}
-
 function onApiError(err: any): Dispatchable {
     return (dispatch: Dispatch<StandardAction>) => {
         const text = err.toString() === 'TypeError: Network request failed'
@@ -76,6 +68,8 @@ function onApiError(err: any): Dispatchable {
         dispatch(onGlobalToast(text));
     };
 }
+
+const ACTION_OAUTH_JUMP_SUCCESS = 'ACTION_OAUTH_JUMP_SUCCESS';
 
 function  onAccountLoginSuccess(jwt: string): Dispatchable {
     return (dispatch: Dispatch<StandardAction>) => {
@@ -88,8 +82,9 @@ function  onAccountLoginSuccess(jwt: string): Dispatchable {
                         }
                         userPrivateApi.oauthJump('fromApp', authorizationCode.code, state)
                             .then((oauthJumpResponseData: OauthJumpResponse) => {
-                                dispatch({type: oauthJump_SUCCESS, payload: oauthJumpResponseData});
+                                tokenString = oauthJumpResponseData.token ? oauthJumpResponseData.token : '';
                                 dispatch(onGlobalToast('登录成功'));
+                                dispatch({type: ACTION_OAUTH_JUMP_SUCCESS, payload: oauthJumpResponseData});
                             }).catch((err) => {
                             dispatch(onApiError(err));
                         });
@@ -106,7 +101,7 @@ export function apiAccountSmsCode(p: smsCodeParams): Dispatchable {
     return (dispatch: Dispatch<StandardAction>) => {
         return accountApi.smsCode(p.scene, p.phone, p.captchaId, p.captchaCode)
             .then(() => {
-                dispatch(onGlobalToast('已发送'));
+                dispatch(onGlobalToast('已发送,验证码1234'));
             }).catch((err) => {
                 dispatch(onApiError(err));
             });
@@ -159,6 +154,35 @@ export function apiAccountResetPassword(p: resetPasswordParams, navigation: Navi
     };
 }
 
+const ACTION_TODO_LIST_BY_CATEGORY = 'ACTION_TODO_LIST_BY_CATEGORY';
+const ACTION_TODO_LIST_OTHERS_BY_CATEGORY = 'ACTION_TODO_LIST_OTHERS_BY_CATEGORY';
+
+export function apiTodoGetTodoListByCategory(p: getTodoListParams): Dispatchable {
+    return (dispatch: Dispatch<StandardAction>) => {
+        return todoPrivateApi.getTodoListByCategory(p.otherUserId)
+            .then((result: TodoItemGroup[]) => {
+                if (p.otherUserId === undefined) {
+                    dispatch({type: ACTION_TODO_LIST_BY_CATEGORY, payload: result});
+                } else {
+                    dispatch({type: ACTION_TODO_LIST_OTHERS_BY_CATEGORY, payload: result});
+                }
+            }).catch((err) => {
+                dispatch(onApiError(err));
+            });
+    };
+}
+
+export function apiTodoAddTodo(p: TodoItem, navigation: NavigationScreenProps<any>): Dispatchable {
+    return (dispatch: Dispatch<StandardAction>) => {
+        return todoPrivateApi.addTodo(p)
+            .then(() => {
+                navigation.navigation.navigate('Todo');
+            }).catch((err) => {
+                dispatch(onApiError(err));
+            });
+    };
+}
+
 function globalToast(state: ToastInfo, action: StandardAction): ToastInfo {
     if (state === undefined) {
         return {text: '', timestamp: new Date()};
@@ -178,8 +202,40 @@ function oauthJumpResponse(state: OauthJumpResponse, action: StandardAction): Oa
     }
 
     switch (action.type) {
-        case oauthJump_SUCCESS:
+        case ACTION_OAUTH_JUMP_SUCCESS:
             return action.payload;
+        default:
+            return state;
+    }
+}
+
+function todoListByCategory(state: TodoItemGroup[], action: StandardAction): TodoItemGroup[] {
+    if (state === undefined) {
+        return [];
+    }
+
+    switch (action.type) {
+        case ACTION_TODO_LIST_BY_CATEGORY:
+            return action.payload;
+        default:
+            return state;
+    }
+}
+
+function otherTodoListByCategory(state: Map<string, TodoItemGroup[]>, action: StandardAction)
+: Map<string, TodoItemGroup[]> {
+    if (state === undefined) {
+        return new Map<string, TodoItemGroup[]>();
+    }
+
+    switch (action.type) {
+        case ACTION_TODO_LIST_OTHERS_BY_CATEGORY:
+            const newMap = new Map<string, TodoItemGroup[]>();
+            state.forEach((value: TodoItemGroup[], key: string) => {
+                newMap.set(key, value);
+            });
+            newMap.set(action.payload[0].UserId, action.payload);
+            return newMap;
         default:
             return state;
     }
@@ -187,5 +243,7 @@ function oauthJumpResponse(state: OauthJumpResponse, action: StandardAction): Oa
 
 export const rootReducer = combineReducers({
     globalToast,
-    oauthJumpResponse
+    oauthJumpResponse,
+    todoListByCategory,
+    otherTodoListByCategory
 });
