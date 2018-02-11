@@ -2,13 +2,14 @@ import * as React from 'react';
 import { Image, Text, TouchableOpacity } from 'react-native';
 import { NavigationScreenProps, StackNavigator } from 'react-navigation';
 import { commonStyles } from '../commonStyles';
-import AddTodoScreen from './AddTodoScreen';
-import TodoScreen from './TodoSceen';
+import TodoAddScreen from './TodoAddScreen';
+import TodoDetailScreen from './TodoDetailScreen';
+import TodoListScreen from './TodoListScreen';
 const mainTabIconTodo = require('../../resource/main_todo_tab_icon.png');
 
 export const TodoScreenStack = StackNavigator({
-    Todo: {
-        screen: TodoScreen,
+    TodoList: {
+        screen: TodoListScreen,
         navigationOptions: ({navigation}: NavigationScreenProps<any>) => ({
             tabBarLabel: '我的计划',
             tabBarIcon: () => (
@@ -20,19 +21,28 @@ export const TodoScreenStack = StackNavigator({
             ),
             headerRight: (
                 <TouchableOpacity
-                    style={[commonStyles.button, {marginRight: 8, width: 100, height: 32}]}
+                    style={[commonStyles.button, {marginRight: 8, width: 80, height: 32}]}
                     onPress={() => {
-                        navigation.navigate('AddTodo');
+                        navigation.navigate('TodoAdd');
                     }}>
-                    <Text style={[commonStyles.buttonText]}>新增计划</Text>
+                    <Text style={[commonStyles.buttonText]}>新计划</Text>
                 </TouchableOpacity>
             ),
         })
     },
-    AddTodo: {
-        screen: AddTodoScreen,
+    TodoAdd: {
+        screen: TodoAddScreen,
         navigationOptions: () => ({
-            headerTitle: '新增计划',
+            headerTitle: '新计划',
+            headerTitleStyle: [commonStyles.stackHeaderText],
+            tabBarVisible: false,
+            headerStyle: [commonStyles.stackHeader],
+        }),
+    },
+    TodoDetail: {
+        screen: TodoDetailScreen,
+        navigationOptions: () => ({
+            headerTitle: '计划详情',
             headerTitleStyle: [commonStyles.stackHeaderText],
             tabBarVisible: false,
             headerStyle: [commonStyles.stackHeader],

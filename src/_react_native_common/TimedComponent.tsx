@@ -5,6 +5,7 @@ export interface Props {
     contentElement: JSX.Element;
     timestamp: Date;
     intervalMillSec: number;
+    visible: boolean;
 }
 
 interface State {
@@ -20,6 +21,10 @@ export default class TimedComponent extends React.Component<Props, State> {
             timestamp: this.props.timestamp,
             visible: false
         });
+
+        if (this.props.visible) {
+            this.show(this.props.timestamp, this.props.intervalMillSec);
+        }
     }
 
     public componentWillUnmount() {
@@ -40,28 +45,11 @@ export default class TimedComponent extends React.Component<Props, State> {
             return;
         }
 
-        if (this.state.timer != null && this.state.timer !== 0) {
+        if (this.state.timer && this.state.timer !== 0) {
             clearInterval(this.state.timer);
         }
 
-        const t: number = window.setInterval(
-            () => {
-                if (new Date().getTime() - nextProps.timestamp.getTime() > nextProps.intervalMillSec) {
-                    clearInterval(t);
-                    this.setState({
-                        visible: false,
-                        timestamp: nextProps.timestamp,
-                        timer: 0
-                    });
-                }
-            },
-            200);
-
-        this.setState({
-            visible: true,
-            timestamp: nextProps.timestamp,
-            timer: t,
-        });
+        this.show(nextProps.timestamp, nextProps.intervalMillSec);
     }
 
     public render() {
@@ -70,5 +58,29 @@ export default class TimedComponent extends React.Component<Props, State> {
                 {this.state.visible ? this.props.contentElement : null}
             </View>
         );
+    }
+
+    private show(timestamp: Date, intervalMillSec: number) {
+        if (new Date().getTime() - timestamp.getTime() > intervalMillSec) {
+            return;
+        }
+
+        const t: number = window.setInterval(
+            () => {
+                if (new Date().getTime() - timestamp.getTime() > intervalMillSec) {
+                    clearInterval(t);
+                    this.setState({
+                        visible: false,
+                        timer: 0
+                    });
+                }
+            },
+            200);
+
+        this.setState({
+            visible: true,
+            timestamp,
+            timer: t,
+        });
     }
 }

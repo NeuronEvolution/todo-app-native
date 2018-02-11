@@ -1,14 +1,12 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const commonStyles = StyleSheet.create({
     screen: {
-        minWidth: Dimensions.get('window').width,
-        minHeight: Dimensions.get('window').height,
+        flex: 1,
         backgroundColor: '#fff',
     },
     screenCentered: {
-        minWidth: Dimensions.get('window').width,
-        minHeight: Dimensions.get('window').height,
+        flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
     },
@@ -17,12 +15,29 @@ export const commonStyles = StyleSheet.create({
     },
     stackHeaderText: {
         color: '#fff',
-        fontSize: 18
+        fontSize: 16
+    },
+    flexRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 48,
+    },
+    flexRowLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        height: 48,
     },
     flexRowCentered: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        height: 48,
+    },
+    flexRowSpaceBetween: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         height: 48,
     },
     flexColumnCentered: {
@@ -44,10 +59,10 @@ export const commonStyles = StyleSheet.create({
     text: {
         color: '#444',
         textAlign: 'center',
-        fontSize: 18
+        fontSize: 16
     },
     textInput: {
-        fontSize: 18,
+        fontSize: 16,
         height: 36,
         borderBottomWidth: 1,
         borderBottomColor: '#eee'

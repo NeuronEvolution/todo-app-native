@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { LoginViewStack } from './loginView/LoginViewStack';
-import { MainViewTabs } from './mainView/MainViewTabs';
+import { MainTabs } from './MainTabs';
 import { RootState } from './redux';
 
 export interface Props {
@@ -13,7 +13,7 @@ class RootView extends React.Component<Props> {
         if (this.props.token == null) {
             return (<LoginViewStack/>);
         } else {
-            return <MainViewTabs/>;
+            return <MainTabs/>;
         }
     }
 }

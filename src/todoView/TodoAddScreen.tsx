@@ -5,12 +5,11 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { TodoItem } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiTodoAddTodo, RootState } from '../redux';
+import { apiTodoAddTodo } from '../redux';
 import ToastView from '../ToastView';
 
-export interface Props extends NavigationScreenProps<any> {
-    rootState: RootState;
-    apiTodoAddTodo: (p: TodoItem, navigation: NavigationScreenProps<any>) => Dispatchable;
+export interface Props extends NavigationScreenProps<void> {
+    apiTodoAddTodo: (p: TodoItem, onSuccess: () => void) => Dispatchable;
 }
 
 interface State {
@@ -19,7 +18,7 @@ interface State {
     desc: string;
 }
 
-class AddTodoScreen extends React.Component<Props, State> {
+class TodoAddScreen extends React.Component<Props, State> {
     public componentWillMount() {
         this.setState({
             category: '',
@@ -29,47 +28,31 @@ class AddTodoScreen extends React.Component<Props, State> {
 
     public render() {
         return (
-            <View style={[commonStyles.screenCentered]}>
-                <View style={[
-                    commonStyles.flexRowCentered,
-                    {
-                        justifyContent: 'flex-start',
-                        marginTop: 48,
-                    }
-                ]}>
+            <View style={[commonStyles.screenCentered, {paddingTop: 48}]}>
+                <View style={[commonStyles.flexRowLeft]}>
                     <Text style={[commonStyles.text]}>分类</Text>
                     <TextInput
-                        style={[commonStyles.textInput, {width: 240, marginLeft: 8}]}
+                        style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({category: text});
                         }}
                         value={this.state.category}
                     />
                 </View>
-                <View style={[
-                    commonStyles.flexRowCentered,
-                    {
-                        justifyContent: 'flex-start',
-                    }
-                ]}>
+                <View style={[commonStyles.flexRowLeft]}>
                     <Text style={[commonStyles.text]}>标题</Text>
                     <TextInput
-                        style={[commonStyles.textInput, {width: 240, marginLeft: 8}]}
+                        style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({title: text});
                         }}
                         value={this.state.title}
                     />
                 </View>
-                <View style={[
-                    commonStyles.flexRowCentered,
-                    {
-                        justifyContent: 'flex-start',
-                    }
-                ]}>
+                <View style={[commonStyles.flexRowLeft]}>
                     <Text style={[commonStyles.text]}>描述</Text>
                     <TextInput
-                        style={[commonStyles.textInput, {width: 240, marginLeft: 8}]}
+                        style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({desc: text});
                         }}
@@ -95,10 +78,12 @@ class AddTodoScreen extends React.Component<Props, State> {
                 title: this.state.title,
                 desc: this.state.desc
             },
-            this.props);
+            () => {
+                this.props.navigation.navigate('TodoList');
+            });
     }
 }
 
-export default connect((rootState: RootState) => ({rootState}), {
+export default connect(null, {
     apiTodoAddTodo
-})(AddTodoScreen);
+})(TodoAddScreen);

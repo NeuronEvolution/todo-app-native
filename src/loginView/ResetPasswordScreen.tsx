@@ -5,14 +5,13 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiAccountResetPassword, apiAccountSmsCode, onGlobalToast, RootState } from '../redux';
+import { apiAccountResetPassword, apiAccountSmsCode, onGlobalToast } from '../redux';
 import ToastView from '../ToastView';
 
 export interface Props extends NavigationScreenProps<any> {
-    rootState: RootState;
     onGlobalToast: (text: string) => Dispatchable;
     apiAccountSmsCode: (p: smsCodeParams) => Dispatchable;
-    apiAccountResetPassword: (p: resetPasswordParams, navigation: NavigationScreenProps<any>) => Dispatchable;
+    apiAccountResetPassword: (p: resetPasswordParams, onSuccess: () => void) => Dispatchable;
 }
 
 interface State {
@@ -78,7 +77,7 @@ class ResetPasswordScreen extends React.Component<Props, State> {
                         this.onResetPasswordPressed();
                     }}
                 >
-                   <Text style={[commonStyles.buttonText]}>重置密码</Text>
+                    <Text style={[commonStyles.buttonText]}>重置密码</Text>
                 </TouchableOpacity>
                 <ToastView/>
             </View>
@@ -113,13 +112,15 @@ class ResetPasswordScreen extends React.Component<Props, State> {
             {
                 phone: this.state.inputPhone,
                 smsCode: this.state.inputSmsCode,
-                newPassword: this.state.inputNewPassword
+                newPassword: this.state.inputNewPassword,
             },
-            this.props);
+            () => {
+                this.props.navigation.navigate('Login');
+            });
     }
 }
 
-export default connect((rootState: RootState) => ({rootState}), {
+export default connect(null, {
     onGlobalToast,
     apiAccountSmsCode,
     apiAccountResetPassword

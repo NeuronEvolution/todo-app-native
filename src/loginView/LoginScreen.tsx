@@ -6,14 +6,10 @@ import { Dispatchable } from '../_common/action';
 import { loginParams, smsCodeParams, smsLoginParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import {
-    apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup, onGlobalToast,
-    RootState
-} from '../redux';
+    apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup, onGlobalToast } from '../redux';
 import ToastView from '../ToastView';
 
-export interface Props extends NavigationScreenProps<any> {
-    rootState: RootState;
-
+export interface Props extends NavigationScreenProps<void> {
     onGlobalToast: (text: string) => Dispatchable;
     apiAccountLogin: (p: loginParams) => Dispatchable;
     apiAccountSmsCode: (p: smsCodeParams) => Dispatchable;
@@ -220,7 +216,7 @@ class LoginScreen extends React.Component<Props, State> {
     }
 }
 
-export default connect((state: RootState) => ({rootState: state}), {
+export default connect(null, {
     onGlobalToast,
     apiAccountLogin,
     apiAccountSmsCode,

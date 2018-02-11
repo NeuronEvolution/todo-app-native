@@ -81,6 +81,58 @@ export class RequiredError extends Error {
 /**
  * 
  * @export
+ * @interface FriendInfo
+ */
+export interface FriendInfo {
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendInfo
+     */
+    userID?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendInfo
+     */
+    userName?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof FriendInfo
+     */
+    todoPublicVisible?: boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof FriendInfo
+     */
+    todoCount?: number;
+}
+
+/**
+ * 
+ * @export
+ * @interface FriendInfoList
+ */
+export interface FriendInfoList {
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendInfoList
+     */
+    nextPageToken?: string;
+    /**
+     * 
+     * @type {Array&lt;FriendInfo&gt;}
+     * @memberof FriendInfoList
+     */
+    items?: Array<FriendInfo>;
+}
+
+/**
+ * 
+ * @export
  * @interface TodoItem
  */
 export interface TodoItem {
@@ -95,7 +147,7 @@ export interface TodoItem {
      * @type {string}
      * @memberof TodoItem
      */
-    userId?: string;
+    userID?: string;
     /**
      * 
      * @type {string}
@@ -148,6 +200,32 @@ export interface TodoItemGroup {
     todoItemList?: Array<TodoItem>;
 }
 
+/**
+ * 
+ * @export
+ * @interface UserProfile
+ */
+export interface UserProfile {
+    /**
+     * 
+     * @type {string}
+     * @memberof UserProfile
+     */
+    userID?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserProfile
+     */
+    userName?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof UserProfile
+     */
+    todoPublicVisible?: boolean;
+}
+
 
 /**
  * DefaultApi - fetch parameter creator
@@ -198,6 +276,84 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 
+         * @param {string} friendID 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFriend(friendID: string, options: any = {}): FetchArgs {
+            // verify required parameter 'friendID' is not null or undefined
+            if (friendID === null || friendID === undefined) {
+                throw new RequiredError('friendID','Required parameter friendID was null or undefined when calling getFriend.');
+            }
+            const localVarPath = `/friends/{friendID}`
+                .replace(`{${"friendID"}}`, encodeURIComponent(String(friendID)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {number} [pageSize] 
+         * @param {string} [pageToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFriendsList(pageSize?: number, pageToken?: string, options: any = {}): FetchArgs {
+            const localVarPath = `/friends`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
+            if (pageSize !== undefined) {
+                localVarQueryParameter['pageSize'] = pageSize;
+            }
+
+            if (pageToken !== undefined) {
+                localVarQueryParameter['pageToken'] = pageToken;
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
          * @param {string} todoId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -235,11 +391,11 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 
-         * @param {string} [otherUserId] 
+         * @param {string} [friendID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoList(otherUserId?: string, options: any = {}): FetchArgs {
+        getTodoList(friendID?: string, options: any = {}): FetchArgs {
             const localVarPath = `/`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
@@ -254,8 +410,8 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
                 localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
             }
 
-            if (otherUserId !== undefined) {
-                localVarQueryParameter['otherUserId'] = otherUserId;
+            if (friendID !== undefined) {
+                localVarQueryParameter['friendID'] = friendID;
             }
 
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
@@ -271,11 +427,11 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 
-         * @param {string} [otherUserId] 
+         * @param {string} [friendID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoListByCategory(otherUserId?: string, options: any = {}): FetchArgs {
+        getTodoListByCategory(friendID?: string, options: any = {}): FetchArgs {
             const localVarPath = `/listByCategory`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
@@ -290,8 +446,39 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
                 localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
             }
 
-            if (otherUserId !== undefined) {
-                localVarQueryParameter['otherUserId'] = otherUserId;
+            if (friendID !== undefined) {
+                localVarQueryParameter['friendID'] = friendID;
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserProfile(options: any = {}): FetchArgs {
+            const localVarPath = `/userProfile`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
             }
 
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
@@ -387,6 +574,42 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary 
+         * @param {UserProfile} [userProfile] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfile(userProfile?: UserProfile, options: any = {}): FetchArgs {
+            const localVarPath = `/userProfile`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'POST' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+            const needsSerialization = (<any>"UserProfile" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.body =  needsSerialization ? JSON.stringify(userProfile || {}) : (userProfile || "");
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -405,6 +628,45 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         addTodo(todoItem: TodoItem, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<string> {
             const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).addTodo(todoItem, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} friendID 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFriend(friendID: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<FriendInfo> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getFriend(friendID, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {number} [pageSize] 
+         * @param {string} [pageToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFriendsList(pageSize?: number, pageToken?: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<FriendInfoList> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getFriendsList(pageSize, pageToken, options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
                     if (response.status >= 200 && response.status < 300) {
@@ -437,12 +699,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 
-         * @param {string} [otherUserId] 
+         * @param {string} [friendID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoList(otherUserId?: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<TodoItem>> {
-            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getTodoList(otherUserId, options);
+        getTodoList(friendID?: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<TodoItem>> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getTodoList(friendID, options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
                     if (response.status >= 200 && response.status < 300) {
@@ -456,14 +718,33 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 
-         * @param {string} [otherUserId] 
+         * @param {string} [friendID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoListByCategory(otherUserId?: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<TodoItemGroup>> {
-            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getTodoListByCategory(otherUserId, options);
+        getTodoListByCategory(friendID?: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<TodoItemGroup>> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getTodoListByCategory(friendID, options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserProfile(options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<UserProfile> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getUserProfile(options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    console.info('getUserProfile', response);
                     if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     } else {
@@ -511,6 +792,25 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                 });
             };
         },
+        /**
+         * 
+         * @summary 
+         * @param {UserProfile} [userProfile] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfile(userProfile?: UserProfile, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Response> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).updateUserProfile(userProfile, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return new Promise<Response>((resolve) => {return resolve(response);})
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
     }
 };
 
@@ -533,6 +833,27 @@ export const DefaultApiFactory = function (configuration?: Configuration, fetch?
         /**
          * 
          * @summary 
+         * @param {string} friendID 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFriend(friendID: string, options?: any) {
+            return DefaultApiFp(configuration).getFriend(friendID, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {number} [pageSize] 
+         * @param {string} [pageToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFriendsList(pageSize?: number, pageToken?: string, options?: any) {
+            return DefaultApiFp(configuration).getFriendsList(pageSize, pageToken, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
          * @param {string} todoId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -543,22 +864,31 @@ export const DefaultApiFactory = function (configuration?: Configuration, fetch?
         /**
          * 
          * @summary 
-         * @param {string} [otherUserId] 
+         * @param {string} [friendID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoList(otherUserId?: string, options?: any) {
-            return DefaultApiFp(configuration).getTodoList(otherUserId, options)(fetch, basePath);
+        getTodoList(friendID?: string, options?: any) {
+            return DefaultApiFp(configuration).getTodoList(friendID, options)(fetch, basePath);
         },
         /**
          * 
          * @summary 
-         * @param {string} [otherUserId] 
+         * @param {string} [friendID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTodoListByCategory(otherUserId?: string, options?: any) {
-            return DefaultApiFp(configuration).getTodoListByCategory(otherUserId, options)(fetch, basePath);
+        getTodoListByCategory(friendID?: string, options?: any) {
+            return DefaultApiFp(configuration).getTodoListByCategory(friendID, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserProfile(options?: any) {
+            return DefaultApiFp(configuration).getUserProfile(options)(fetch, basePath);
         },
         /**
          * 
@@ -580,6 +910,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, fetch?
          */
         updateTodo(todoId: string, todoItem: TodoItem, options?: any) {
             return DefaultApiFp(configuration).updateTodo(todoId, todoItem, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {UserProfile} [userProfile] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfile(userProfile?: UserProfile, options?: any) {
+            return DefaultApiFp(configuration).updateUserProfile(userProfile, options)(fetch, basePath);
         },
     };
 };
@@ -606,6 +946,31 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
+     * @param {} friendID 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getFriend(friendID: string, options?: any) {
+        return DefaultApiFp(this.configuration).getFriend(friendID, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {} [pageSize] 
+     * @param {} [pageToken] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getFriendsList(pageSize?: number, pageToken?: string, options?: any) {
+        return DefaultApiFp(this.configuration).getFriendsList(pageSize, pageToken, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary 
      * @param {} todoId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -618,25 +983,36 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} [otherUserId] 
+     * @param {} [friendID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getTodoList(otherUserId?: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTodoList(otherUserId, options)(this.fetch, this.basePath);
+    public getTodoList(friendID?: string, options?: any) {
+        return DefaultApiFp(this.configuration).getTodoList(friendID, options)(this.fetch, this.basePath);
     }
 
     /**
      * 
      * @summary 
-     * @param {} [otherUserId] 
+     * @param {} [friendID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getTodoListByCategory(otherUserId?: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTodoListByCategory(otherUserId, options)(this.fetch, this.basePath);
+    public getTodoListByCategory(friendID?: string, options?: any) {
+        return DefaultApiFp(this.configuration).getTodoListByCategory(friendID, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getUserProfile(options?: any) {
+        return DefaultApiFp(this.configuration).getUserProfile(options)(this.fetch, this.basePath);
     }
 
     /**
@@ -664,19 +1040,38 @@ export class DefaultApi extends BaseAPI {
         return DefaultApiFp(this.configuration).updateTodo(todoId, todoItem, options)(this.fetch, this.basePath);
     }
 
+    /**
+     * 
+     * @summary 
+     * @param {} [userProfile] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public updateUserProfile(userProfile?: UserProfile, options?: any) {
+        return DefaultApiFp(this.configuration).updateUserProfile(userProfile, options)(this.fetch, this.basePath);
+    }
+
 }
 
 export interface addTodoParams {
     todoItem: TodoItem;
 }
+export interface getFriendParams {
+    friendID: string;
+}
+export interface getFriendsListParams {
+    pageSize?: number;
+    pageToken?: string;
+}
 export interface getTodoParams {
     todoId: string;
 }
 export interface getTodoListParams {
-    otherUserId?: string;
+    friendID?: string;
 }
 export interface getTodoListByCategoryParams {
-    otherUserId?: string;
+    friendID?: string;
 }
 export interface removeTodoParams {
     todoId: string;
@@ -684,6 +1079,9 @@ export interface removeTodoParams {
 export interface updateTodoParams {
     todoId: string;
     todoItem: TodoItem;
+}
+export interface updateUserProfileParams {
+    userProfile?: UserProfile;
 }
 
 

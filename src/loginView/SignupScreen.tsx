@@ -4,15 +4,10 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { smsCodeParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
-import {
-    apiAccountSmsCode, apiAccountSmsSignup, onGlobalToast,
-    RootState
-} from '../redux';
+import { apiAccountSmsCode, apiAccountSmsSignup, onGlobalToast } from '../redux';
 import ToastView from '../ToastView';
 
 export interface Props {
-    rootState: RootState;
-
     onGlobalToast: (text: string) => Dispatchable;
     apiAccountSmsSignup: (p: smsSignupParams) => Dispatchable;
     apiAccountSmsCode: (p: smsCodeParams) => Dispatchable;
@@ -128,7 +123,7 @@ class SignupScreen extends React.Component<Props, State> {
     }
 }
 
-export default connect((rootState: RootState) => ({rootState}), {
+export default connect(null, {
     onGlobalToast,
     apiAccountSmsSignup,
     apiAccountSmsCode,

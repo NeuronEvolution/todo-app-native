@@ -1,0 +1,1 @@
+export const FRIEND_LIST_PAGE_SIZE = 40;
