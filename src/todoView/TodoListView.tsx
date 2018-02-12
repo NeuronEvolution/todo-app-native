@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { TodoItem, TodoItemGroup } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
+import { getTodoStatusName } from '../enums';
 
 export interface Props {
     editable: boolean;
@@ -64,7 +65,7 @@ export default class TodoListView extends React.Component<Props> {
     private renderTodoItem(todoItem: TodoItem): JSX.Element {
         return (
             <TouchableOpacity
-                style={[{height: 48}]}
+                style={[commonStyles.flexRowSpaceBetween, {paddingHorizontal: 8}]}
                 onPress={() => {
                     this.props.onItemPress(todoItem);
                 }}
@@ -72,9 +73,12 @@ export default class TodoListView extends React.Component<Props> {
                     this.onLongPress(todoItem);
                 }}
             >
-                <Text style={[{marginLeft: 8, marginRight: 8, marginTop: 16, fontSize: 16, color: '#333'}]}
+                <Text style={[commonStyles.text]}
                 >
                     {todoItem.title}
+                </Text>
+                <Text style={[{color: '#bbb', fontSize: 12}]}>
+                    {getTodoStatusName(todoItem.status)}
                 </Text>
             </TouchableOpacity>
         );

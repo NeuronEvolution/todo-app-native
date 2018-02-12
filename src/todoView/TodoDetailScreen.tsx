@@ -3,7 +3,7 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import { TodoItem } from '../api/todo-private/gen';
+import { TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUpdate, onGlobalToast } from '../redux';
 import ToastView from '../ToastView';
@@ -19,9 +19,11 @@ interface State {
     originCategory: string;
     originTitle: string;
     originDesc: string;
+    originStatus: TodoStatus;
     category: string;
     title: string;
     desc: string;
+    status: TodoStatus;
 }
 
 class TodoDetailScreen extends React.Component<Props, State> {
@@ -30,14 +32,17 @@ class TodoDetailScreen extends React.Component<Props, State> {
         const category = todoItem.category ? todoItem.category : '';
         const title = todoItem.title ? todoItem.title : '';
         const desc = todoItem.desc ? todoItem.desc : '';
+        const status = todoItem.status ? todoItem.status : TodoStatus.Ongoing;
         this.setState({
             todoItemParam: todoItem,
             category,
             title,
             desc,
+            status,
             originCategory: category,
             originTitle: title,
             originDesc: desc,
+            originStatus: status,
             changed: false
         });
     }
@@ -51,7 +56,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                         style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({category: text});
-                            this.updateChanged(this.state.title, text, this.state.desc);
+                            this.updateChanged(this.state.title, text, this.state.desc, this.state.status);
                         }}
                         value={this.state.category}
                     />
@@ -62,7 +67,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                         style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({title: text});
-                            this.updateChanged(text, this.state.category, this.state.desc);
+                            this.updateChanged(text, this.state.category, this.state.desc, this.state.status);
                         }}
                         value={this.state.title}
                     />
@@ -73,7 +78,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                         style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({desc: text});
-                            this.updateChanged(this.state.title, this.state.category, text);
+                            this.updateChanged(this.state.title, this.state.category, text, this.state.status);
                         }}
                         value={this.state.desc}
                     />
@@ -104,10 +109,11 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
-    private updateChanged(title: string, category: string, desc: string) {
+    private updateChanged(title: string, category: string, desc: string, status: TodoStatus) {
         const changed = title !== this.state.originTitle
             || category !== this.state.originCategory
-            || desc !== this.state.originDesc;
+            || desc !== this.state.originDesc
+            || status !== this.state.status;
 
         this.setState({changed});
     }
@@ -123,7 +129,8 @@ class TodoDetailScreen extends React.Component<Props, State> {
             {
                 category: this.state.category,
                 title: this.state.title,
-                desc: this.state.desc
+                desc: this.state.desc,
+                status: this.state.status
             },
             () => {
                 this.props.navigation.navigate('TodoList');

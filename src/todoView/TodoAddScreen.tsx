@@ -3,7 +3,7 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import { TodoItem } from '../api/todo-private/gen';
+import {TodoItem, TodoStatus} from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoAddTodo } from '../redux';
 import ToastView from '../ToastView';
@@ -76,7 +76,8 @@ class TodoAddScreen extends React.Component<Props, State> {
             {
                 category: this.state.category,
                 title: this.state.title,
-                desc: this.state.desc
+                desc: this.state.desc,
+                status: TodoStatus.Ongoing
             },
             () => {
                 this.props.navigation.navigate('TodoList');

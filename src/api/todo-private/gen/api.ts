@@ -168,10 +168,10 @@ export interface TodoItem {
     desc?: string;
     /**
      * 
-     * @type {string}
+     * @type {TodoStatus}
      * @memberof TodoItem
      */
-    status?: string;
+    status?: TodoStatus;
     /**
      * 
      * @type {number}
@@ -198,6 +198,17 @@ export interface TodoItemGroup {
      * @memberof TodoItemGroup
      */
     todoItemList?: Array<TodoItem>;
+}
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+export enum TodoStatus {
+    Ongoing = <any> 'ongoing',
+    Completed = <any> 'completed',
+    Discard = <any> 'discard'
 }
 
 /**
@@ -744,7 +755,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getUserProfile(options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
-                    console.info('getUserProfile', response);
                     if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     } else {
