@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiAccountResetPassword, apiAccountSmsCode, onGlobalToast } from '../redux';
+import { onGlobalToast } from '../redux';
+import { apiAccountResetPassword, apiAccountSmsCode } from '../redux_login';
 import ToastView from '../ToastView';
 
 export interface Props extends NavigationScreenProps<any> {

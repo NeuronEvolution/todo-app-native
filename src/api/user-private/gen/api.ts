@@ -86,22 +86,36 @@ export class RequiredError extends Error {
 export interface OauthJumpResponse {
     /**
      * 
-     * @type {string}
+     * @type {Token}
      * @memberof OauthJumpResponse
      */
-    token?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof OauthJumpResponse
-     */
-    refreshToken?: string;
+    token?: Token;
     /**
      * 
      * @type {string}
      * @memberof OauthJumpResponse
      */
     queryString?: string;
+}
+
+/**
+ * 
+ * @export
+ * @interface Token
+ */
+export interface Token {
+    /**
+     * 
+     * @type {string}
+     * @memberof Token
+     */
+    accessToken?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Token
+     */
+    refreshToken?: string;
 }
 
 
@@ -342,7 +356,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        refreshToken(refreshToken: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<string> {
+        refreshToken(refreshToken: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Token> {
             const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).refreshToken(refreshToken, options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {

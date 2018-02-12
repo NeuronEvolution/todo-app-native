@@ -27,7 +27,7 @@ class ToastView extends React.Component<Props> {
                             </Text>
                         </View>
                     }
-                    intervalMillSec={1000}
+                    intervalMillSec={5000}
                     visible={this.props.toastInfo.text !== ''}
                 />
             </View>

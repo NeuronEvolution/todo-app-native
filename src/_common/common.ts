@@ -1,19 +1,7 @@
 import { AnyAction } from 'redux';
 
-export function  valueOrDefault(s: string|undefined): string {
-    return s === undefined ? '' : s;
-}
-
-export function isNullOrEmpty(s: string|undefined|null): boolean {
-    if (s === undefined) {
-        return true;
-    }
-
-    if (s == null || s === '') {
-        return true;
-    }
-
-    return false;
+export function sleep(nMS: number) {
+    return new Promise((resolve) => setTimeout(resolve, nMS));
 }
 
 export function parseQueryString(search: string): Map<string, string> {
