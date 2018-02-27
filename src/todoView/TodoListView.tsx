@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { TodoItem, TodoItemGroup } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
-import { getTodoStatusName } from '../enums';
+import { getTodoStatusName, getTodoStatusTextColor } from '../utils';
 
 export interface Props {
     editable: boolean;
@@ -53,10 +53,7 @@ export default class TodoListView extends React.Component<Props> {
                         }}
                         keyExtractor={(item: TodoItem, index: number) =>
                             item.todoId ? item.todoId : index.toString()}
-                        ItemSeparatorComponent={() => <View style={{
-                            height: 1,
-                            backgroundColor: '#eee'
-                        }}/>}
+                        ItemSeparatorComponent={() => <View style={[commonStyles.line]}/>}
                     /> : null}
             </View>
         );
@@ -77,7 +74,7 @@ export default class TodoListView extends React.Component<Props> {
                 >
                     {todoItem.title}
                 </Text>
-                <Text style={[{color: '#bbb', fontSize: 12}]}>
+                <Text style={[{fontSize: 12}, getTodoStatusTextColor(todoItem.status)]}>
                     {getTodoStatusName(todoItem.status)}
                 </Text>
             </TouchableOpacity>

@@ -12,12 +12,14 @@ export interface Props {
 class ToastView extends React.Component<Props> {
     public render() {
         return (
-            <View style={{
-                position: 'absolute',
-                top: Dimensions.get('window').height * 0.7,
-                alignItems: 'center',
-                width: Dimensions.get('window').width
-            }}>
+            <View
+                pointerEvents={'none'}
+                style={{
+                    position: 'absolute',
+                    top: Dimensions.get('window').height * 0.1,
+                    alignItems: 'center',
+                    width: Dimensions.get('window').width
+                }}>
                 <TimedComponent
                     timestamp={this.props.toastInfo.timestamp}
                     contentElement={

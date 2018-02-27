@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { TabBarBottom, TabNavigator, TabScene } from 'react-navigation';
 import { REDUX_STORE } from '../App';
-import * as constants from './constants';
 import { FriendsScreenStack } from './friendsView/FriendsScreenStack';
+import * as GlobalConstants from './GlobalConstants';
 import { apiTodoGetFriendsList, apiTodoGetTodoListByCategory, apiTodoGetUserProfile } from './redux';
 import { SettingsScreenStack } from './settingsView/SettingsScreenStack';
 import { TodoScreenStack } from './todoView/TodoScreenStack';
@@ -30,7 +30,7 @@ export const MainTabs = TabNavigator(
                 }) => {
                     REDUX_STORE.dispatch(apiTodoGetFriendsList({
                         pageToken: '',
-                        pageSize: constants.FRIEND_LIST_PAGE_SIZE
+                        pageSize: GlobalConstants.FRIEND_LIST_PAGE_SIZE
                     }));
                     jumpToIndex(scene.index);
                 }

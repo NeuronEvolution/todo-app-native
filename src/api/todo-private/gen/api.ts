@@ -98,10 +98,10 @@ export interface FriendInfo {
     userName?: string;
     /**
      * 
-     * @type {boolean}
+     * @type {TodoVisibility}
      * @memberof FriendInfo
      */
-    todoPublicVisible?: boolean;
+    todoVisibility?: TodoVisibility;
     /**
      * 
      * @type {number}
@@ -203,12 +203,61 @@ export interface TodoItemGroup {
 /**
  * 
  * @export
+ * @interface TodoItemMutate
+ */
+export interface TodoItemMutate {
+    /**
+     * 
+     * @type {string}
+     * @memberof TodoItemMutate
+     */
+    category?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TodoItemMutate
+     */
+    title?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TodoItemMutate
+     */
+    desc?: string;
+    /**
+     * 
+     * @type {TodoStatus}
+     * @memberof TodoItemMutate
+     */
+    status?: TodoStatus;
+    /**
+     * 
+     * @type {number}
+     * @memberof TodoItemMutate
+     */
+    priority?: number;
+}
+
+/**
+ * 
+ * @export
  * @enum {string}
  */
 export enum TodoStatus {
     Ongoing = <any> 'ongoing',
     Completed = <any> 'completed',
     Discard = <any> 'discard'
+}
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+export enum TodoVisibility {
+    Private = <any> 'private',
+    Public = <any> 'public',
+    Friend = <any> 'friend'
 }
 
 /**
@@ -231,10 +280,10 @@ export interface UserProfile {
     userName?: string;
     /**
      * 
-     * @type {boolean}
+     * @type {TodoVisibility}
      * @memberof UserProfile
      */
-    todoPublicVisible?: boolean;
+    todoVisibility?: TodoVisibility;
 }
 
 
@@ -278,6 +327,37 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
             localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
             const needsSerialization = (<any>"TodoItem" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
             localVarRequestOptions.body =  needsSerialization ? JSON.stringify(todoItem || {}) : (todoItem || "");
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCategoryNameList(options: any = {}): FetchArgs {
+            const localVarPath = `/categoryNames`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
 
             return {
                 url: url.format(localVarUrlObj),
@@ -543,11 +623,11 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
          * 
          * @summary 
          * @param {string} todoId 
-         * @param {TodoItem} todoItem 
+         * @param {TodoItemMutate} todoItem 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTodo(todoId: string, todoItem: TodoItem, options: any = {}): FetchArgs {
+        updateTodo(todoId: string, todoItem: TodoItemMutate, options: any = {}): FetchArgs {
             // verify required parameter 'todoId' is not null or undefined
             if (todoId === null || todoId === undefined) {
                 throw new RequiredError('todoId','Required parameter todoId was null or undefined when calling updateTodo.');
@@ -577,7 +657,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
             localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
-            const needsSerialization = (<any>"TodoItem" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            const needsSerialization = (<any>"TodoItemMutate" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
             localVarRequestOptions.body =  needsSerialization ? JSON.stringify(todoItem || {}) : (todoItem || "");
 
             return {
@@ -621,6 +701,78 @@ export const DefaultApiFetchParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary 
+         * @param {TodoVisibility} [visibility] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfileTodoVisibility(visibility?: TodoVisibility, options: any = {}): FetchArgs {
+            const localVarPath = `/userProfile/todoVisibility`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'POST' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+            const needsSerialization = (<any>"TodoVisibility" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.body =  needsSerialization ? JSON.stringify(visibility || {}) : (visibility || "");
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [userName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfileUserName(userName?: string, options: any = {}): FetchArgs {
+            const localVarPath = `/userProfile/userName`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'POST' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+					? configuration.apiKey("Authorization")
+					: configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+
+            if (userName !== undefined) {
+                localVarQueryParameter['userName'] = userName;
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -639,6 +791,24 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         addTodo(todoItem: TodoItem, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<string> {
             const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).addTodo(todoItem, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCategoryNameList(options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<string>> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getCategoryNameList(options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
                     if (response.status >= 200 && response.status < 300) {
@@ -786,11 +956,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 
          * @summary 
          * @param {string} todoId 
-         * @param {TodoItem} todoItem 
+         * @param {TodoItemMutate} todoItem 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTodo(todoId: string, todoItem: TodoItem, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Response> {
+        updateTodo(todoId: string, todoItem: TodoItemMutate, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Response> {
             const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).updateTodo(todoId, todoItem, options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
@@ -821,6 +991,44 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                 });
             };
         },
+        /**
+         * 
+         * @summary 
+         * @param {TodoVisibility} [visibility] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfileTodoVisibility(visibility?: TodoVisibility, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Response> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).updateUserProfileTodoVisibility(visibility, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return new Promise<Response>((resolve) => {return resolve(response);})
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [userName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfileUserName(userName?: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Response> {
+            const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).updateUserProfileUserName(userName, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return new Promise<Response>((resolve) => {return resolve(response);})
+                    } else {
+                        return response.json().then((data: {}) => {throw data; });
+                    }
+                });
+            };
+        },
     }
 };
 
@@ -839,6 +1047,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, fetch?
          */
         addTodo(todoItem: TodoItem, options?: any) {
             return DefaultApiFp(configuration).addTodo(todoItem, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCategoryNameList(options?: any) {
+            return DefaultApiFp(configuration).getCategoryNameList(options)(fetch, basePath);
         },
         /**
          * 
@@ -914,11 +1131,11 @@ export const DefaultApiFactory = function (configuration?: Configuration, fetch?
          * 
          * @summary 
          * @param {string} todoId 
-         * @param {TodoItem} todoItem 
+         * @param {TodoItemMutate} todoItem 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTodo(todoId: string, todoItem: TodoItem, options?: any) {
+        updateTodo(todoId: string, todoItem: TodoItemMutate, options?: any) {
             return DefaultApiFp(configuration).updateTodo(todoId, todoItem, options)(fetch, basePath);
         },
         /**
@@ -930,6 +1147,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, fetch?
          */
         updateUserProfile(userProfile?: UserProfile, options?: any) {
             return DefaultApiFp(configuration).updateUserProfile(userProfile, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {TodoVisibility} [visibility] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfileTodoVisibility(visibility?: TodoVisibility, options?: any) {
+            return DefaultApiFp(configuration).updateUserProfileTodoVisibility(visibility, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [userName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserProfileUserName(userName?: string, options?: any) {
+            return DefaultApiFp(configuration).updateUserProfileUserName(userName, options)(fetch, basePath);
         },
     };
 };
@@ -951,6 +1188,17 @@ export class DefaultApi extends BaseAPI {
      */
     public addTodo(todoItem: TodoItem, options?: any) {
         return DefaultApiFp(this.configuration).addTodo(todoItem, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getCategoryNameList(options?: any) {
+        return DefaultApiFp(this.configuration).getCategoryNameList(options)(this.fetch, this.basePath);
     }
 
     /**
@@ -1046,7 +1294,7 @@ export class DefaultApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public updateTodo(todoId: string, todoItem: TodoItem, options?: any) {
+    public updateTodo(todoId: string, todoItem: TodoItemMutate, options?: any) {
         return DefaultApiFp(this.configuration).updateTodo(todoId, todoItem, options)(this.fetch, this.basePath);
     }
 
@@ -1060,6 +1308,30 @@ export class DefaultApi extends BaseAPI {
      */
     public updateUserProfile(userProfile?: UserProfile, options?: any) {
         return DefaultApiFp(this.configuration).updateUserProfile(userProfile, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {} [visibility] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public updateUserProfileTodoVisibility(visibility?: TodoVisibility, options?: any) {
+        return DefaultApiFp(this.configuration).updateUserProfileTodoVisibility(visibility, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {} [userName] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public updateUserProfileUserName(userName?: string, options?: any) {
+        return DefaultApiFp(this.configuration).updateUserProfileUserName(userName, options)(this.fetch, this.basePath);
     }
 
 }
@@ -1088,10 +1360,16 @@ export interface removeTodoParams {
 }
 export interface updateTodoParams {
     todoId: string;
-    todoItem: TodoItem;
+    todoItem: TodoItemMutate;
 }
 export interface updateUserProfileParams {
     userProfile?: UserProfile;
+}
+export interface updateUserProfileTodoVisibilityParams {
+    visibility?: TodoVisibility;
+}
+export interface updateUserProfileUserNameParams {
+    userName?: string;
 }
 
 

@@ -5,7 +5,7 @@ import { Dispatchable, StandardAction } from './_common/action';
 import * as actions from './actions';
 import {
     DefaultApiFactory as TodoPrivateApi, FriendInfo,
-    getFriendsListParams, getTodoListParams, TodoItem, TodoItemGroup,
+    getFriendsListParams, getTodoListParams, TodoItem, TodoItemGroup, TodoItemMutate,
     UserProfile
 } from './api/todo-private/gen';
 import { Token } from './api/user-private/gen';
@@ -34,6 +34,7 @@ export interface RootState {
     todoListByCategory: TodoItemGroup[];
     friendsList: FriendsListWithPage;
     friendTodoListByCategory: TodoItemGroup[];
+    categoryNameList: string[];
 }
 
 export interface FriendsListWithPage {
@@ -101,10 +102,10 @@ export const apiTodoRemove = (todoId: string): Dispatchable => (dispatch) => {
     });
 };
 
-export const apiTodoUpdate = (todoId: string, todoItem: TodoItem, onSuccess: () => void)
+export const apiTodoUpdate = (todoId: string, todoItemMutate: TodoItemMutate, onSuccess: () => void)
     : Dispatchable => (dispatch) => {
     return apiCall(() => {
-        return todoPrivateApi.updateTodo(todoId, todoItem).then(() => {
+        return todoPrivateApi.updateTodo(todoId, todoItemMutate).then(() => {
             dispatch(onGlobalToast('已更新'));
             onSuccess();
         });
@@ -120,6 +121,17 @@ export const apiTodoGetFriendsList = (p: getFriendsListParams): Dispatchable => 
                     pageToken: p.pageToken,
                     data
                 }
+            });
+        });
+    });
+};
+
+export const apiTodoGetCategoryNameList = (): Dispatchable => (dispatch) => {
+    return apiCall(() => {
+        return todoPrivateApi.getCategoryNameList().then((data) => {
+            dispatch({
+                type: actions.ACTION_TODO_GET_CATEGORY_NAME_LIST,
+                payload: data
             });
         });
     });
@@ -189,11 +201,21 @@ function friendsList(state: FriendsListWithPage, action: StandardAction): Friend
     }
 }
 
+function categoryNameList(state: string[]= [], action: StandardAction): string[] {
+    switch (action.type) {
+        case actions.ACTION_TODO_GET_CATEGORY_NAME_LIST:
+            return action.payload;
+        default:
+            return state;
+    }
+}
+
 export const rootReducer = combineReducers<RootState>({
     globalToast,
     token,
     userProfile,
     todoListByCategory,
     friendsList,
-    friendTodoListByCategory
+    friendTodoListByCategory,
+    categoryNameList
 });

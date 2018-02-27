@@ -1,89 +1,103 @@
 import * as React from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity , View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import { TodoItem, TodoStatus } from '../api/todo-private/gen';
+import AutoComplete from '../_react_native_common/AutoComplete';
+import DropdownList, { Item } from '../_react_native_common/DropdownList';
+import { TodoItem, TodoItemMutate, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiTodoUpdate, onGlobalToast } from '../redux';
+import * as GlobalConstants from '../GlobalConstants';
+import { apiTodoGetCategoryNameList, apiTodoUpdate, onGlobalToast, RootState } from '../redux';
 import ToastView from '../ToastView';
+import { getTodoStatusTextColor } from '../utils';
 
 export interface Props extends NavigationScreenProps<{todoItem: TodoItem}> {
     apiTodoUpdate: (todoId: string, todoItem: TodoItem, onSuccess: () => void) => Dispatchable;
+    apiTodoGetCategoryNameList: () => Dispatchable;
     onGlobalToast: (text: string) => Dispatchable;
+    categoryNameList: string[];
 }
 
 interface State {
-    todoItemParam: TodoItem;
+    todoItem: TodoItem;
+    todoItemMutate: TodoItemMutate;
     changed: boolean;
-    originCategory: string;
-    originTitle: string;
-    originDesc: string;
-    originStatus: TodoStatus;
-    category: string;
-    title: string;
-    desc: string;
-    status: TodoStatus;
 }
 
 class TodoDetailScreen extends React.Component<Props, State> {
     public componentWillMount() {
         const todoItem: TodoItem = this.props.navigation.state.params.todoItem;
-        const category = todoItem.category ? todoItem.category : '';
-        const title = todoItem.title ? todoItem.title : '';
-        const desc = todoItem.desc ? todoItem.desc : '';
-        const status = todoItem.status ? todoItem.status : TodoStatus.Ongoing;
         this.setState({
-            todoItemParam: todoItem,
-            category,
-            title,
-            desc,
-            status,
-            originCategory: category,
-            originTitle: title,
-            originDesc: desc,
-            originStatus: status,
+            todoItem,
+            todoItemMutate: {
+                category: todoItem.category,
+                title: todoItem.title,
+                desc: todoItem.desc,
+                status: todoItem.status,
+                priority: todoItem.priority
+            },
             changed: false
         });
+
+        this.onStatusSelected = this.onStatusSelected.bind(this);
+        this.onCategoryChanged = this.onCategoryChanged.bind(this);
+        this.onTitleChanged = this.onTitleChanged.bind(this);
+        this.onDescChanged = this.onDescChanged.bind(this);
+        this.onCategoryFocused = this.onCategoryFocused.bind(this);
     }
 
     public render() {
         return (
-            <View style={[commonStyles.screenCentered, {paddingTop: 48}]}>
+            <View style={[commonStyles.screen, {paddingTop: 48, paddingHorizontal: 8}]}>
                 <View style={[commonStyles.flexRowLeft]}>
-                    <Text style={[commonStyles.text]}>分类</Text>
-                    <TextInput
-                        style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
-                        onChangeText={(text) => {
-                            this.setState({category: text});
-                            this.updateChanged(this.state.title, text, this.state.desc, this.state.status);
-                        }}
-                        value={this.state.category}
+                    <Text style={[commonStyles.text, styles.nameText]}>分类</Text>
+                    <AutoComplete
+                        style={[commonStyles.textInput, {width: 80}]}
+                        value={this.state.todoItemMutate.category}
+                        placeholder={'最多' + GlobalConstants.MAX_CATEGORY_NAME_LENGTH + '个字符'}
+                        onChangeText={this.onCategoryChanged}
+                        items={this.props.categoryNameList}
+                        onFocus={this.onCategoryFocused}
                     />
                 </View>
                 <View style={[commonStyles.flexRowLeft]}>
-                    <Text style={[commonStyles.text]}>标题</Text>
+                    <Text style={[commonStyles.text, styles.nameText]}>标题</Text>
                     <TextInput
-                        style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
-                        onChangeText={(text) => {
-                            this.setState({title: text});
-                            this.updateChanged(text, this.state.category, this.state.desc, this.state.status);
-                        }}
-                        value={this.state.title}
+                        style={[commonStyles.textInput, {width: 240}]}
+                        onChangeText={this.onTitleChanged}
+                        value={this.state.todoItemMutate.title}
+                        placeholder={'最多' + GlobalConstants.MAX_TITLE_NAME_LENGTH + '个字符'}
                     />
                 </View>
                 <View style={[commonStyles.flexRowLeft]}>
-                    <Text style={[commonStyles.text]}>描述</Text>
+                    <Text style={[commonStyles.text, styles.nameText]}>描述</Text>
                     <TextInput
-                        style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
-                        onChangeText={(text) => {
-                            this.setState({desc: text});
-                            this.updateChanged(this.state.title, this.state.category, text, this.state.status);
-                        }}
-                        value={this.state.desc}
+                        style={[commonStyles.textInput, {width: 240}]}
+                        onChangeText={this.onDescChanged}
+                        value={this.state.todoItemMutate.desc}
+                        placeholder={'最多' + GlobalConstants.MAX_DESC_TEXT_LENGTH + '个字符'}
                     />
                 </View>
-                {this.renderSummitButton()}
+                <View style={[commonStyles.flexRowLeft]}>
+                    <Text style={[commonStyles.text, styles.nameText]}>状态</Text>
+                    <DropdownList
+                        buttonStyle={{width: 80, alignItems: 'flex-start'}}
+                        buttonTextStyle={[
+                            getTodoStatusTextColor(this.state.todoItemMutate.status)
+                        ]}
+                        items={[
+                            {label: '进行中', value: TodoStatus.Ongoing},
+                            {label: '已完成', value: TodoStatus.Completed},
+                            {label: '已放弃', value: TodoStatus.Discard}
+                        ]}
+                        selectedValue={this.state.todoItemMutate.status}
+                        onSelect={this.onStatusSelected}
+                    />
+                </View>
+                <View style={[commonStyles.flexRowCentered]}>
+                    {this.renderSummitButton()}
+                </View>
                 <ToastView/>
             </View>
         );
@@ -109,36 +123,82 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
-    private updateChanged(title: string, category: string, desc: string, status: TodoStatus) {
-        const changed = title !== this.state.originTitle
-            || category !== this.state.originCategory
-            || desc !== this.state.originDesc
-            || status !== this.state.status;
+    private updateChanged(todoItemMutate: TodoItemMutate) {
+        const changed =
+            todoItemMutate.category !== this.state.todoItem.category
+            || todoItemMutate.title !== this.state.todoItem.title
+            || todoItemMutate.desc !== this.state.todoItem.desc
+            || todoItemMutate.status !== this.state.todoItem.status
+            || todoItemMutate.priority !== this.state.todoItem.priority;
 
         this.setState({changed});
     }
 
+    private onStatusSelected(item: Item) {
+        const todoItemMutate = this.state.todoItemMutate;
+        todoItemMutate.status = item.value;
+        this.setState({
+            todoItemMutate
+        });
+
+        this.updateChanged(todoItemMutate);
+    }
+
+    private onCategoryChanged(text: string) {
+        const todoItemMutate = this.state.todoItemMutate;
+        todoItemMutate.category = text;
+        this.setState({todoItemMutate});
+        this.updateChanged(todoItemMutate);
+    }
+
+    private onTitleChanged(text: string) {
+        const todoItemMutate = this.state.todoItemMutate;
+        todoItemMutate.title = text;
+        this.setState({todoItemMutate});
+        this.updateChanged(todoItemMutate);
+    }
+
+    private onDescChanged(text: string) {
+        const todoItemMutate = this.state.todoItemMutate;
+        todoItemMutate.desc = text;
+        this.setState({todoItemMutate});
+        this.updateChanged(todoItemMutate);
+    }
+
+    private onCategoryFocused() {
+        this.props.apiTodoGetCategoryNameList();
+    }
+
     private onSummitPressed() {
-        const todoId = this.state.todoItemParam.todoId;
+        const todoId = this.state.todoItem.todoId;
         if (!todoId) {
             return this.props.onGlobalToast('todoId为空');
         }
 
+        if (this.state.todoItemMutate.category === '未分类') {
+            return this.props.onGlobalToast('请使用别的分类名称');
+        }
+
         this.props.apiTodoUpdate(
             todoId,
-            {
-                category: this.state.category,
-                title: this.state.title,
-                desc: this.state.desc,
-                status: this.state.status
-            },
+            this.state.todoItemMutate,
             () => {
                 this.props.navigation.navigate('TodoList');
             });
     }
 }
 
-export default connect(null, {
+const selectProps = (rootState: RootState) =>
+    ({categoryNameList: rootState.categoryNameList});
+
+export default connect(selectProps, {
     apiTodoUpdate,
+    apiTodoGetCategoryNameList,
     onGlobalToast
 })(TodoDetailScreen);
+
+const styles = StyleSheet.create({
+    nameText: {
+        width: 60
+    }
+});

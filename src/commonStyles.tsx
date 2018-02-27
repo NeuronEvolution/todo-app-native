@@ -56,19 +56,23 @@ export const commonStyles = StyleSheet.create({
         color: '#007AFF',
         fontSize: 18
     },
+    textColor: {
+        color: '#444',
+    },
     text: {
         color: '#444',
         textAlign: 'center',
         fontSize: 16
     },
     textInput: {
-        fontSize: 16,
+        color: '#333',
+        fontSize: 14,
         height: 36,
         borderBottomWidth: 1,
         borderBottomColor: '#eee'
     },
     line: {
         height: 1,
-        backgroundColor: '#EEE'
-    }
+        backgroundColor: '#eee'
+    },
 });

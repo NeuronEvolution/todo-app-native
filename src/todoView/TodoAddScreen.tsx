@@ -3,12 +3,14 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import {TodoItem, TodoStatus} from '../api/todo-private/gen';
+import { TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiTodoAddTodo } from '../redux';
+import * as GlobalConstants from '../GlobalConstants';
+import { apiTodoAddTodo, onGlobalToast } from '../redux';
 import ToastView from '../ToastView';
 
 export interface Props extends NavigationScreenProps<void> {
+    onGlobalToast: (text: string) => Dispatchable;
     apiTodoAddTodo: (p: TodoItem, onSuccess: () => void) => Dispatchable;
 }
 
@@ -37,6 +39,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                             this.setState({category: text});
                         }}
                         value={this.state.category}
+                        placeholder={'最多' + GlobalConstants.MAX_CATEGORY_NAME_LENGTH + '个字符'}
                     />
                 </View>
                 <View style={[commonStyles.flexRowLeft]}>
@@ -47,6 +50,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                             this.setState({title: text});
                         }}
                         value={this.state.title}
+                        placeholder={'最多' + GlobalConstants.MAX_TITLE_NAME_LENGTH + '个字符'}
                     />
                 </View>
                 <View style={[commonStyles.flexRowLeft]}>
@@ -57,6 +61,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                             this.setState({desc: text});
                         }}
                         value={this.state.desc}
+                        placeholder={'最多' + GlobalConstants.MAX_DESC_TEXT_LENGTH + '个字符'}
                     />
                 </View>
                 <TouchableOpacity
@@ -72,6 +77,10 @@ class TodoAddScreen extends React.Component<Props, State> {
     }
 
     private onAddPressed() {
+        if (this.state.category === '未分类') {
+            return this.props.onGlobalToast('请使用别的分类名称');
+        }
+
         this.props.apiTodoAddTodo(
             {
                 category: this.state.category,
@@ -86,5 +95,6 @@ class TodoAddScreen extends React.Component<Props, State> {
 }
 
 export default connect(null, {
+    onGlobalToast,
     apiTodoAddTodo
 })(TodoAddScreen);
