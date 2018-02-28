@@ -13,7 +13,7 @@ import ToastView from '../ToastView';
 import { getTodoStatusTextColor } from '../utils';
 
 export interface Props extends NavigationScreenProps<{todoItem: TodoItem}> {
-    apiTodoUpdate: (todoId: string, todoItem: TodoItem, onSuccess: () => void) => Dispatchable;
+    apiTodoUpdate: (todoId: string, todoItemMutate: TodoItemMutate, onSuccess: () => void) => Dispatchable;
     apiTodoGetCategoryNameList: () => Dispatchable;
     onGlobalToast: (text: string) => Dispatchable;
     categoryNameList: string[];
@@ -173,10 +173,6 @@ class TodoDetailScreen extends React.Component<Props, State> {
         const todoId = this.state.todoItem.todoId;
         if (!todoId) {
             return this.props.onGlobalToast('todoId为空');
-        }
-
-        if (this.state.todoItemMutate.category === '未分类') {
-            return this.props.onGlobalToast('请使用别的分类名称');
         }
 
         this.props.apiTodoUpdate(

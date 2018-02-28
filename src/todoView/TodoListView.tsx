@@ -18,8 +18,7 @@ export default class TodoListView extends React.Component<Props> {
         return (
             <View style={{height: 24, backgroundColor: '#eee'}}>
                 <Text style={styles.categoryText}>
-                    {(category && category !== '')
-                        ? category : '未分类'}
+                    {category}
                 </Text>
             </View>
         );
