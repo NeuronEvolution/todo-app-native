@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import AutoComplete from '../_react_native_common/AutoComplete';
 import DropdownList, { Item } from '../_react_native_common/DropdownList';
-import { TodoItem, TodoItemMutate, TodoStatus } from '../api/todo-private/gen';
+import { TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
 import { apiTodoGetCategoryNameList, apiTodoUpdate, onGlobalToast, RootState } from '../redux';
@@ -13,7 +13,7 @@ import ToastView from '../ToastView';
 import { getTodoStatusTextColor } from '../utils';
 
 export interface Props extends NavigationScreenProps<{todoItem: TodoItem}> {
-    apiTodoUpdate: (todoId: string, todoItemMutate: TodoItemMutate, onSuccess: () => void) => Dispatchable;
+    apiTodoUpdate: (todoId: string, todoItemMutate: TodoItem, onSuccess: () => void) => Dispatchable;
     apiTodoGetCategoryNameList: () => Dispatchable;
     onGlobalToast: (text: string) => Dispatchable;
     categoryNameList: string[];
@@ -21,7 +21,7 @@ export interface Props extends NavigationScreenProps<{todoItem: TodoItem}> {
 
 interface State {
     todoItem: TodoItem;
-    todoItemMutate: TodoItemMutate;
+    todoItemMutate: TodoItem;
     changed: boolean;
 }
 
@@ -31,6 +31,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
         this.setState({
             todoItem,
             todoItemMutate: {
+                todoId: todoItem.todoId,
                 category: todoItem.category,
                 title: todoItem.title,
                 desc: todoItem.desc,
@@ -123,13 +124,13 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
-    private updateChanged(todoItemMutate: TodoItemMutate) {
+    private updateChanged(todoItem: TodoItem) {
         const changed =
-            todoItemMutate.category !== this.state.todoItem.category
-            || todoItemMutate.title !== this.state.todoItem.title
-            || todoItemMutate.desc !== this.state.todoItem.desc
-            || todoItemMutate.status !== this.state.todoItem.status
-            || todoItemMutate.priority !== this.state.todoItem.priority;
+            todoItem.category !== this.state.todoItem.category
+            || todoItem.title !== this.state.todoItem.title
+            || todoItem.desc !== this.state.todoItem.desc
+            || todoItem.status !== this.state.todoItem.status
+            || todoItem.priority !== this.state.todoItem.priority;
 
         this.setState({changed});
     }

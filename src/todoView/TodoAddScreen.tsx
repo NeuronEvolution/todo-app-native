@@ -83,6 +83,7 @@ class TodoAddScreen extends React.Component<Props, State> {
 
         this.props.apiTodoAddTodo(
             {
+                todoId: '',
                 category: this.state.category,
                 title: this.state.title,
                 desc: this.state.desc,

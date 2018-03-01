@@ -22,7 +22,7 @@ const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
             return oauthPrivateApi.authorize(jwt, 'code', '100002', 'fromApp', 'BASIC', state)
                 .then((authorizationCode: AuthorizationCode) => {
                     if (authorizationCode.code === undefined) {
-                        return dispatch(onApiError('oauthPrivateApi.authorize', 'code is null'));
+                        return dispatch(onApiError('oauthPrivateApi.authorize code is null'));
                     }
                     return userPrivateApi.oauthJump('fromApp', authorizationCode.code, state)
                         .then((oauthJumpResponseData: OauthJumpResponse) => {
@@ -30,14 +30,23 @@ const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
                             dispatch({type: actions.ACTION_USER_OAUTH_JUMP_SUCCESS, payload: oauthJumpResponseData});
                             dispatch(apiTodoGetUserProfile());
                         }).catch((err) => {
-                            dispatch(onApiError('userPrivateApi.oauthJump', err));
+                            dispatch(onApiError(err));
                         });
                 }).catch((err) => {
-                    dispatch(onApiError('oauthPrivateApi.authorize', err));
+                    dispatch(onApiError(err));
                 });
         }).catch((err) => {
-            dispatch(onApiError('userPrivateApi.oauthState', err));
+            dispatch(onApiError(err));
         });
+};
+
+export const apiUserLogout = (): Dispatchable => (dispatch) => {
+    const t: Token = REDUX_STORE.getState().token;
+    return userPrivateApi.logout(t.accessToken, t.refreshToken).then(() => {
+        dispatch({type: actions.ACTION_USER_LOGOUT_SUCCESS});
+    }).catch((err) => {
+        dispatch(onApiError(err));
+    });
 };
 
 export const apiAccountSmsCode = (p: smsCodeParams): Dispatchable => (dispatch) => {
@@ -45,7 +54,7 @@ export const apiAccountSmsCode = (p: smsCodeParams): Dispatchable => (dispatch) 
         .then(() => {
             dispatch(onGlobalToast('已发送,验证码1234'));
         }).catch((err) => {
-            dispatch(onApiError('accountApi.smsCode', err));
+            dispatch(onApiError(err));
         });
 };
 
@@ -54,7 +63,7 @@ export const apiAccountSmsLogin = (p: smsLoginParams): Dispatchable => (dispatch
         .then((jwt: string) => {
             dispatch(onAccountLoginSuccess(jwt));
         }).catch((err) => {
-            dispatch(onApiError('accountApi.smsLogin', err));
+            dispatch(onApiError(err));
         });
 };
 
@@ -63,7 +72,7 @@ export const apiAccountLogin = (p: loginParams): Dispatchable => (dispatch) => {
         .then((jwt: string) => {
             dispatch(onAccountLoginSuccess(jwt));
         }).catch((err) => {
-            dispatch(onApiError('accountApi.login', err));
+            dispatch(onApiError(err));
         });
 };
 
@@ -73,7 +82,7 @@ export const apiAccountSmsSignup = (p: smsSignupParams): Dispatchable => (dispat
             dispatch(onAccountLoginSuccess(jwt));
         })
         .catch((err) => {
-            dispatch(onApiError('accountApi.smsSignup', err));
+            dispatch(onApiError(err));
         });
 };
 
@@ -83,7 +92,7 @@ export const apiAccountResetPassword = (p: resetPasswordParams, onSuccess: () =>
             dispatch(onGlobalToast('密码重置成功'));
             onSuccess();
         }).catch((err) => {
-            dispatch(onApiError('accountApi.resetPassword', err));
+            dispatch(onApiError(err));
         });
 };
 
@@ -91,7 +100,7 @@ const refreshUserToken = (refreshToken: string): Promise<void> => {
     return userPrivateApi.refreshToken(refreshToken).then((data: Token) => {
         REDUX_STORE.dispatch({type: actions.ACTION_USER_REFRESH_TOKEN, payload: data});
     }).catch((err) => {
-        REDUX_STORE.dispatch(onApiError('userPrivateApi.refreshToken', err));
+        REDUX_STORE.dispatch(onApiError(err));
     });
 };
 
@@ -102,10 +111,10 @@ function isUnauthorizedError(err: any): boolean {
 
 export const apiCall = (f: () => Promise<any>): void => {
     f().then(() => {
-        console.log('progress end'); // todo
+        console.log('progress end'); // todo 防止同时刷新
     }).catch((err) => {
         if (!isUnauthorizedError(err)) {
-            REDUX_STORE.dispatch(onApiError('todoPrivateApi.getUserProfile', err));
+            REDUX_STORE.dispatch(onApiError(err));
             return;
         }
 
@@ -114,7 +123,7 @@ export const apiCall = (f: () => Promise<any>): void => {
             return refreshUserToken(refreshToken).then(() => {
                 return f().catch((errAgain: any) => {
                     if (!isUnauthorizedError(errAgain)) {
-                        REDUX_STORE.dispatch(onApiError('todoPrivateApi.getUserProfile', errAgain));
+                        REDUX_STORE.dispatch(onApiError(errAgain));
                         return;
                     }
 
@@ -125,14 +134,26 @@ export const apiCall = (f: () => Promise<any>): void => {
     });
 };
 
-export function token(state: Token= {}, action: StandardAction): Token {
+const initialToken: Token = {accessToken: '', refreshToken: ''};
+export function token(state: Token = initialToken, action: StandardAction): Token {
     switch (action.type) {
         case actions.ACTION_USER_OAUTH_JUMP_SUCCESS:
             return action.payload.token;
         case actions.ACTION_USER_REFRESH_TOKEN:
             return action.payload;
         case actions.REQUIRE_LOGIN:
-            return {};
+            return initialToken;
+        case actions.ACTION_USER_LOGOUT_SUCCESS:
+            return initialToken;
+        default:
+            return state;
+    }
+}
+
+export function userID(state: string= '', action: StandardAction): string {
+    switch (action.type) {
+        case  actions.ACTION_USER_OAUTH_JUMP_SUCCESS:
+            return action.payload.userID;
         default:
             return state;
     }

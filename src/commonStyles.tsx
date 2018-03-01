@@ -62,7 +62,7 @@ export const commonStyles = StyleSheet.create({
     text: {
         color: '#444',
         textAlign: 'center',
-        fontSize: 16
+        fontSize: 14
     },
     textInput: {
         color: '#333',

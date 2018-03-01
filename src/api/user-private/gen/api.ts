@@ -86,10 +86,16 @@ export class RequiredError extends Error {
 export interface OauthJumpResponse {
     /**
      * 
+     * @type {string}
+     * @memberof OauthJumpResponse
+     */
+    userID: string;
+    /**
+     * 
      * @type {Token}
      * @memberof OauthJumpResponse
      */
-    token?: Token;
+    token: Token;
     /**
      * 
      * @type {string}
@@ -109,13 +115,13 @@ export interface Token {
      * @type {string}
      * @memberof Token
      */
-    accessToken?: string;
+    accessToken: string;
     /**
      * 
      * @type {string}
      * @memberof Token
      */
-    refreshToken?: string;
+    refreshToken: string;
 }
 
 

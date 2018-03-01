@@ -1,12 +1,26 @@
 import * as React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
-import { TodoItem } from '../api/todo-private/gen';
+import { FriendInfo, TodoItem } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import ToastView from '../ToastView';
 import { getTodoStatusName, getTodoStatusTextColor } from '../utils';
 
-export default class FriendTodoDetailScreen extends React.Component<NavigationScreenProps<{todoItem: TodoItem}>> {
+const navigationOptionsFunc
+    = ({navigation}: NavigationScreenProps<{friendInfo: FriendInfo, todoItem: TodoItem}>) => {
+    const userName = navigation.state.params.friendInfo.userName;
+    return {
+        headerTitle: userName + '的计划',
+        headerTitleStyle: [commonStyles.stackHeaderText],
+        tabBarVisible: false,
+        headerStyle: [commonStyles.stackHeader]
+    };
+};
+
+export default class FriendTodoDetailScreen
+    extends React.Component<NavigationScreenProps<{friendInfo: FriendInfo, todoItem: TodoItem}>> {
+    public static navigationOptions = navigationOptionsFunc;
+
     public render() {
         const todoItem: TodoItem = this.props.navigation.state.params.todoItem;
 

@@ -3,6 +3,7 @@ import { Image, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { commonStyles } from '../commonStyles';
 import SettingsScreen from './SettingsScreen';
+import UserNameScreen from './UserNameScreen';
 
 const mainTabIconSettings = require('../../resource/main_settings_tab_icon.png');
 
@@ -20,4 +21,13 @@ export const SettingsScreenStack = StackNavigator({
             )
         }
     },
+    UserName: {
+        screen: UserNameScreen,
+        navigationOptions: {
+            headerTitle: '更改名字',
+            headerTitleStyle: [commonStyles.stackHeaderText],
+            tabBarVisible: false,
+            headerStyle: [commonStyles.stackHeader],
+        }
+    }
 });

@@ -21,11 +21,13 @@ export const TodoScreenStack = StackNavigator({
             ),
             headerRight: (
                 <TouchableOpacity
-                    style={[commonStyles.button, {marginRight: 8, width: 80, height: 32}]}
+                    style={[{marginRight: 8, width: 64, height: 32,
+                        backgroundColor: '#0088FF', borderRadius: 2,
+                        justifyContent: 'center', alignItems: 'center'}]}
                     onPress={() => {
                         navigation.navigate('TodoAdd');
                     }}>
-                    <Text style={[commonStyles.buttonText]}>新计划</Text>
+                    <Text style={[{fontSize: 14, color: '#fff'}]}>新计划</Text>
                 </TouchableOpacity>
             ),
         })

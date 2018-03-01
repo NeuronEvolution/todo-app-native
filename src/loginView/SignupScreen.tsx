@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { smsCodeParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiAccountSmsCode, apiAccountSmsSignup, onGlobalToast } from '../redux';
+import { onGlobalToast } from '../redux';
+import { apiAccountSmsCode, apiAccountSmsSignup } from '../redux_login';
 import ToastView from '../ToastView';
 
 export interface Props {

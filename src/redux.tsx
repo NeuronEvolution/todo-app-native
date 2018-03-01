@@ -5,11 +5,11 @@ import { Dispatchable, StandardAction } from './_common/action';
 import * as actions from './actions';
 import {
     DefaultApiFactory as TodoPrivateApi, FriendInfo,
-    getFriendsListParams, getTodoListParams, TodoItem, TodoItemGroup, TodoItemMutate,
-    UserProfile
+    getFriendsListParams, getTodoListParams, TodoItem, TodoItemGroup,
+    TodoVisibility, UserProfile
 } from './api/todo-private/gen';
 import { Token } from './api/user-private/gen';
-import { apiCall, token } from './redux_login';
+import { apiCall, token, userID } from './redux_login';
 
 const todoPrivateApi = TodoPrivateApi(
     {
@@ -28,6 +28,7 @@ export interface ToastInfo {
 const GLOBAL_TOAST_ACTION = 'GLOBAL_TOAST_ACTION';
 
 export interface RootState {
+    userID: string;
     globalToast: ToastInfo;
     token: Token;
     userProfile: UserProfile;
@@ -53,7 +54,7 @@ export const onGlobalToast = (text: string): Dispatchable => (dispatch) => {
     });
 };
 
-export const onApiError = (apiName: string, err: any): Dispatchable => (dispatch) => {
+export const onApiError = (err: any): Dispatchable => (dispatch) => {
     const status = err && err.status ? err.status : 0;
     if (status === 401) {
         return; // skip Unauthorized error
@@ -68,6 +69,24 @@ export const apiTodoGetUserProfile = (): Dispatchable => (dispatch) => {
     return apiCall(() => {
         return todoPrivateApi.getUserProfile().then((data) => {
             dispatch({type: actions.ACTION_TODO_GET_USER_PROFILE_SUCCESS, payload: data});
+        });
+    });
+};
+
+export const apiTodoUserProfileUpdateTodoVisibility = (visibility: TodoVisibility): Dispatchable => (dispatch) => {
+    return apiCall(() => {
+        return todoPrivateApi.updateUserProfileTodoVisibility(visibility).then(() => {
+            dispatch(apiTodoGetUserProfile());
+        });
+    });
+};
+
+export const apiTodoUserProfileUpdateUserName
+    = (userName: string, onSuccess: () => void): Dispatchable => (dispatch) => {
+    return apiCall(() => {
+        return todoPrivateApi.updateUserProfileUserName(userName).then(() => {
+            onSuccess();
+            dispatch(apiTodoGetUserProfile());
         });
     });
 };
@@ -102,10 +121,10 @@ export const apiTodoRemove = (todoId: string): Dispatchable => (dispatch) => {
     });
 };
 
-export const apiTodoUpdate = (todoId: string, todoItemMutate: TodoItemMutate, onSuccess: () => void)
+export const apiTodoUpdate = (todoId: string, todoItem: TodoItem, onSuccess: () => void)
     : Dispatchable => (dispatch) => {
     return apiCall(() => {
-        return todoPrivateApi.updateTodo(todoId, todoItemMutate).then(() => {
+        return todoPrivateApi.updateTodo(todoId, todoItem).then(() => {
             dispatch(onGlobalToast('已更新'));
             onSuccess();
         });
@@ -150,7 +169,8 @@ function globalToast(state: ToastInfo, action: StandardAction): ToastInfo {
     }
 }
 
-function userProfile(state: UserProfile= {}, action: StandardAction): UserProfile {
+const initialUserProfile: UserProfile = {userName: '', todoVisibility: TodoVisibility.Public};
+function userProfile(state: UserProfile= initialUserProfile, action: StandardAction): UserProfile {
     switch (action.type) {
         case actions.ACTION_TODO_GET_USER_PROFILE_SUCCESS:
             return action.payload;
@@ -213,6 +233,7 @@ function categoryNameList(state: string[]= [], action: StandardAction): string[]
 export const rootReducer = combineReducers<RootState>({
     globalToast,
     token,
+    userID,
     userProfile,
     todoListByCategory,
     friendsList,

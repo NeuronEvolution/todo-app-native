@@ -22,21 +22,9 @@ export const FriendsScreenStack = StackNavigator({
         }
     },
     FriendTodoList: {
-        screen: FriendTodoListScreen,
-        navigationOptions: () => ({
-            headerTitle: '计划列表',
-            headerTitleStyle: [commonStyles.stackHeaderText],
-            tabBarVisible: false,
-            headerStyle: [commonStyles.stackHeader],
-        })
+        screen: FriendTodoListScreen
     },
     FriendTodoDetail: {
-        screen: FriendTodoDetailScreen,
-        navigationOptions: () => ({
-            headerTitle: '计划详情',
-            headerTitleStyle: [commonStyles.stackHeaderText],
-            tabBarVisible: false,
-            headerStyle: [commonStyles.stackHeader],
-        })
+        screen: FriendTodoDetailScreen
     },
 });

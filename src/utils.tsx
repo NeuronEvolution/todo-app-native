@@ -1,5 +1,5 @@
 import { TextStyle } from 'react-native';
-import { TodoStatus } from './api/todo-private/gen';
+import { TodoStatus, TodoVisibility } from './api/todo-private/gen';
 import { commonStyles } from './commonStyles';
 
 export function getTodoStatusName(p?: TodoStatus): string {
@@ -25,5 +25,18 @@ export function getTodoStatusTextColor(p?: TodoStatus): TextStyle {
             return {color: 'red'};
         default:
             return commonStyles.textColor;
+    }
+}
+
+export function getTodoVisibilityName(p?: TodoVisibility): string {
+    switch (p) {
+        case TodoVisibility.Private:
+            return '保密的';
+        case TodoVisibility.Friend:
+            return '仅朋友可见';
+        case TodoVisibility.Public:
+            return '公开的';
+        default:
+            return '未知的';
     }
 }

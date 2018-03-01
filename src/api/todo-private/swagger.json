@@ -128,7 +128,7 @@
             "in": "body",
             "name": "todoItem",
             "schema": {
-              "$ref": "#/definitions/TodoItemMutate"
+              "$ref": "#/definitions/TodoItem"
             },
             "required": true
           }
@@ -248,7 +248,8 @@
           {
             "in": "query",
             "name": "userName",
-            "type": "string"
+            "type": "string",
+            "required": true
           }
         ],
         "security": [
@@ -274,7 +275,8 @@
             "name": "visibility",
             "schema": {
               "$ref": "#/definitions/TodoVisibility"
-            }
+            },
+            "required": true
           }
         ],
         "security": [
@@ -400,9 +402,6 @@
         "todoId": {
           "type": "string"
         },
-        "userID": {
-          "type": "string"
-        },
         "category": {
           "type": "string"
         },
@@ -419,28 +418,13 @@
           "type": "integer",
           "format": "int32"
         }
-      }
-    },
-    "TodoItemMutate": {
-      "type": "object",
-      "properties": {
-        "category": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "desc": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/TodoStatus"
-        },
-        "priority": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
+      },
+      "required": [
+        "todoId",
+        "category",
+        "title",
+        "status"
+      ]
     },
     "TodoItemGroup": {
       "type": "object",
@@ -454,21 +438,26 @@
             "$ref": "#/definitions/TodoItem"
           }
         }
-      }
+      },
+      "required": [
+        "category",
+        "todoItemList"
+      ]
     },
     "UserProfile": {
       "type": "object",
       "properties": {
-        "userID": {
-          "type": "string"
-        },
         "userName": {
           "type": "string"
         },
         "todoVisibility": {
           "$ref": "#/definitions/TodoVisibility"
         }
-      }
+      },
+      "required": [
+        "userName",
+        "todoVisibility"
+      ]
     },
     "FriendInfo": {
       "type": "object",
@@ -486,7 +475,13 @@
           "type": "integer",
           "format": "int64"
         }
-      }
+      },
+      "required": [
+        "userID",
+        "userName",
+        "todoVisibility",
+        "todoCount"
+      ]
     },
     "FriendInfoList": {
       "type": "object",
@@ -500,7 +495,11 @@
             "$ref": "#/definitions/FriendInfo"
           }
         }
-      }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ]
     }
   }
 }

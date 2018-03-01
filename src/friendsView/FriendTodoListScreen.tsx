@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
@@ -14,9 +14,30 @@ export interface Props extends NavigationScreenProps<{friendInfo: FriendInfo}> {
     apiTodoGetTodoListByCategory: (p: getTodoListParams) => Dispatchable;
 }
 
-class FriendTodoListScreen extends React.Component<Props> {
+interface State {
+    friendInfo: FriendInfo;
+}
+
+const navigationOptionsFunc = ({navigation}: NavigationScreenProps<{friendInfo: FriendInfo}>) => {
+    const userName = navigation.state.params.friendInfo.userName;
+    return {
+        headerTitle: userName + '的计划',
+        headerTitleStyle: [commonStyles.stackHeaderText],
+        tabBarVisible: false,
+        headerStyle: [commonStyles.stackHeader]
+    };
+};
+
+class FriendTodoListScreen extends React.Component<Props, State> {
+    public static navigationOptions = navigationOptionsFunc;
+
     public componentWillMount() {
-        const friendID = this.props.navigation.state.params.friendInfo.userID;
+        const friendInfo = this.props.navigation.state.params.friendInfo;
+        this.setState({
+            friendInfo
+        });
+
+        const friendID = friendInfo.userID;
         this.props.apiTodoGetTodoListByCategory({friendID});
     }
 
@@ -27,7 +48,12 @@ class FriendTodoListScreen extends React.Component<Props> {
                     editable={false}
                     todoListByCategory={this.props.friendTodoListByCategory}
                     onItemPress={(todoItem: TodoItem) => {
-                        this.props.navigation.navigate('FriendTodoDetail', {todoItem});
+                        this.props.navigation.navigate(
+                            'FriendTodoDetail',
+                            {
+                                todoItem,
+                                friendInfo: this.state.friendInfo
+                            });
                     }}
                 />
                 <ToastView/>
