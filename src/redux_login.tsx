@@ -1,4 +1,5 @@
 import { REDUX_STORE } from '../App';
+import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import * as actions from './actions';
 import {
@@ -12,9 +13,9 @@ import { AuthorizationCode, DefaultApiFactory as OauthPrivateApi } from './api/o
 import {DefaultApiFactory as UserPrivateApi, OauthJumpResponse, Token } from './api/user-private/gen';
 import { apiTodoGetUserProfile, onApiError, onGlobalToast } from './redux';
 
-const accountApi = AccountApi(undefined, fetch, 'http://127.0.0.1:8083/api-private/v1/accounts');
-const oauthPrivateApi = OauthPrivateApi(undefined, fetch, 'http://127.0.0.1:8085/api-private/v1/oauth');
-const userPrivateApi = UserPrivateApi(undefined, fetch, 'http://127.0.0.1:8086/api-private/v1/users');
+const accountApi = AccountApi(undefined, fetch, 'http://' + SERVER_IP + ':8083/api-private/v1/accounts');
+const oauthPrivateApi = OauthPrivateApi(undefined, fetch, 'http://' + SERVER_IP + ':8085/api-private/v1/oauth');
+const userPrivateApi = UserPrivateApi(undefined, fetch, 'http://' + SERVER_IP + ':8086/api-private/v1/users');
 
 const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
     return userPrivateApi.oauthState('fromApp')

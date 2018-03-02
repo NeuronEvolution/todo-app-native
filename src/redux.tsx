@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { combineReducers } from 'redux';
 import { REDUX_STORE } from '../App';
+import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import * as actions from './actions';
 import {
@@ -18,7 +19,7 @@ const todoPrivateApi = TodoPrivateApi(
             return t && t.accessToken ? t.accessToken : '';
         }
     },
-    fetch, 'http://127.0.0.1:9001/api-private/v1/todo');
+    fetch, 'http://' + SERVER_IP + ':9001/api-private/v1/todo');
 
 export interface ToastInfo {
     text: string;
