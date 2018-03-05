@@ -55,17 +55,6 @@ export const onGlobalToast = (text: string): Dispatchable => (dispatch) => {
     });
 };
 
-export const onApiError = (err: any): Dispatchable => (dispatch) => {
-    const status = err && err.status ? err.status : 0;
-    if (status === 401) {
-        return; // skip Unauthorized error
-    }
-
-    const text = err.toString() === 'TypeError: Network request failed'
-        ? '网络连接失败' : (err.message ? err.message : err.toString());
-    dispatch(onGlobalToast(text));
-};
-
 export const apiTodoGetUserProfile = (): Dispatchable => (dispatch) => {
     return apiCall(() => {
         return todoPrivateApi.getUserProfile().then((data) => {
