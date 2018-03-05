@@ -72,7 +72,7 @@ export default class DropdownList extends React.Component<Props, State> {
                         </Text>
                     </View>
                 </TouchableOpacity>
-                <Modal visible={this.state.visible} transparent={true}>
+                <Modal onRequestClose={this.closeModal} visible={this.state.visible} transparent={true}>
                     <TouchableOpacity style={[{flex: 1}]} onPress={this.closeModal}>
                         <FlatList
                             keyboardShouldPersistTaps={'always'}

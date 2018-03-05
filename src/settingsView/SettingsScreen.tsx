@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import {Dimensions, Text, TouchableOpacity, View} from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
@@ -26,21 +26,21 @@ class SettingsScreen extends React.Component<Props> {
     public render() {
         return (
             <View style={[commonStyles.screen, {paddingHorizontal: 16, paddingTop: 48}]}>
-                <View
+                <TouchableOpacity
                     style={[commonStyles.flexRowSpaceBetween]}
-                    onTouchStart={this.onUserNamePressed}
+                    onPressIn={this.onUserNamePressed}
                 >
                     <Text style={[commonStyles.text]}>你的名字</Text>
                     <Text style={[commonStyles.text]}>{this.props.userProfile.userName}</Text>
-                </View>
+                </TouchableOpacity>
                 <View style={[commonStyles.line]}/>
                 <View style={[commonStyles.flexRowSpaceBetween]}>
                     <Text style={[commonStyles.text]}>计划是否公开</Text>
                     <DropdownList
                         items={[
-                            {label: '公开', value: TodoVisibility.Public},
+                            {label: '公开的', value: TodoVisibility.Public},
                             {label: '仅朋友可见', value: TodoVisibility.Friend},
-                            {label: '保密', value: TodoVisibility.Private}
+                            {label: '保密的', value: TodoVisibility.Private}
                         ]}
                         selectedIndex={0}
                         buttonStyle={{width: 120, borderBottomWidth: 0, alignItems: 'flex-end'}}

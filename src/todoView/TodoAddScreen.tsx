@@ -34,6 +34,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowLeft]}>
                     <Text style={[commonStyles.text]}>分类</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({category: text});
@@ -45,6 +46,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowLeft]}>
                     <Text style={[commonStyles.text]}>标题</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({title: text});
@@ -56,6 +58,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowLeft]}>
                     <Text style={[commonStyles.text]}>描述</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 240, marginLeft: 16}]}
                         onChangeText={(text) => {
                             this.setState({desc: text});

@@ -1,5 +1,5 @@
 import { StackNavigator } from 'react-navigation';
-import { commonStyles } from '../commonStyles';
+import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import LoginScreen from './LoginScreen';
 import ResetPasswordScreen from './ResetPasswordScreen';
 import SignupScreen from './SignupScreen';
@@ -17,6 +17,7 @@ export const LoginViewStack = StackNavigator(
         Signup: {
             screen: SignupScreen,
             navigationOptions: {
+                headerTintColor: defaultHeaderTintColor,
                 title: '注册',
                 headerTitleStyle: [commonStyles.stackHeaderText],
                 headerStyle: [commonStyles.stackHeader]
@@ -25,6 +26,7 @@ export const LoginViewStack = StackNavigator(
         ResetPassword: {
             screen: ResetPasswordScreen,
             navigationOptions: {
+                headerTintColor: defaultHeaderTintColor,
                 title: '找回密码',
                 headerTitleStyle: [commonStyles.stackHeaderText],
                 headerStyle: [commonStyles.stackHeader]

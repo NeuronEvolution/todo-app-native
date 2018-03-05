@@ -33,6 +33,7 @@ class UserNameScreen extends React.Component<Props, State> {
         return (
             <View style={[commonStyles.screen, {paddingHorizontal: 16, paddingTop: 24}]}>
                 <TextInput
+                    underlineColorAndroid={'transparent'}
                     autoFocus={true}
                     style={[commonStyles.textInput]}
                     value={this.state.userName}

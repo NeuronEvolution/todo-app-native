@@ -55,6 +55,19 @@ export const onGlobalToast = (text: string): Dispatchable => (dispatch) => {
     });
 };
 
+function globalToast(state: ToastInfo, action: StandardAction): ToastInfo {
+    if (state === undefined) {
+        return {text: '', timestamp: new Date()};
+    }
+
+    switch (action.type) {
+        case GLOBAL_TOAST_ACTION:
+            return action.payload;
+        default:
+            return state;
+    }
+}
+
 export const apiTodoGetUserProfile = (): Dispatchable => (dispatch) => {
     return apiCall(() => {
         return todoPrivateApi.getUserProfile().then((data) => {
@@ -116,6 +129,7 @@ export const apiTodoUpdate = (todoId: string, todoItem: TodoItem, onSuccess: () 
     return apiCall(() => {
         return todoPrivateApi.updateTodo(todoId, todoItem).then(() => {
             dispatch(onGlobalToast('已更新'));
+            dispatch(apiTodoGetTodoListByCategory({}));
             onSuccess();
         });
     });
@@ -145,19 +159,6 @@ export const apiTodoGetCategoryNameList = (): Dispatchable => (dispatch) => {
         });
     });
 };
-
-function globalToast(state: ToastInfo, action: StandardAction): ToastInfo {
-    if (state === undefined) {
-        return {text: '', timestamp: new Date()};
-    }
-
-    switch (action.type) {
-        case GLOBAL_TOAST_ACTION:
-            return action.payload;
-        default:
-            return state;
-    }
-}
 
 const initialUserProfile: UserProfile = {userName: '', todoVisibility: TodoVisibility.Public};
 function userProfile(state: UserProfile= initialUserProfile, action: StandardAction): UserProfile {

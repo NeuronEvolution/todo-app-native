@@ -52,6 +52,7 @@ export default class AutoComplete extends React.Component<Props, State> {
     private renderNormal(): JSX.Element {
         return (
             <TextInput
+                underlineColorAndroid={'transparent'}
                 ref={(node) => {
                     this.textInputRef = node;
                 }}
@@ -68,10 +69,12 @@ export default class AutoComplete extends React.Component<Props, State> {
     private renderWithModal(): JSX.Element {
         return (
             <Modal
+                onRequestClose={this.closeModal}
                 transparent={true}
             >
                 <TouchableOpacity style={[{flex: 1}]} onPressIn={this.closeModal}>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         autoFocus={true}
                         style={[
                             this.props.style,

@@ -1,1 +1,1 @@
-export const SERVER_IP = __DEV__ ? '10.0.2.2' : '106.14.204.11';
+export const SERVER_IP = __DEV__ ? '106.14.204.11' : '106.14.204.11';

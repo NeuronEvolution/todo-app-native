@@ -28,7 +28,7 @@ interface State {
 class LoginScreen extends React.Component<Props, State> {
     public render() {
         return <View style={[commonStyles.screenCentered]}>
-            <Text style={[commonStyles.text, {fontSize: 32, marginTop: 80, marginBottom: 32}]}>登录火星</Text>
+            <Text style={[commonStyles.text, {fontSize: 32, marginTop: 48, marginBottom: 24}]}>登录火星</Text>
             {this.renderTabHeader()}
             <View style={[commonStyles.line, {width: 300}]}/>
             {this.state.tabIndex === 0 ? this.renderAccountLogin() : null}
@@ -53,7 +53,7 @@ class LoginScreen extends React.Component<Props, State> {
                     onPress={() => {
                         this.onSignupPressed();
                     }}>
-                    新注册用户&nbsp;&nbsp;&nbsp;&nbsp;
+                    新用户注册&nbsp;&nbsp;&nbsp;&nbsp;
                 </Text>
             </View>
             <ToastView/>
@@ -82,7 +82,7 @@ class LoginScreen extends React.Component<Props, State> {
                     onPress={() => {
                         this.setState({tabIndex: 0});
                     }}>
-                    <Text style={[commonStyles.buttonText]}>帐号密码登录</Text>
+                    <Text style={[commonStyles.text]}>帐号密码登录</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[
@@ -93,7 +93,7 @@ class LoginScreen extends React.Component<Props, State> {
                     onPress={() => {
                         this.setState({tabIndex: 1});
                     }}>
-                    <Text style={[commonStyles.buttonText]}>短信验证码登录</Text>
+                    <Text style={[commonStyles.text]}>短信验证码登录</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -105,6 +105,7 @@ class LoginScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 60}]}>帐号</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 200}]}
                         onChangeText={(text) => {
                             this.setState({loginName: text});
@@ -116,6 +117,7 @@ class LoginScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 60}]}>密码</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 200}]}
                         onChangeText={(text) => {
                             this.setState({loginPassword: text});
@@ -134,6 +136,7 @@ class LoginScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 80}]}>手机号</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 220}]}
                         onChangeText={(text) => {
                             this.setState({loginPhone: text});
@@ -145,6 +148,7 @@ class LoginScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 80}]}>验证码</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 60}]}
                         onChangeText={(text) => {
                             this.setState({loginSmsCode: text});
@@ -157,7 +161,7 @@ class LoginScreen extends React.Component<Props, State> {
                             this.onGetSmsCodePressed();
                         }}
                     >
-                        <Text style={[commonStyles.buttonText]}>获取验证码</Text>
+                        <Text style={[commonStyles.buttonColorText]}>获取验证码</Text>
                     </TouchableOpacity>
                 </View>
             </View>

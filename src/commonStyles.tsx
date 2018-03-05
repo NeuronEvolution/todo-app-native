@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+export const defaultHeaderTintColor = '#0088FF';
+
 export const commonStyles = StyleSheet.create({
     screen: {
         flex: 1,
@@ -46,14 +48,14 @@ export const commonStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     button: {
-        backgroundColor: 'gold',
+        backgroundColor: '#0088FF',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius : 8,
         height: 48,
     },
     buttonText: {
-        color: '#007AFF',
+        color: '#fff',
         fontSize: 18
     },
     textColor: {
@@ -64,15 +66,18 @@ export const commonStyles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 14
     },
+    buttonColorText: {
+        fontSize: 16,
+        color: '#0088FF'
+    },
     textInput: {
         color: '#333',
         fontSize: 14,
-        height: 36,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee'
+        borderBottomColor: '#eee',
     },
     line: {
         height: 1,
         backgroundColor: '#eee'
-    },
+    }
 });

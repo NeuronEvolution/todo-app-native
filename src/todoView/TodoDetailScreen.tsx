@@ -65,6 +65,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowLeft]}>
                     <Text style={[commonStyles.text, styles.nameText]}>标题</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 240}]}
                         onChangeText={this.onTitleChanged}
                         value={this.state.todoItemMutate.title}
@@ -74,6 +75,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowLeft]}>
                     <Text style={[commonStyles.text, styles.nameText]}>描述</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 240}]}
                         onChangeText={this.onDescChanged}
                         value={this.state.todoItemMutate.desc}
@@ -180,7 +182,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
             todoId,
             this.state.todoItemMutate,
             () => {
-                this.props.navigation.navigate('TodoList');
+                this.updateChanged(this.state.todoItem);
             });
     }
 }

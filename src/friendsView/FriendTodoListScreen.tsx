@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { FriendInfo, getTodoListParams, TodoItem, TodoItemGroup } from '../api/todo-private/gen';
-import { commonStyles } from '../commonStyles';
+import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import { apiTodoGetTodoListByCategory, RootState } from '../redux';
 import ToastView from '../ToastView';
 import TodoListView from '../todoView/TodoListView';
@@ -21,6 +21,7 @@ interface State {
 const navigationOptionsFunc = ({navigation}: NavigationScreenProps<{friendInfo: FriendInfo}>) => {
     const userName = navigation.state.params.friendInfo.userName;
     return {
+        headerTintColor: defaultHeaderTintColor,
         headerTitle: userName + '的计划',
         headerTitleStyle: [commonStyles.stackHeaderText],
         tabBarVisible: false,

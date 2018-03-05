@@ -32,12 +32,13 @@ class SignupScreen extends React.Component<Props, State> {
     public render() {
         return (
             <View style={[commonStyles.screenCentered]}>
-                <Text style={[commonStyles.text, {fontSize: 32, marginTop: 80, marginBottom: 32}]}>
+                <Text style={[commonStyles.text, {fontSize: 32, marginTop: 48, marginBottom: 24}]}>
                     注册火星帐号
                 </Text>
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 72}]}>手机号</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 180}]}
                         onChangeText={(text) => {
                             this.setState({signupPhone: text});
@@ -49,6 +50,7 @@ class SignupScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 72}]}>验证码</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 60}]}
                         onChangeText={(text) => {
                             this.setState({signupSmsCode: text});
@@ -61,7 +63,7 @@ class SignupScreen extends React.Component<Props, State> {
                             this.onGetSmsCodePressed();
                         }}
                     >
-                        <Text style={[commonStyles.buttonText]}>
+                        <Text style={[commonStyles.buttonColorText]}>
                             获取验证码
                         </Text>
                     </TouchableOpacity>
@@ -69,6 +71,7 @@ class SignupScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 72}]}>密码</Text>
                     <TextInput
+                        underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 180}]}
                         onChangeText={(text) => {
                             this.setState({signupPassword: text});

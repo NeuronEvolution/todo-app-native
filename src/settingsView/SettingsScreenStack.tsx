@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Image, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import { commonStyles } from '../commonStyles';
+import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import SettingsScreen from './SettingsScreen';
 import UserNameScreen from './UserNameScreen';
 
@@ -24,6 +24,7 @@ export const SettingsScreenStack = StackNavigator({
     UserName: {
         screen: UserNameScreen,
         navigationOptions: {
+            headerTintColor: defaultHeaderTintColor,
             headerTitle: '更改名字',
             headerTitleStyle: [commonStyles.stackHeaderText],
             tabBarVisible: false,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Image, Text, TouchableOpacity } from 'react-native';
 import { NavigationScreenProps, StackNavigator } from 'react-navigation';
-import { commonStyles } from '../commonStyles';
+import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import TodoAddScreen from './TodoAddScreen';
 import TodoDetailScreen from './TodoDetailScreen';
 import TodoListScreen from './TodoListScreen';
@@ -35,6 +35,7 @@ export const TodoScreenStack = StackNavigator({
     TodoAdd: {
         screen: TodoAddScreen,
         navigationOptions: () => ({
+            headerTintColor: defaultHeaderTintColor,
             headerTitle: '新计划',
             headerTitleStyle: [commonStyles.stackHeaderText],
             tabBarVisible: false,
@@ -44,6 +45,7 @@ export const TodoScreenStack = StackNavigator({
     TodoDetail: {
         screen: TodoDetailScreen,
         navigationOptions: () => ({
+            headerTintColor: defaultHeaderTintColor,
             headerTitle: '计划详情',
             headerTitleStyle: [commonStyles.stackHeaderText],
             tabBarVisible: false,

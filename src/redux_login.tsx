@@ -58,6 +58,7 @@ const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
 export const apiUserLogout = (): Dispatchable => (dispatch) => {
     const t: Token = REDUX_STORE.getState().token;
     return userPrivateApi.logout(t.accessToken, t.refreshToken).then(() => {
+        dispatch(onGlobalToast('您已退出登录'));
         dispatch({type: actions.ACTION_USER_LOGOUT_SUCCESS});
     }).catch((err) => {
         dispatch(onApiError(err, userPrivateApiHost + '/logout'));
@@ -83,8 +84,6 @@ export const apiAccountSmsLogin = (p: smsLoginParams): Dispatchable => (dispatch
 };
 
 export const apiAccountLogin = (p: loginParams): Dispatchable => (dispatch) => {
-    dispatch(onGlobalToast('apiAccountLogin:' + accountApiHost));
-
     return accountApi.login(p.name, p.password)
         .then((jwt: string) => {
             dispatch(onAccountLoginSuccess(jwt));
