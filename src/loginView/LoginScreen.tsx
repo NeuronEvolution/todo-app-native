@@ -28,13 +28,13 @@ interface State {
 class LoginScreen extends React.Component<Props, State> {
     public render() {
         return <View style={[commonStyles.screenCentered]}>
-            <Text style={[commonStyles.text, {fontSize: 32, marginTop: 48, marginBottom: 24}]}>登录火星</Text>
+            <Text style={[commonStyles.text, {fontSize: 32, marginTop: 48, marginBottom: 12}]}>登录火星</Text>
             {this.renderTabHeader()}
             <View style={[commonStyles.line, {width: 300}]}/>
             {this.state.tabIndex === 0 ? this.renderAccountLogin() : null}
             {this.state.tabIndex === 1 ? this.renderSmsLogin() : null}
             <TouchableOpacity
-                style={[commonStyles.button, {width: 300}]}
+                style={[commonStyles.button, {width: 300, marginTop: 8}]}
                 onPress={() => {
                     this.onLoginPressed();
                 }}>

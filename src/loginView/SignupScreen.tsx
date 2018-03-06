@@ -32,7 +32,7 @@ class SignupScreen extends React.Component<Props, State> {
     public render() {
         return (
             <View style={[commonStyles.screenCentered]}>
-                <Text style={[commonStyles.text, {fontSize: 32, marginTop: 48, marginBottom: 24}]}>
+                <Text style={[commonStyles.text, {fontSize: 32, marginTop: 48, marginBottom: 12}]}>
                     注册火星帐号
                 </Text>
                 <View style={[commonStyles.flexRowCentered]}>
@@ -81,7 +81,7 @@ class SignupScreen extends React.Component<Props, State> {
                     />
                 </View>
                 <TouchableOpacity
-                    style={[commonStyles.button, {width: 300}]}
+                    style={[commonStyles.button, {width: 300 , marginTop: 8}]}
                     onPress={() => {
                         this.onSignupPressed();
                     }}

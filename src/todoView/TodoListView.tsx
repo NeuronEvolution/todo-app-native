@@ -16,7 +16,7 @@ export interface Props {
 export default class TodoListView extends React.Component<Props> {
     public static renderCategory(category?: string): JSX.Element {
         return (
-            <View style={{height: 24, backgroundColor: '#eee'}}>
+            <View style={{height: 24, backgroundColor: '#eee', justifyContent: 'center'}}>
                 <Text style={styles.categoryText}>
                     {category}
                 </Text>
@@ -103,7 +103,6 @@ export default class TodoListView extends React.Component<Props> {
 
 const styles = StyleSheet.create({
     categoryText: {
-        marginTop: 6,
         marginLeft: 8,
         marginRight: 8,
         fontSize: 12,

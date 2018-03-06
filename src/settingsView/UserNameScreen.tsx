@@ -62,7 +62,7 @@ class UserNameScreen extends React.Component<Props, State> {
         }
 
         this.props.apiTodoUserProfileUpdateUserName(userName, () => {
-            this.props.navigation.navigate('Settings');
+            this.props.navigation.goBack();
         });
     }
 

@@ -76,7 +76,7 @@ class ResetPasswordScreen extends React.Component<Props, State> {
                     />
                 </View>
                 <TouchableOpacity
-                    style={[commonStyles.button, {width: 300}]}
+                    style={[commonStyles.button, {width: 300, marginTop: 8}]}
                     onPress={() => {
                         this.onResetPasswordPressed();
                     }}
@@ -119,7 +119,7 @@ class ResetPasswordScreen extends React.Component<Props, State> {
                 newPassword: this.state.inputNewPassword,
             },
             () => {
-                this.props.navigation.navigate('Login');
+                this.props.navigation.goBack();
             });
     }
 }

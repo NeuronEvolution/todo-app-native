@@ -18,11 +18,11 @@ export function getTodoStatusName(p?: TodoStatus): string {
 export function getTodoStatusTextColor(p?: TodoStatus): TextStyle {
     switch (p) {
         case TodoStatus.Ongoing:
-            return {color: '#007AFF'};
+            return {color: '#777'};
         case TodoStatus.Completed:
-            return {color: 'darkgoldenrod'};
+            return {color: '#ccc'};
         case TodoStatus.Discard:
-            return {color: 'red'};
+            return {color: '#ccc'};
         default:
             return commonStyles.textColor;
     }

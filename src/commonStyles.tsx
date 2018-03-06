@@ -71,6 +71,7 @@ export const commonStyles = StyleSheet.create({
         color: '#0088FF'
     },
     textInput: {
+        height: 48,
         color: '#333',
         fontSize: 14,
         borderBottomWidth: 1,
