@@ -19,7 +19,7 @@ const todoPrivateApi = TodoPrivateApi(
             return t && t.accessToken ? t.accessToken : '';
         }
     },
-    fetch, 'http://' + SERVER_IP + ':9001/api-private/v1/todo');
+    fetch, 'http://' + SERVER_IP + ':8080/api-private/v1/todo');
 
 export interface ToastInfo {
     text: string;

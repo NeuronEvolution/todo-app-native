@@ -143,11 +143,11 @@ export default class AutoComplete extends React.Component<Props, State> {
     private onSelect(text: string) {
         this.setState({value: text});
 
-        this.closeModal();
-
         if (this.props.onChangeText) {
             this.props.onChangeText(text);
         }
+
+        this.closeModal();
     }
 
     private onChangeText(text: string) {
@@ -184,8 +184,6 @@ export default class AutoComplete extends React.Component<Props, State> {
     }
 
     private onBlur() {
-        this.closeModal();
-
         if (this.props.onBlur) {
             this.props.onBlur();
         }

@@ -13,11 +13,11 @@ import { AuthorizationCode, DefaultApiFactory as OauthPrivateApi } from './api/o
 import {DefaultApiFactory as UserPrivateApi, OauthJumpResponse, Token } from './api/user-private/gen';
 import { apiTodoGetUserProfile, onGlobalToast } from './redux';
 
-const accountApiHost = 'http://' + SERVER_IP + ':8083/api-private/v1/accounts';
+const accountApiHost = 'http://' + SERVER_IP + ':8080/api-private/v1/accounts';
 const accountApi = AccountApi(undefined, fetch, accountApiHost);
-const oauthPrivateApiHost = 'http://' + SERVER_IP + ':8085/api-private/v1/oauth';
+const oauthPrivateApiHost = 'http://' + SERVER_IP + ':8080/api-private/v1/oauth';
 const oauthPrivateApi = OauthPrivateApi(undefined, fetch, oauthPrivateApiHost);
-const userPrivateApiHost = 'http://' + SERVER_IP + ':8086/api-private/v1/users';
+const userPrivateApiHost = 'http://' + SERVER_IP + ':8080/api-private/v1/users';
 const userPrivateApi = UserPrivateApi(undefined, fetch, userPrivateApiHost);
 
 export const onApiError = (err: any, message: string): Dispatchable => (dispatch) => {
