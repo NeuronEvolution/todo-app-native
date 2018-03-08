@@ -1,36 +1,30 @@
 import * as React from 'react';
 import { combineReducers } from 'redux';
-import { REDUX_STORE } from '../App';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
-import * as actions from './actions';
 import {
     DefaultApiFactory as TodoPrivateApi, FriendInfo,
     getFriendsListParams, getTodoListParams, TodoItem, TodoItemGroup,
     TodoVisibility, UserProfile
 } from './api/todo-private/gen';
 import { Token } from './api/user-private/gen';
-import { apiCall, token, userID } from './redux_login';
+import { apiCall, getAccessToken, token, userID } from './redux_login';
+import { globalToast, onGlobalToast, ToastInfo } from './ToastView';
+
+export const ACTION_TODO_GET_USER_PROFILE_SUCCESS = 'ACTION_TODO_GET_USER_PROFILE_SUCCESS';
+export const ACTION_TODO_LIST_BY_CATEGORY_SUCCESS = 'ACTION_TODO_LIST_BY_CATEGORY_SUCCESS';
+export const ACTION_TODO_LIST_BY_CATEGORY_FRIEND_SUCCESS = 'ACTION_TODO_LIST_BY_CATEGORY_FRIEND_SUCCESS';
+export const ACTION_TODO_GET_FRIEND_LIST_SUCCESS = 'ACTION_TODO_GET_FRIEND_LIST_SUCCESS';
+export const ACTION_TODO_GET_CATEGORY_NAME_LIST = 'ACTION_TODO_GET_CATEGORY_NAME_LIST';
 
 const todoPrivateApi = TodoPrivateApi(
-    {
-        apiKey: () => {
-            const t = REDUX_STORE.getState().token;
-            return t && t.accessToken ? t.accessToken : '';
-        }
-    },
-    fetch, 'http://' + SERVER_IP + ':8080/api-private/v1/todo');
-
-export interface ToastInfo {
-    text: string;
-    timestamp: Date;
-}
-
-const GLOBAL_TOAST_ACTION = 'GLOBAL_TOAST_ACTION';
+    {apiKey: getAccessToken},
+    fetch, 'http://' + SERVER_IP + ':8080/api-private/v1/todo'
+);
 
 export interface RootState {
-    userID: string;
     globalToast: ToastInfo;
+    userID: string;
     token: Token;
     userProfile: UserProfile;
     todoListByCategory: TodoItemGroup[];
@@ -45,33 +39,10 @@ export interface FriendsListWithPage {
     nextPageToken: string;
 }
 
-export const onGlobalToast = (text: string): Dispatchable => (dispatch) => {
-    dispatch({
-        type: GLOBAL_TOAST_ACTION,
-        payload: {
-            text,
-            timestamp: new Date()
-        }
-    });
-};
-
-function globalToast(state: ToastInfo, action: StandardAction): ToastInfo {
-    if (state === undefined) {
-        return {text: '', timestamp: new Date()};
-    }
-
-    switch (action.type) {
-        case GLOBAL_TOAST_ACTION:
-            return action.payload;
-        default:
-            return state;
-    }
-}
-
 export const apiTodoGetUserProfile = (): Dispatchable => (dispatch) => {
     return apiCall(() => {
         return todoPrivateApi.getUserProfile().then((data) => {
-            dispatch({type: actions.ACTION_TODO_GET_USER_PROFILE_SUCCESS, payload: data});
+            dispatch({type: ACTION_TODO_GET_USER_PROFILE_SUCCESS, payload: data});
         });
     });
 };
@@ -98,9 +69,9 @@ export const apiTodoGetTodoListByCategory = (p: getTodoListParams): Dispatchable
     return apiCall(() => {
         return todoPrivateApi.getTodoListByCategory(p.friendID).then((result: TodoItemGroup[]) => {
             if (p.friendID) {
-                dispatch({type: actions.ACTION_TODO_LIST_BY_CATEGORY_FRIEND_SUCCESS, payload: result});
+                dispatch({type: ACTION_TODO_LIST_BY_CATEGORY_FRIEND_SUCCESS, payload: result});
             } else {
-                dispatch({type: actions.ACTION_TODO_LIST_BY_CATEGORY_SUCCESS, payload: result});
+                dispatch({type: ACTION_TODO_LIST_BY_CATEGORY_SUCCESS, payload: result});
             }
         });
     });
@@ -139,7 +110,7 @@ export const apiTodoGetFriendsList = (p: getFriendsListParams): Dispatchable => 
     return apiCall(() => {
         return todoPrivateApi.getFriendsList(p.pageSize, p.pageToken).then((data) => {
             dispatch({
-                type: actions.ACTION_TODO_GET_FRIEND_LIST_SUCCESS,
+                type: ACTION_TODO_GET_FRIEND_LIST_SUCCESS,
                 payload: {
                     pageToken: p.pageToken,
                     data
@@ -153,17 +124,17 @@ export const apiTodoGetCategoryNameList = (): Dispatchable => (dispatch) => {
     return apiCall(() => {
         return todoPrivateApi.getCategoryNameList().then((data) => {
             dispatch({
-                type: actions.ACTION_TODO_GET_CATEGORY_NAME_LIST,
+                type: ACTION_TODO_GET_CATEGORY_NAME_LIST,
                 payload: data
             });
         });
     });
 };
 
-const initialUserProfile: UserProfile = {userName: '', todoVisibility: TodoVisibility.Public};
-function userProfile(state: UserProfile= initialUserProfile, action: StandardAction): UserProfile {
+const initUserProfile: UserProfile = {userName: '', todoVisibility: TodoVisibility.Public};
+function userProfile(state: UserProfile= initUserProfile, action: StandardAction): UserProfile {
     switch (action.type) {
-        case actions.ACTION_TODO_GET_USER_PROFILE_SUCCESS:
+        case ACTION_TODO_GET_USER_PROFILE_SUCCESS:
             return action.payload;
         default:
             return state;
@@ -172,7 +143,7 @@ function userProfile(state: UserProfile= initialUserProfile, action: StandardAct
 
 function todoListByCategory(state: TodoItemGroup[]= [], action: StandardAction): TodoItemGroup[] {
     switch (action.type) {
-        case actions.ACTION_TODO_LIST_BY_CATEGORY_SUCCESS:
+        case ACTION_TODO_LIST_BY_CATEGORY_SUCCESS:
             return action.payload;
         default:
             return state;
@@ -181,20 +152,17 @@ function todoListByCategory(state: TodoItemGroup[]= [], action: StandardAction):
 
 function friendTodoListByCategory(state: TodoItemGroup[]= [], action: StandardAction): TodoItemGroup[] {
     switch (action.type) {
-        case actions.ACTION_TODO_LIST_BY_CATEGORY_FRIEND_SUCCESS:
+        case ACTION_TODO_LIST_BY_CATEGORY_FRIEND_SUCCESS:
             return action.payload;
         default:
             return state;
     }
 }
 
-function friendsList(state: FriendsListWithPage, action: StandardAction): FriendsListWithPage {
-    if (state === undefined) {
-        return {pageToken: '', items: [], nextPageToken: ''};
-    }
-
+const initFriendsList = {pageToken: '', items: [], nextPageToken: ''};
+function friendsList(state: FriendsListWithPage= initFriendsList, action: StandardAction): FriendsListWithPage {
     switch (action.type) {
-        case actions.ACTION_TODO_GET_FRIEND_LIST_SUCCESS:
+        case ACTION_TODO_GET_FRIEND_LIST_SUCCESS:
             const oldItems = state.items;
             state = {
                 pageToken: action.payload.pageToken,
@@ -214,7 +182,7 @@ function friendsList(state: FriendsListWithPage, action: StandardAction): Friend
 
 function categoryNameList(state: string[]= [], action: StandardAction): string[] {
     switch (action.type) {
-        case actions.ACTION_TODO_GET_CATEGORY_NAME_LIST:
+        case ACTION_TODO_GET_CATEGORY_NAME_LIST:
             return action.payload;
         default:
             return state;

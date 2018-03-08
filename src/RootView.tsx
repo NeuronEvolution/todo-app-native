@@ -11,12 +11,13 @@ export interface Props {
 
 class RootView extends React.Component<Props> {
     public render() {
-        const logged = this.props.token && this.props.token.accessToken && this.props.token.accessToken !== '';
+        const token = this.props.token;
+        const logged = token && token.accessToken && token.accessToken !== '';
 
         return logged ? <MainTabs/> : <LoginViewStack/>;
     }
 }
 
-export default connect((rootState: RootState) => ({token: rootState.token}), {
+const selectProps = (rootState: RootState) => ({token: rootState.token});
 
-})(RootView);
+export default connect(selectProps, {})(RootView);

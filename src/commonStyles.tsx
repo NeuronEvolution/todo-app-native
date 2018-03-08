@@ -51,8 +51,16 @@ export const commonStyles = StyleSheet.create({
         backgroundColor: '#0088FF',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius : 8,
+        borderRadius: 8,
         height: 48,
+    },
+    windowButton: {
+        backgroundColor: '#0088FF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 8,
+        height: 48,
+        width: 300
     },
     buttonText: {
         color: '#fff',
@@ -80,5 +88,8 @@ export const commonStyles = StyleSheet.create({
     line: {
         height: 1,
         backgroundColor: '#eee'
+    },
+    contentWidth: {
+        width: 300
     }
 });

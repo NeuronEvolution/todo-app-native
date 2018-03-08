@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { FriendInfo, TodoVisibility } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
-import { FriendsListWithPage, onGlobalToast, RootState } from '../redux';
-import ToastView from '../ToastView';
+import { FriendsListWithPage, RootState } from '../redux';
+import ToastView, { onGlobalToast } from '../ToastView';
 import { getTodoVisibilityName } from '../utils';
 
 export interface Props extends NavigationScreenProps<void> {
@@ -16,67 +16,87 @@ export interface Props extends NavigationScreenProps<void> {
 }
 
 class FriendListScreen extends React.Component<Props> {
+    private static getItemKey(item: FriendInfo, index: number): string {
+        return item.userID ? item.userID : index.toString();
+    }
+
+    private static renderSeparatorLine(): JSX.Element {
+        return (<View style={[commonStyles.line]}/>);
+    }
+
+    private static renderTodoSummery(friendInfo: FriendInfo): JSX.Element {
+        const {todoCount, todoVisibility} = friendInfo;
+
+        return (
+            <View style={[{width: 120}]}>
+                <View style={[commonStyles.flexRowSpaceBetween, {height: 24}]}>
+                    <Text style={[commonStyles.text, {fontSize: 12}]}>总计划数：</Text>
+                    <Text style={[commonStyles.text, {fontSize: 12}]}>{todoCount}</Text>
+                </View>
+                <View style={[commonStyles.flexRowSpaceBetween, {height: 24}]}>
+                    <Text style={[commonStyles.text, {fontSize: 12}]}>是否公开：</Text>
+                    <Text style={[commonStyles.text, {fontSize: 12}]}>
+                        {getTodoVisibilityName(todoVisibility)}
+                    </Text>
+                </View>
+            </View>
+        );
+    }
+
+    public componentWillMount() {
+        this.renderFriendInfo = this.renderFriendInfo.bind(this);
+    }
+
     public render() {
+        const data = this.props.friendList.items;
+
         return (
             <View style={[commonStyles.screen]}>
                 <FlatList
-                    data={this.props.friendList.items}
-                    renderItem={(info: ListRenderItemInfo<FriendInfo>) => {
-                        return this.renderFriendInfo(info.item);
-                    }}
-                    keyExtractor={(item: FriendInfo, index: number) =>
-                        item.userID ? item.userID : index.toString()}
-                    ItemSeparatorComponent={() => <View style={[commonStyles.line]}/>}
-                />
+                    data={data}
+                    renderItem={this.renderFriendInfo}
+                    keyExtractor={FriendListScreen.getItemKey}
+                    ItemSeparatorComponent={FriendListScreen.renderSeparatorLine}/>
                 <ToastView/>
             </View>
         );
     }
 
-    private renderFriendInfo(friendInfo: FriendInfo): JSX.Element {
+    private renderFriendInfo(info: ListRenderItemInfo<FriendInfo>): JSX.Element {
+        const friendInfo = info.item;
+
         return (
             <TouchableOpacity
                 style={[commonStyles.flexRowSpaceBetween, {paddingHorizontal: 8}]}
                 onPress={() => {
                     this.onFriendInfoItemPress(friendInfo);
-                }}
-            >
-                <View style={[commonStyles.flexRowLeft]}>
-                    <Text style={[commonStyles.text]}>
-                        {friendInfo.userName}
-                    </Text>
-                    <Text style={[{color: '#0088FF', fontSize: 10, marginLeft: 4}]}>
-                        {friendInfo.userID === this.props.userID ? '(你自己)' : ''}
-                    </Text>
-                </View>
-                <View style={[{width: 120}]}>
-                    <View style={[commonStyles.flexRowSpaceBetween, {height: 24}]}>
-                        <Text style={[commonStyles.text, {fontSize: 12}]}>
-                            总计划数：
-                        </Text>
-                        <Text style={[commonStyles.text, {fontSize: 12}]}>
-                            {friendInfo.todoCount}
-                        </Text>
-                    </View>
-                    <View style={[commonStyles.flexRowSpaceBetween, {height: 24}]}>
-                        <Text style={[commonStyles.text, {fontSize: 12}]}>
-                            是否公开：
-                        </Text>
-                        <Text style={[commonStyles.text, {fontSize: 12}]}>
-                            {getTodoVisibilityName(friendInfo.todoVisibility)}
-                        </Text>
-                    </View>
-                </View>
+                }}>
+                {this.renderUserName(friendInfo)}
+                {FriendListScreen.renderTodoSummery(friendInfo)}
             </TouchableOpacity>
         );
     }
 
+    private renderUserName(friendInfo: FriendInfo): JSX.Element {
+        const {userName, userID} = friendInfo;
+        const self = userID === this.props.userID ? '(你自己)' : '';
+
+        return (
+            <View style={[commonStyles.flexRowLeft]}>
+                <Text style={[commonStyles.text]}>{userName}</Text>
+                <Text style={[{color: '#0088FF', fontSize: 10, marginLeft: 4}]}>{self}</Text>
+            </View>
+        );
+    }
+
     private onFriendInfoItemPress(friendInfo: FriendInfo) {
-        if (friendInfo.userID === this.props.userID) {
+        const {userID, todoVisibility} = friendInfo;
+
+        if (userID === this.props.userID) {
             return this.props.navigation.navigate('Todo');
         }
 
-        if (friendInfo.todoVisibility !== TodoVisibility.Public) {
+        if (todoVisibility !== TodoVisibility.Public) {
             return this.props.onGlobalToast('该用户的计划不可见');
         }
 
@@ -84,12 +104,10 @@ class FriendListScreen extends React.Component<Props> {
     }
 }
 
-const selectProps = (rootState: RootState) => {
-    return {
-        userID: rootState.userID,
-        friendList: rootState.friendsList
-    };
-};
+const selectProps = (rootState: RootState) => ({
+    userID: rootState.userID,
+    friendList: rootState.friendsList
+});
 
 export default connect(selectProps, {
     onGlobalToast

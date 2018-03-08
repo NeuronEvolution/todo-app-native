@@ -14,14 +14,32 @@ export interface Props {
 }
 
 export default class TodoListView extends React.Component<Props> {
-    public static renderCategory(category?: string): JSX.Element {
+    private static renderCategory(category?: string): JSX.Element {
         return (
-            <View style={{height: 24, backgroundColor: '#eee', justifyContent: 'center'}}>
-                <Text style={styles.categoryText}>
-                    {category}
-                </Text>
+            <View style={[styles.category]}>
+                <Text style={styles.categoryText}>{category}</Text>
             </View>
         );
+    }
+
+    private static getItemGroupKey(item: TodoItemGroup, index: number): string {
+        return item.category ? item.category : index.toString();
+    }
+
+    private static getItemKey(item: TodoItem, index: number) {
+        return item.todoId ? item.todoId : index.toString();
+    }
+
+    private static renderSeparatorLine(): JSX.Element {
+        return (
+            <View style={[commonStyles.line]}/>
+        );
+    }
+
+    public componentWillMount() {
+        this.renderTodoItemGroup = this.renderTodoItemGroup.bind(this);
+        this.renderTodoItem = this.renderTodoItem.bind(this);
+        this.onLongPress = this.onLongPress.bind(this);
     }
 
     public render() {
@@ -29,36 +47,33 @@ export default class TodoListView extends React.Component<Props> {
             <View>
                 <FlatList
                     data={this.props.todoListByCategory}
-                    renderItem={(info: ListRenderItemInfo<TodoItemGroup>) => {
-                        return this.renderTodoItemGroup(info);
-                    }}
-                    keyExtractor={(item: TodoItemGroup, index: number) =>
-                        item.category ? item.category : index.toString()}
-                    ItemSeparatorComponent={() => <View style={[commonStyles.line]}/>}
-                />
+                    renderItem={this.renderTodoItemGroup}
+                    keyExtractor={TodoListView.getItemGroupKey}
+                    ItemSeparatorComponent={TodoListView.renderSeparatorLine}/>
             </View>
         );
     }
 
     private renderTodoItemGroup(info: ListRenderItemInfo<TodoItemGroup>): JSX.Element {
+        const data = info.item.todoItemList;
+
         return (
             <View>
                 {TodoListView.renderCategory(info.item.category)}
-                {info.item.todoItemList ?
+                {data ?
                     <FlatList
-                        data={info.item.todoItemList}
-                        renderItem={(itemInfo: ListRenderItemInfo<TodoItem>) => {
-                            return this.renderTodoItem(itemInfo.item);
-                        }}
-                        keyExtractor={(item: TodoItem, index: number) =>
-                            item.todoId ? item.todoId : index.toString()}
-                        ItemSeparatorComponent={() => <View style={[commonStyles.line]}/>}
-                    /> : null}
+                        data={data}
+                        renderItem={this.renderTodoItem}
+                        keyExtractor={TodoListView.getItemKey}
+                        ItemSeparatorComponent={TodoListView.renderSeparatorLine}/>
+                    : null}
             </View>
         );
     }
 
-    private renderTodoItem(todoItem: TodoItem): JSX.Element {
+    private renderTodoItem(itemInfo: ListRenderItemInfo<TodoItem>): JSX.Element {
+        const todoItem = itemInfo.item;
+
         return (
             <TouchableOpacity
                 style={[commonStyles.flexRowSpaceBetween, {paddingHorizontal: 8}]}
@@ -67,12 +82,8 @@ export default class TodoListView extends React.Component<Props> {
                 }}
                 onLongPress={() => {
                     this.onLongPress(todoItem);
-                }}
-            >
-                <Text style={[commonStyles.text]}
-                >
-                    {todoItem.title}
-                </Text>
+                }}>
+                <Text style={[commonStyles.text]}>{todoItem.title}</Text>
                 <Text style={[{fontSize: 12}, getTodoStatusTextColor(todoItem.status)]}>
                     {getTodoStatusName(todoItem.status)}
                 </Text>
@@ -80,18 +91,24 @@ export default class TodoListView extends React.Component<Props> {
         );
     }
 
+    private onRemoveConfirm(todoId: string) {
+        if (todoId && this.props.onRemoveItem) {
+            this.props.onRemoveItem(todoId);
+        }
+    }
+
     private onLongPress(todoItem: TodoItem) {
         if (!this.props.editable) {
             return;
         }
 
-        Alert.alert('删除计划？', todoItem.title, [
+        const {title, todoId} = todoItem;
+
+        Alert.alert('删除计划？', title, [
             {
                 text: '确定',
                 onPress: () => {
-                    if (todoItem.todoId && this.props.onRemoveItem) {
-                        this.props.onRemoveItem(todoItem.todoId);
-                    }
+                    this.onRemoveConfirm(todoId);
                 }
             },
             {
@@ -102,6 +119,11 @@ export default class TodoListView extends React.Component<Props> {
 }
 
 const styles = StyleSheet.create({
+    category: {
+        height: 24,
+        backgroundColor: '#eee',
+        justifyContent: 'center'
+    },
     categoryText: {
         marginLeft: 8,
         marginRight: 8,

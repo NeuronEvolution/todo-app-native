@@ -17,6 +17,9 @@ export interface Props extends NavigationScreenProps<void> {
 
 class TodoListScreen extends React.Component<Props> {
     public componentWillMount() {
+        this.onItemPress = this.onItemPress.bind(this);
+        this.onRemoveItem = this.onRemoveItem.bind(this);
+
         this.props.apiTodoGetTodoListByCategory({});
     }
 
@@ -26,19 +29,26 @@ class TodoListScreen extends React.Component<Props> {
                 <TodoListView
                     editable={true}
                     todoListByCategory={this.props.todoListByCategory}
-                    onItemPress={(todoItem: TodoItem) => {
-                        this.props.navigation.navigate('TodoDetail', {todoItem});
-                    }}
-                    onRemoveItem={(todoId: string) => {
-                        this.props.apiTodoRemove(todoId);
-                    }}
-                />
+                    onItemPress={this.onItemPress}
+                    onRemoveItem={this.onRemoveItem}/>
                 <ToastView/>
             </View>);
     }
+
+    private onItemPress(todoItem: TodoItem) {
+        this.props.navigation.navigate('TodoDetail', {todoItem});
+    }
+
+    private onRemoveItem(todoId: string) {
+        this.props.apiTodoRemove(todoId);
+    }
 }
 
-export default connect((rootState: RootState) => ({todoListByCategory: rootState.todoListByCategory}), {
+const selectProps = (rootState: RootState) => ({
+    todoListByCategory: rootState.todoListByCategory
+});
+
+export default connect(selectProps, {
     apiTodoRemove,
     apiTodoGetTodoListByCategory
 })(TodoListScreen);

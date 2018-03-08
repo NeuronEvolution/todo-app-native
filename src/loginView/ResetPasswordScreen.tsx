@@ -5,9 +5,8 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
-import { onGlobalToast } from '../redux';
 import { apiAccountResetPassword, apiAccountSmsCode } from '../redux_login';
-import ToastView from '../ToastView';
+import ToastView, { onGlobalToast } from '../ToastView';
 
 export interface Props extends NavigationScreenProps<any> {
     onGlobalToast: (text: string) => Dispatchable;
@@ -20,107 +19,139 @@ interface State {
     inputSmsCode: string;
     inputNewPassword: string;
 }
+const initialState = {
+    inputPhone: '',
+    inputSmsCode: '',
+    inputNewPassword: ''
+};
 
 class ResetPasswordScreen extends React.Component<Props, State> {
     public componentWillMount() {
-        this.setState({
-            inputPhone: '',
-            inputSmsCode: '',
-            inputNewPassword: ''
-        });
+        this.onPhoneChanged = this.onPhoneChanged.bind(this);
+        this.onSmsCodeChanged = this.onSmsCodeChanged.bind(this);
+        this.onGetSmsCodePressed = this.onGetSmsCodePressed.bind(this);
+        this.onPasswordChanged = this.onPasswordChanged.bind(this);
+        this.onResetPasswordPressed = this.onResetPasswordPressed.bind(this);
+        this.onResetSuccess = this.onResetSuccess.bind(this);
+
+        this.setState(initialState);
     }
 
     public render() {
         return (
             <View style={[commonStyles.screenCentered]}>
-                <View style={[commonStyles.flexRowCentered, {marginTop: 80}]}>
-                    <Text style={[commonStyles.text, {width: 80}]}>手机号</Text>
-                    <TextInput
-                        underlineColorAndroid={'transparent'}
-                        style={[commonStyles.textInput, {width: 180}]}
-                        onChangeText={(text) => {
-                            this.setState({inputPhone: text});
-                        }}
-                        value={this.state.inputPhone}
-                        placeholder={'请输入手机号'}
-                    />
-                </View>
-                <View style={[commonStyles.flexRowCentered]}>
-                    <Text style={[commonStyles.text, {width: 80}]}>验证码</Text>
-                    <TextInput
-                        underlineColorAndroid={'transparent'}
-                        style={[commonStyles.textInput, {width: 60}]}
-                        onChangeText={(text) => {
-                            this.setState({inputSmsCode: text});
-                        }}
-                        value={this.state.inputSmsCode}
-                    />
-                    <TouchableOpacity
-                        style={[commonStyles.button, {width: 120, backgroundColor: '#fff'}]}
-                        onPress={() => {
-                            this.onGetSmsCodePressed();
-                        }}>
-                        <Text style={[commonStyles.buttonColorText]}>获取验证码</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={[commonStyles.flexRowCentered]}>
-                    <Text style={[commonStyles.text, {width: 80}]}>新密码</Text>
-                    <TextInput
-                        underlineColorAndroid={'transparent'}
-                        style={[commonStyles.textInput, {width: 180}]}
-                        onChangeText={(text) => {
-                            this.setState({inputNewPassword: text});
-                        }}
-                        value={this.state.inputNewPassword}
-                        placeholder={'请输入新密码'}
-                    />
-                </View>
-                <TouchableOpacity
-                    style={[commonStyles.button, {width: 300, marginTop: 8}]}
-                    onPress={() => {
-                        this.onResetPasswordPressed();
-                    }}
-                >
-                    <Text style={[commonStyles.buttonText]}>重置密码</Text>
-                </TouchableOpacity>
+                {this.renderPhone()}
+                {this.renderSmsCode()}
+                {this.renderPassword()}
+                {this.renderResetButton()}
                 <ToastView/>
             </View>
         );
     }
 
+    private renderPhone(): JSX.Element {
+        return (
+            <View style={[commonStyles.flexRowCentered, {marginTop: 80}]}>
+                <Text style={[commonStyles.text, {width: 80}]}>手机号</Text>
+                <TextInput
+                    underlineColorAndroid={'transparent'}
+                    style={[commonStyles.textInput, {width: 180}]}
+                    onChangeText={this.onPhoneChanged}
+                    value={this.state.inputPhone}
+                    placeholder={'请输入手机号'}/>
+            </View>
+        );
+    }
+
+    private renderSmsCode(): JSX.Element {
+        return (
+            <View style={[commonStyles.flexRowCentered]}>
+                <Text style={[commonStyles.text, {width: 80}]}>验证码</Text>
+                <TextInput
+                    underlineColorAndroid={'transparent'}
+                    style={[commonStyles.textInput, {width: 60}]}
+                    onChangeText={this.onSmsCodeChanged}
+                    value={this.state.inputSmsCode}/>
+                <TouchableOpacity
+                    style={[commonStyles.button, {width: 120, backgroundColor: '#fff'}]}
+                    onPress={this.onGetSmsCodePressed}>
+                    <Text style={[commonStyles.buttonColorText]}>获取验证码</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    private renderPassword(): JSX.Element {
+        return (
+            <View style={[commonStyles.flexRowCentered]}>
+                <Text style={[commonStyles.text, {width: 80}]}>新密码</Text>
+                <TextInput
+                    underlineColorAndroid={'transparent'}
+                    style={[commonStyles.textInput, {width: 180}]}
+                    onChangeText={this.onPasswordChanged}
+                    value={this.state.inputNewPassword}
+                    placeholder={'请输入新密码'}/>
+            </View>
+        );
+    }
+
+    private renderResetButton(): JSX.Element {
+        return (
+            <TouchableOpacity
+                style={[commonStyles.windowButton, {marginTop: 8}]}
+                onPress={this.onResetPasswordPressed}>
+                <Text style={[commonStyles.buttonText]}>重置密码</Text>
+            </TouchableOpacity>
+        );
+    }
+
+    private onPhoneChanged(text: string) {
+        this.setState({inputPhone: text});
+    }
+
+    private onSmsCodeChanged(text: string) {
+        this.setState({inputSmsCode: text});
+    }
+
+    private onPasswordChanged(text: string) {
+        this.setState({inputNewPassword: text});
+    }
+
     private onGetSmsCodePressed() {
-        if (this.state.inputPhone === '') {
+        const phone = this.state.inputPhone;
+        if (phone === '') {
             return this.props.onGlobalToast('请输入手机号');
         }
 
-        this.props.apiAccountSmsCode({
-            scene: 'RESET_PASSWORD',
-            phone: this.state.inputPhone
-        });
+        this.props.apiAccountSmsCode({scene: 'RESET_PASSWORD', phone});
+    }
+
+    private onResetSuccess() {
+        this.props.navigation.goBack();
     }
 
     private onResetPasswordPressed() {
-        if (this.state.inputPhone === '') {
+        const {inputPhone, inputSmsCode, inputNewPassword} = this.state;
+
+        if (inputPhone === '') {
             return this.props.onGlobalToast('请输入手机号');
         }
 
-        if (this.state.inputSmsCode === '') {
+        if (inputSmsCode === '') {
             return this.props.onGlobalToast('请输入短信验证码');
         }
 
-        if (this.state.inputNewPassword === '') {
+        if (inputNewPassword === '') {
             return this.props.onGlobalToast('请输入新密码');
         }
 
         this.props.apiAccountResetPassword(
             {
-                phone: this.state.inputPhone,
-                smsCode: this.state.inputSmsCode,
-                newPassword: this.state.inputNewPassword,
+                phone: inputPhone,
+                smsCode: inputSmsCode,
+                newPassword: inputNewPassword,
             },
-            () => {
-                this.props.navigation.goBack();
-            });
+            this.onResetSuccess);
     }
 }
 

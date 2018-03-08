@@ -34,11 +34,11 @@ class FriendTodoListScreen extends React.Component<Props, State> {
 
     public componentWillMount() {
         const friendInfo = this.props.navigation.state.params.friendInfo;
-        this.setState({
-            friendInfo
-        });
-
         const friendID = friendInfo.userID;
+
+        this.onItemPress = this.onItemPress.bind(this);
+
+        this.setState({friendInfo});
         this.props.apiTodoGetTodoListByCategory({friendID});
     }
 
@@ -48,20 +48,24 @@ class FriendTodoListScreen extends React.Component<Props, State> {
                 <TodoListView
                     editable={false}
                     todoListByCategory={this.props.friendTodoListByCategory}
-                    onItemPress={(todoItem: TodoItem) => {
-                        this.props.navigation.navigate(
-                            'FriendTodoDetail',
-                            {
-                                todoItem,
-                                friendInfo: this.state.friendInfo
-                            });
-                    }}
-                />
+                    onItemPress={this.onItemPress}/>
                 <ToastView/>
             </View>);
     }
+
+    private onItemPress(todoItem: TodoItem) {
+        this.props.navigation.navigate(
+            'FriendTodoDetail', {
+                todoItem,
+                friendInfo: this.state.friendInfo
+            });
+    }
 }
 
-export default connect((rootState: RootState) => ({friendTodoListByCategory: rootState.friendTodoListByCategory}), {
+const selectProps = (rootState: RootState) => ({
+    friendTodoListByCategory: rootState.friendTodoListByCategory
+});
+
+export default connect(selectProps, {
     apiTodoGetTodoListByCategory
 })(FriendTodoListScreen);

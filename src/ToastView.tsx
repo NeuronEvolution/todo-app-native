@@ -1,42 +1,76 @@
 import * as React from 'react';
 import { Dimensions, Text, View } from 'react-native';
 import { connect } from 'react-redux';
+import { Dispatchable, StandardAction } from './_common/action';
 import TimedComponent from './_react_native_common/TimedComponent';
 import { commonStyles } from './commonStyles';
-import { RootState, ToastInfo } from './redux';
+import { RootState } from './redux';
 
-export interface Props {
-    toastInfo: ToastInfo;
+const GLOBAL_TOAST_ACTION = 'GLOBAL_TOAST_ACTION';
+
+export interface ToastInfo {
+    text: string;
+    timestamp: Date;
 }
 
-class ToastView extends React.Component<Props> {
+export const onGlobalToast = (text: string): Dispatchable => (dispatch) => {
+    dispatch({
+        type: GLOBAL_TOAST_ACTION,
+        payload: {
+            text,
+            timestamp: new Date()
+        }
+    });
+};
+
+export const globalToast = (state: ToastInfo, action: StandardAction): ToastInfo => {
+    if (state === undefined) {
+        return {text: '', timestamp: new Date()};
+    }
+
+    switch (action.type) {
+        case GLOBAL_TOAST_ACTION:
+            return action.payload;
+        default:
+            return state;
+    }
+};
+
+class ToastView extends React.Component<ToastInfo> {
     public render() {
+        const {width, height} = Dimensions.get('window');
+        const text = this.props.text;
+        const timestamp = this.props.timestamp;
+
         return (
             <View
                 pointerEvents={'none'}
                 style={{
                     position: 'absolute',
-                    top: Dimensions.get('window').height * 0.1,
-                    alignItems: 'center',
-                    width: Dimensions.get('window').width
+                    top: height * 0.1,
+                    width,
+                    alignItems: 'center'
                 }}>
                 <TimedComponent
-                    timestamp={this.props.toastInfo.timestamp}
+                    timestamp={timestamp}
                     contentElement={
                         <View style={{padding: 10, backgroundColor: '#444', borderRadius: 8}}>
                             <Text style={[commonStyles.text, {color: '#fff'}]}>
-                                {this.props.toastInfo.text}
+                                {text}
                             </Text>
                         </View>
                     }
                     intervalMillSec={5000}
-                    visible={this.props.toastInfo.text !== ''}
+                    visible={text !== ''}
                 />
             </View>
         );
     }
 }
 
-export default connect((rootState: RootState) => ({toastInfo: rootState.globalToast}), {
+const selectProps = (rootState: RootState) => ({
+    text: rootState.globalToast.text,
+    timestamp: rootState.globalToast.timestamp
+});
 
-})(ToastView);
+export default connect(selectProps, {})(ToastView);

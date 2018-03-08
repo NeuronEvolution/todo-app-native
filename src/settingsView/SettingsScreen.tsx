@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Dimensions, Text, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity , View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
@@ -26,32 +26,44 @@ class SettingsScreen extends React.Component<Props> {
     public render() {
         return (
             <View style={[commonStyles.screen, {paddingHorizontal: 16, paddingTop: 48}]}>
-                <TouchableOpacity
-                    style={[commonStyles.flexRowSpaceBetween]}
-                    onPressIn={this.onUserNamePressed}
-                >
-                    <Text style={[commonStyles.text]}>你的名字</Text>
-                    <Text style={[commonStyles.text]}>{this.props.userProfile.userName}</Text>
-                </TouchableOpacity>
+                {this.renderNameSetting()}
                 <View style={[commonStyles.line]}/>
-                <View style={[commonStyles.flexRowSpaceBetween]}>
-                    <Text style={[commonStyles.text]}>计划是否公开</Text>
-                    <DropdownList
-                        items={[
-                            {label: '公开的', value: TodoVisibility.Public},
-                            {label: '仅朋友可见', value: TodoVisibility.Friend},
-                            {label: '保密的', value: TodoVisibility.Private}
-                        ]}
-                        selectedIndex={0}
-                        buttonStyle={{width: 120, borderBottomWidth: 0, alignItems: 'flex-end'}}
-                        onSelect={this.onTodoVisibilitySelected}
-                    />
-                </View>
+                {this.renderVisibilitySetting()}
                 <View style={[commonStyles.line]}/>
-                <View style={[commonStyles.flexRowCentered, {marginTop: 48}]}>
+                <View style={[commonStyles.flexRowCentered, {marginTop: 240}]}>
                     {this.renderLogoutButton()}
                 </View>
                 <ToastView/>
+            </View>
+        );
+    }
+
+    private renderNameSetting(): JSX.Element {
+        const userName = this.props.userProfile.userName;
+
+        return (
+            <TouchableOpacity
+                style={[commonStyles.flexRowSpaceBetween]}
+                onPressIn={this.onUserNamePressed}>
+                <Text style={[commonStyles.text]}>你的名字</Text>
+                <Text style={[commonStyles.text]}>{userName}</Text>
+            </TouchableOpacity>
+        );
+    }
+
+    private renderVisibilitySetting(): JSX.Element {
+        return (
+            <View style={[commonStyles.flexRowSpaceBetween]}>
+                <Text style={[commonStyles.text]}>计划是否公开</Text>
+                <DropdownList
+                    items={[
+                        {label: '公开的', value: TodoVisibility.Public},
+                        {label: '仅朋友可见', value: TodoVisibility.Friend},
+                        {label: '保密的', value: TodoVisibility.Private}
+                    ]}
+                    selectedIndex={0}
+                    buttonStyle={[styles.visibilityDropDownButton]}
+                    onSelect={this.onTodoVisibilitySelected}/>
             </View>
         );
     }
@@ -63,15 +75,9 @@ class SettingsScreen extends React.Component<Props> {
     private renderLogoutButton(): JSX.Element {
         return (
             <TouchableOpacity
-                style={[
-                    commonStyles.button,
-                    {width: 300, backgroundColor: 'red'}
-                ]}
+                style={[commonStyles.windowButton, styles.logoutButton]}
                 onPress={this.onLogoutPressed}>
-                <Text style={[
-                    commonStyles.buttonText,
-                    {color: '#fff'}
-                ]}>退出当前帐号</Text>
+                <Text style={[commonStyles.buttonText]}>退出当前帐号</Text>
             </TouchableOpacity>
         );
     }
@@ -85,11 +91,22 @@ class SettingsScreen extends React.Component<Props> {
     }
 }
 
-const selectProps = (rootState: RootState) => {
-    return {userProfile: rootState.userProfile};
-};
+const selectProps = (rootState: RootState) => ({
+    userProfile: rootState.userProfile
+});
 
 export default connect(selectProps, {
     apiUserLogout,
     apiTodoUserProfileUpdateTodoVisibility
 })(SettingsScreen);
+
+const styles = StyleSheet.create({
+    logoutButton: {
+        backgroundColor: 'red'
+    },
+    visibilityDropDownButton: {
+        width: 120,
+        borderBottomWidth: 0,
+        alignItems: 'flex-end'
+    }
+});

@@ -1,7 +1,6 @@
 import { REDUX_STORE } from '../App';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
-import * as actions from './actions';
 import {
     DefaultApiFactory as AccountApi,
     loginParams, resetPasswordParams,
@@ -11,7 +10,13 @@ import {
 } from './api/account-private/gen/';
 import { AuthorizationCode, DefaultApiFactory as OauthPrivateApi } from './api/oauth-private/gen';
 import {DefaultApiFactory as UserPrivateApi, OauthJumpResponse, Token } from './api/user-private/gen';
-import { apiTodoGetUserProfile, onGlobalToast } from './redux';
+import { apiTodoGetUserProfile } from './redux';
+import { onGlobalToast } from './ToastView';
+
+export const REQUIRE_LOGIN = 'REQUIRE_LOGIN';
+export const ACTION_USER_OAUTH_JUMP_SUCCESS = 'ACTION_USER_OAUTH_JUMP_SUCCESS';
+export const ACTION_USER_REFRESH_TOKEN = 'ACTION_USER_REFRESH_TOKEN';
+export const ACTION_USER_LOGOUT_SUCCESS = 'ACTION_USER_LOGOUT_SUCCESS';
 
 const accountApiHost = 'http://' + SERVER_IP + ':8080/api-private/v1/accounts';
 const accountApi = AccountApi(undefined, fetch, accountApiHost);
@@ -36,13 +41,14 @@ const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
         .then((state: string) => {
             return oauthPrivateApi.authorize(jwt, 'code', '100002', 'fromApp', 'BASIC', state)
                 .then((authorizationCode: AuthorizationCode) => {
-                    if (authorizationCode.code === undefined) {
+                    const authCode = authorizationCode.code;
+                    if (authCode === undefined) {
                         return dispatch(onApiError('oauthPrivateApi.authorize code is null', ''));
                     }
-                    return userPrivateApi.oauthJump('fromApp', authorizationCode.code, state)
+                    return userPrivateApi.oauthJump('fromApp', authCode, state)
                         .then((oauthJumpResponseData: OauthJumpResponse) => {
                             dispatch(onGlobalToast('登录成功'));
-                            dispatch({type: actions.ACTION_USER_OAUTH_JUMP_SUCCESS, payload: oauthJumpResponseData});
+                            dispatch({type: ACTION_USER_OAUTH_JUMP_SUCCESS, payload: oauthJumpResponseData});
                             dispatch(apiTodoGetUserProfile());
                         }).catch((err) => {
                             dispatch(onApiError(err, userPrivateApiHost + '/oauthJump'));
@@ -59,7 +65,7 @@ export const apiUserLogout = (): Dispatchable => (dispatch) => {
     const t: Token = REDUX_STORE.getState().token;
     return userPrivateApi.logout(t.accessToken, t.refreshToken).then(() => {
         dispatch(onGlobalToast('您已退出登录'));
-        dispatch({type: actions.ACTION_USER_LOGOUT_SUCCESS});
+        dispatch({type: ACTION_USER_LOGOUT_SUCCESS});
     }).catch((err) => {
         dispatch(onApiError(err, userPrivateApiHost + '/logout'));
     });
@@ -114,16 +120,16 @@ export const apiAccountResetPassword = (p: resetPasswordParams, onSuccess: () =>
 
 const refreshUserToken = (refreshToken: string): Promise<void> => {
     return userPrivateApi.refreshToken(refreshToken).then((data: Token) => {
-        REDUX_STORE.dispatch({type: actions.ACTION_USER_REFRESH_TOKEN, payload: data});
+        REDUX_STORE.dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
     }).catch((err) => {
         REDUX_STORE.dispatch(onApiError(err, userPrivateApiHost + 'refreshToken'));
     });
 };
 
-function isUnauthorizedError(err: any): boolean {
+const isUnauthorizedError = (err: any): boolean => {
     const status = err && err.status;
     return status === 401;
-}
+};
 
 export const apiCall = (f: () => Promise<any>): void => {
     f().then(() => {
@@ -143,7 +149,7 @@ export const apiCall = (f: () => Promise<any>): void => {
                         return;
                     }
 
-                    REDUX_STORE.dispatch({type: actions.REQUIRE_LOGIN});
+                    REDUX_STORE.dispatch({type: REQUIRE_LOGIN});
                 });
             });
         }
@@ -151,26 +157,31 @@ export const apiCall = (f: () => Promise<any>): void => {
 };
 
 const initialToken: Token = {accessToken: '', refreshToken: ''};
-export function token(state: Token = initialToken, action: StandardAction): Token {
+export const token = (state: Token = initialToken, action: StandardAction): Token => {
     switch (action.type) {
-        case actions.ACTION_USER_OAUTH_JUMP_SUCCESS:
+        case ACTION_USER_OAUTH_JUMP_SUCCESS:
             return action.payload.token;
-        case actions.ACTION_USER_REFRESH_TOKEN:
+        case ACTION_USER_REFRESH_TOKEN:
             return action.payload;
-        case actions.REQUIRE_LOGIN:
+        case REQUIRE_LOGIN:
             return initialToken;
-        case actions.ACTION_USER_LOGOUT_SUCCESS:
+        case ACTION_USER_LOGOUT_SUCCESS:
             return initialToken;
         default:
             return state;
     }
-}
+};
 
-export function userID(state: string= '', action: StandardAction): string {
+export const userID = (state: string= '', action: StandardAction): string => {
     switch (action.type) {
-        case  actions.ACTION_USER_OAUTH_JUMP_SUCCESS:
+        case  ACTION_USER_OAUTH_JUMP_SUCCESS:
             return action.payload.userID;
         default:
             return state;
     }
-}
+};
+
+export const getAccessToken = (): string => {
+    const t = REDUX_STORE.getState().token;
+    return t && t.accessToken ? t.accessToken : '';
+};
