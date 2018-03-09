@@ -53,12 +53,14 @@ class LoginScreen extends React.Component<Props, State> {
     }
 
     public render() {
+        const {tabIndex} = this.state;
+
         return <View style={[commonStyles.screenCentered]}>
             {LoginScreen.renderTitle()}
             {this.renderTabHeader()}
             <View style={[commonStyles.line, commonStyles.contentWidth]}/>
-            {this.state.tabIndex === 0 ? this.renderAccountLogin() : null}
-            {this.state.tabIndex === 1 ? this.renderSmsLogin() : null}
+            {tabIndex === 0 ? this.renderAccountLogin() : null}
+            {tabIndex === 1 ? this.renderSmsLogin() : null}
             {this.renderLoginButton()}
             {this.renderLinks()}
             <ToastView/>
