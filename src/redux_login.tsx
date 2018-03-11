@@ -141,18 +141,22 @@ export const apiCall = (f: () => Promise<any>): void => {
         }
 
         const refreshToken = REDUX_STORE.getState().token.refreshToken;
-        if (refreshToken) {
-            return refreshUserToken(refreshToken).then(() => {
-                return f().catch((errAgain: any) => {
-                    if (!isUnauthorizedError(errAgain)) {
-                        REDUX_STORE.dispatch(onApiError(errAgain, ''));
-                        return;
-                    }
-
-                    REDUX_STORE.dispatch({type: REQUIRE_LOGIN});
-                });
-            });
+        if (!refreshToken) {
+            REDUX_STORE.dispatch({type: REQUIRE_LOGIN});
+            return null;
         }
+
+        return refreshUserToken(refreshToken).then(() => {
+            return f().catch((errAgain: any) => {
+                if (!isUnauthorizedError(errAgain)) {
+                    REDUX_STORE.dispatch(onApiError(errAgain, ''));
+                    return;
+                }
+
+                REDUX_STORE.dispatch({type: REQUIRE_LOGIN});
+            });
+        });
+
     });
 };
 
