@@ -30,12 +30,12 @@ class FriendListScreen extends React.Component<Props> {
         return (
             <View style={[{width: 120}]}>
                 <View style={[commonStyles.flexRowSpaceBetween, {height: 24}]}>
-                    <Text style={[commonStyles.text, {fontSize: 12}]}>总计划数：</Text>
-                    <Text style={[commonStyles.text, {fontSize: 12}]}>{todoCount}</Text>
+                    <Text style={[{fontSize: 12, color: '#888'}]}>总计划数：</Text>
+                    <Text style={[{fontSize: 12, color: '#888'}]}>{todoCount}</Text>
                 </View>
                 <View style={[commonStyles.flexRowSpaceBetween, {height: 24}]}>
-                    <Text style={[commonStyles.text, {fontSize: 12}]}>是否公开：</Text>
-                    <Text style={[commonStyles.text, {fontSize: 12}]}>
+                    <Text style={[{fontSize: 12, color: '#888'}]}>是否公开：</Text>
+                    <Text style={[{fontSize: 12, color: '#888'}]}>
                         {getTodoVisibilityName(todoVisibility)}
                     </Text>
                 </View>
