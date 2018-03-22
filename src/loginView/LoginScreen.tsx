@@ -3,6 +3,8 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { checkPhone } from '../_common/common';
+import { countdown } from '../_common/countdown';
 import { loginParams, smsCodeParams, smsLoginParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup } from '../redux_login';
@@ -22,6 +24,7 @@ interface State {
     loginPassword: string;
     loginPhone: string;
     loginSmsCode: string;
+    smsCodeCountdown: number;
 }
 
 const initialState = {
@@ -30,6 +33,7 @@ const initialState = {
     loginPassword: '',
     loginPhone: '',
     loginSmsCode: '',
+    smsCodeCountdown: 0
 };
 
 class LoginScreen extends React.Component<Props, State> {
@@ -70,7 +74,7 @@ class LoginScreen extends React.Component<Props, State> {
     private renderLoginButton(): JSX.Element {
         return (
             <TouchableOpacity
-                style={[commonStyles.button, commonStyles.contentWidth, {marginTop: 8}]}
+                style={[commonStyles.button, commonStyles.contentWidth, {marginTop: 12}]}
                 onPress={this.onLoginPressed}>
                 <Text style={[commonStyles.buttonText]}>登录</Text>
             </TouchableOpacity>
@@ -158,6 +162,10 @@ class LoginScreen extends React.Component<Props, State> {
     }
 
     private renderSmsLogin() {
+        const {smsCodeCountdown} = this.state;
+        const disabled = smsCodeCountdown > 0;
+        const color = disabled ? '#888' : '#0088FF';
+
         return (
             <View style={[commonStyles.flexColumnCentered]}>
                 <View style={[commonStyles.flexRowCentered]}>
@@ -177,9 +185,12 @@ class LoginScreen extends React.Component<Props, State> {
                         onChangeText={this.onSmsCodeChanged}
                         value={this.state.loginSmsCode}/>
                     <TouchableOpacity
+                        disabled={disabled}
                         style={[commonStyles.button, {width: 160, backgroundColor: '#fff'}]}
                         onPress={this.onGetSmsCodePressed}>
-                        <Text style={[commonStyles.buttonColorText]}>获取验证码</Text>
+                        <Text style={[commonStyles.text, {color}]}>
+                            {disabled ? smsCodeCountdown + '秒后重新发送' : '发送短信验证码'}
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -199,6 +210,15 @@ class LoginScreen extends React.Component<Props, State> {
         if (phone === '') {
             return this.props.onGlobalToast('请输入手机号');
         }
+
+        if (!checkPhone(phone)) {
+            return this.props.onGlobalToast('手机号格式不正确');
+        }
+
+        const COUNT_DOWN_SECONDS = 60;
+        countdown(COUNT_DOWN_SECONDS, (n: number) => {
+            this.setState({smsCodeCountdown: n});
+        });
 
         this.props.apiAccountSmsCode({scene: 'SMS_LOGIN', phone});
     }

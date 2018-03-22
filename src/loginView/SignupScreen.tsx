@@ -2,6 +2,8 @@ import * as React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { checkPhone } from '../_common/common';
+import { countdown } from '../_common/countdown';
 import { smsCodeParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiAccountSmsCode, apiAccountSmsSignup } from '../redux_login';
@@ -17,11 +19,13 @@ interface State {
     signupPhone: string;
     signupSmsCode: string;
     signupPassword: string;
+    smsCodeCountdown: number;
 }
 const initialState = {
     signupPhone: '',
     signupSmsCode: '',
-    signupPassword: ''
+    signupPassword: '',
+    smsCodeCountdown: 0
 };
 
 class SignupScreen extends React.Component<Props, State> {
@@ -67,6 +71,10 @@ class SignupScreen extends React.Component<Props, State> {
     }
 
     private renderSmsCode(): JSX.Element {
+        const {smsCodeCountdown} = this.state;
+        const disabled = smsCodeCountdown > 0;
+        const color = disabled ? '#888' : '#0088FF';
+
         return (
             <View style={[commonStyles.flexRowCentered]}>
                 <Text style={[commonStyles.text, {width: 72}]}>验证码</Text>
@@ -76,9 +84,12 @@ class SignupScreen extends React.Component<Props, State> {
                     onChangeText={this.onSmsCodeChanged}
                     value={this.state.signupSmsCode}/>
                 <TouchableOpacity
+                    disabled={disabled}
                     style={[commonStyles.button, {width: 120, backgroundColor: '#fff'}]}
                     onPress={this.onGetSmsCodePressed}>
-                    <Text style={[commonStyles.buttonColorText]}>获取验证码</Text>
+                    <Text style={[commonStyles.text, {color}]}>
+                        {disabled ? smsCodeCountdown + '秒后重新发送' : '发送短信验证码'}
+                    </Text>
                 </TouchableOpacity>
             </View>
         );
@@ -102,7 +113,7 @@ class SignupScreen extends React.Component<Props, State> {
     private renderSignupButton(): JSX.Element {
         return (
             <TouchableOpacity
-                style={[commonStyles.windowButton, {marginTop: 8}]}
+                style={[commonStyles.windowButton, {marginTop: 12}]}
                 onPress={this.onSignupPressed}>
                 <Text style={[commonStyles.buttonText]}>注册并登录</Text>
             </TouchableOpacity>
@@ -126,6 +137,15 @@ class SignupScreen extends React.Component<Props, State> {
         if (phone === '') {
             return this.props.onGlobalToast('请输入手机号');
         }
+
+        if (!checkPhone(phone)) {
+            return this.props.onGlobalToast('手机号格式不正确');
+        }
+
+        const COUNT_DOWN_SECONDS = 60;
+        countdown(COUNT_DOWN_SECONDS, (n: number) => {
+            this.setState({smsCodeCountdown: n});
+        });
 
         this.props.apiAccountSmsCode({
             scene: 'SMS_SIGNUP',

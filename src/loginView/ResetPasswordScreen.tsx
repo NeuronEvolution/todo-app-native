@@ -7,6 +7,8 @@ import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiAccountResetPassword, apiAccountSmsCode } from '../redux_login';
 import ToastView, { onGlobalToast } from '../ToastView';
+import {checkPhone} from "../_common/common";
+import {countdown} from "../_common/countdown";
 
 export interface Props extends NavigationScreenProps<any> {
     onGlobalToast: (text: string) => Dispatchable;
@@ -18,11 +20,13 @@ interface State {
     inputPhone: string;
     inputSmsCode: string;
     inputNewPassword: string;
+    smsCodeCountdown: number;
 }
 const initialState = {
     inputPhone: '',
     inputSmsCode: '',
-    inputNewPassword: ''
+    inputNewPassword: '',
+    smsCodeCountdown: 0
 };
 
 class ResetPasswordScreen extends React.Component<Props, State> {
@@ -64,6 +68,10 @@ class ResetPasswordScreen extends React.Component<Props, State> {
     }
 
     private renderSmsCode(): JSX.Element {
+        const {smsCodeCountdown} = this.state;
+        const disabled = smsCodeCountdown > 0;
+        const color = disabled ? '#888' : '#0088FF';
+
         return (
             <View style={[commonStyles.flexRowCentered]}>
                 <Text style={[commonStyles.text, {width: 80}]}>验证码</Text>
@@ -73,9 +81,12 @@ class ResetPasswordScreen extends React.Component<Props, State> {
                     onChangeText={this.onSmsCodeChanged}
                     value={this.state.inputSmsCode}/>
                 <TouchableOpacity
+                    disabled={disabled}
                     style={[commonStyles.button, {width: 120, backgroundColor: '#fff'}]}
                     onPress={this.onGetSmsCodePressed}>
-                    <Text style={[commonStyles.buttonColorText]}>获取验证码</Text>
+                    <Text style={[commonStyles.text, {color}]}>
+                        {disabled ? smsCodeCountdown + '秒后重新发送' : '发送短信验证码'}
+                    </Text>
                 </TouchableOpacity>
             </View>
         );
@@ -98,7 +109,7 @@ class ResetPasswordScreen extends React.Component<Props, State> {
     private renderResetButton(): JSX.Element {
         return (
             <TouchableOpacity
-                style={[commonStyles.windowButton, {marginTop: 8}]}
+                style={[commonStyles.windowButton, {marginTop: 12}]}
                 onPress={this.onResetPasswordPressed}>
                 <Text style={[commonStyles.buttonText]}>重置密码</Text>
             </TouchableOpacity>
@@ -122,6 +133,15 @@ class ResetPasswordScreen extends React.Component<Props, State> {
         if (phone === '') {
             return this.props.onGlobalToast('请输入手机号');
         }
+
+        if (!checkPhone(phone)) {
+            return this.props.onGlobalToast('手机号格式不正确');
+        }
+
+        const COUNT_DOWN_SECONDS = 60;
+        countdown(COUNT_DOWN_SECONDS, (n: number) => {
+            this.setState({smsCodeCountdown: n});
+        });
 
         this.props.apiAccountSmsCode({scene: 'RESET_PASSWORD', phone});
     }
