@@ -26,7 +26,7 @@ interface State {
 }
 
 export default class AutoComplete extends React.Component<Props, State> {
-    private textInputRef: React.Component<TextInputProperties, React.ComponentState> | null;
+    private textInputRef: React.Component<TextInputProperties, React.ComponentState> | null = null;
 
     public componentWillMount() {
         this.setState({
@@ -75,7 +75,7 @@ export default class AutoComplete extends React.Component<Props, State> {
                 <TouchableOpacity style={[{flex: 1}]} onPressIn={this.closeModal}>
                     <TextInput
                         underlineColorAndroid={'transparent'}
-                        autoFocus={true}
+                        // autoFocus={true}
                         style={[
                             this.props.style,
                             {

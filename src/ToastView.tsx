@@ -60,7 +60,7 @@ class ToastView extends React.Component<ToastInfo> {
                             </Text>
                         </View>
                     }
-                    intervalMillSec={5000}
+                    intervalMillSec={1000}
                     visible={text !== ''}
                 />
             </View>

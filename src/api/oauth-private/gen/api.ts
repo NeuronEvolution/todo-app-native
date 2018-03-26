@@ -55,7 +55,7 @@ export interface FetchArgs {
  * @class BaseAPI
  */
 export class BaseAPI {
-    protected configuration: Configuration;
+    protected configuration?: Configuration;
 
     constructor(configuration?: Configuration, protected basePath: string = BASE_PATH, protected fetch: FetchAPI = portableFetch) {
         if (configuration) {
@@ -63,7 +63,7 @@ export class BaseAPI {
             this.basePath = configuration.basePath || this.basePath;
         }
     }
-};
+}
 
 /**
  * 
@@ -72,7 +72,8 @@ export class BaseAPI {
  * @extends {Error}
  */
 export class RequiredError extends Error {
-    name: "RequiredError"
+    name: string = "RequiredError";
+
     constructor(public field: string, msg?: string) {
         super(msg);
     }
@@ -252,12 +253,12 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} accountJwt 
-     * @param {} responseType 
-     * @param {} clientId 
-     * @param {} redirectUri 
-     * @param {} scope 
-     * @param {} state 
+     * @param {string} accountJwt 
+     * @param {string} responseType 
+     * @param {string} clientId 
+     * @param {string} redirectUri 
+     * @param {string} scope 
+     * @param {string} state 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi

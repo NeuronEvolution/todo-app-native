@@ -55,7 +55,7 @@ export interface FetchArgs {
  * @class BaseAPI
  */
 export class BaseAPI {
-    protected configuration: Configuration;
+    protected configuration?: Configuration;
 
     constructor(configuration?: Configuration, protected basePath: string = BASE_PATH, protected fetch: FetchAPI = portableFetch) {
         if (configuration) {
@@ -63,7 +63,7 @@ export class BaseAPI {
             this.basePath = configuration.basePath || this.basePath;
         }
     }
-};
+}
 
 /**
  * 
@@ -72,7 +72,8 @@ export class BaseAPI {
  * @extends {Error}
  */
 export class RequiredError extends Error {
-    name: "RequiredError"
+    name: string = "RequiredError";
+
     constructor(public field: string, msg?: string) {
         super(msg);
     }
@@ -573,8 +574,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} name 
-     * @param {} password 
+     * @param {string} name 
+     * @param {string} password 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -586,7 +587,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} jwt 
+     * @param {string} jwt 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -598,9 +599,9 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} phone 
-     * @param {} smsCode 
-     * @param {} newPassword 
+     * @param {string} phone 
+     * @param {string} smsCode 
+     * @param {string} newPassword 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -612,10 +613,10 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} scene 
-     * @param {} phone 
-     * @param {} [captchaId] 
-     * @param {} [captchaCode] 
+     * @param {string} scene 
+     * @param {string} phone 
+     * @param {string} [captchaId] 
+     * @param {string} [captchaCode] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -627,8 +628,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary sms login
-     * @param {} phone 
-     * @param {} smsCode 
+     * @param {string} phone 
+     * @param {string} smsCode 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -640,9 +641,9 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary sms signup
-     * @param {} phone 
-     * @param {} smsCode 
-     * @param {} password 
+     * @param {string} phone 
+     * @param {string} smsCode 
+     * @param {string} password 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi

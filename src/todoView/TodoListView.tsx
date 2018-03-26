@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
     Alert, FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View
 } from 'react-native';
-import { TodoItem, TodoItemGroup } from '../api/todo-private/gen';
+import { TodoItem, TodoItemGroup, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { getTodoStatusName, getTodoStatusTextColor } from '../utils';
 
@@ -13,8 +13,23 @@ export interface Props {
     onItemPress: (todoItem: TodoItem) => void;
 }
 
-export default class TodoListView extends React.Component<Props> {
-    private static renderCategory(category?: string): JSX.Element {
+interface State {
+    todoTotalCount: number;
+    todoOngoingCount: number;
+    todoCompletedCount: number;
+    todoDiscardedCount: number;
+    todoProgressRatio: string;
+}
+const initialState: State = {
+    todoTotalCount: 0,
+    todoOngoingCount: 0,
+    todoCompletedCount: 0,
+    todoDiscardedCount: 0,
+    todoProgressRatio: '0'
+};
+
+export default class TodoListView extends React.Component<Props, State> {
+    private static renderCategory(category?: string) {
         return (
             <View style={[styles.category]}>
                 <Text style={styles.categoryText}>{category}</Text>
@@ -30,7 +45,7 @@ export default class TodoListView extends React.Component<Props> {
         return item.todoId ? item.todoId : index.toString();
     }
 
-    private static renderSeparatorLine(): JSX.Element {
+    private static renderSeparatorLine() {
         return (
             <View style={[commonStyles.line]}/>
         );
@@ -40,11 +55,22 @@ export default class TodoListView extends React.Component<Props> {
         this.renderTodoItemGroup = this.renderTodoItemGroup.bind(this);
         this.renderTodoItem = this.renderTodoItem.bind(this);
         this.onLongPress = this.onLongPress.bind(this);
+
+        this.setState(initialState);
+    }
+
+    public componentWillReceiveProps(nextProps: Props) {
+        const todoListByCategoryOld = this.props.todoListByCategory;
+        const todoListByCategoryNext = nextProps.todoListByCategory;
+        if (todoListByCategoryNext !== todoListByCategoryOld) {
+            this.updateSummary(todoListByCategoryNext);
+        }
     }
 
     public render() {
         return (
             <View>
+                {this.renderSummary()}
                 <FlatList
                     data={this.props.todoListByCategory}
                     renderItem={this.renderTodoItemGroup}
@@ -54,7 +80,84 @@ export default class TodoListView extends React.Component<Props> {
         );
     }
 
-    private renderTodoItemGroup(info: ListRenderItemInfo<TodoItemGroup>): JSX.Element {
+    private updateSummary(todoListByCategory: TodoItemGroup[]) {
+        if (!todoListByCategory) {
+            return this.setState({
+                todoTotalCount: 0,
+                todoOngoingCount: 0,
+                todoCompletedCount: 0,
+                todoDiscardedCount: 0,
+                todoProgressRatio: '0'
+            });
+        }
+
+        let todoOngoingCount = 0;
+        let todoCompletedCount = 0;
+        let todoDiscardedCount = 0;
+        todoListByCategory.forEach((todoItemGroup: TodoItemGroup) => {
+            const {todoItemList} = todoItemGroup;
+            if (todoItemList) {
+                todoItemList.forEach((todoItem: TodoItem) => {
+                    switch (todoItem.status) {
+                        case TodoStatus.Ongoing:
+                            return todoOngoingCount++;
+                        case TodoStatus.Completed:
+                            return todoCompletedCount++;
+                        case TodoStatus.Discard:
+                            return todoDiscardedCount++;
+                        default:
+                            return;
+                    }
+                });
+            }
+        });
+        const todoTotalCount = todoOngoingCount + todoCompletedCount + todoDiscardedCount;
+        const todoProgressRatio = ((todoTotalCount - todoOngoingCount) * 100 / todoTotalCount).toFixed(2);
+
+        this.setState({
+            todoTotalCount,
+            todoOngoingCount,
+            todoCompletedCount,
+            todoDiscardedCount,
+            todoProgressRatio
+        });
+    }
+
+    private renderSummary() {
+        const {
+            todoTotalCount,
+            todoOngoingCount,
+            todoDiscardedCount,
+            todoCompletedCount,
+            todoProgressRatio
+        } = this.state;
+
+        return (
+            <View style={[commonStyles.flexRowSpaceBetween, styles.summary]}>
+                <View style={[{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start'}]}>
+                    <View style={[{flexDirection: 'row', height: 24, justifyContent: 'center', alignItems: 'center'}]}>
+                        <Text style={styles.summaryText}>共</Text>
+                        <Text style={styles.summaryValueText}>{todoTotalCount}</Text>
+                        <Text style={styles.summaryText}>个计划，完成进度：</Text>
+                        <Text style={styles.summaryValueText}>{todoProgressRatio}%</Text>
+                    </View>
+                    <View style={[{flexDirection: 'row', height: 24, justifyContent: 'center', alignItems: 'center'}]}>
+                        <Text style={styles.summaryValueText}>{todoOngoingCount}</Text>
+                        <Text style={styles.summaryText}>个进行中，</Text>
+                        <Text style={styles.summaryValueText}>{todoCompletedCount}</Text>
+                        <Text style={styles.summaryText}>个已完成，</Text>
+                        <Text style={styles.summaryValueText}>{todoDiscardedCount}</Text>
+                        <Text style={styles.summaryText}>个已放弃</Text>
+                    </View>
+                </View>
+                <View>
+                    <Text style={styles.summaryText}>筛选</Text>
+                </View>
+            </View>
+        );
+    }
+
+    private renderTodoItemGroup(info: ListRenderItemInfo<TodoItemGroup>) {
         const data = info.item.todoItemList;
 
         return (
@@ -71,7 +174,7 @@ export default class TodoListView extends React.Component<Props> {
         );
     }
 
-    private renderTodoItem(itemInfo: ListRenderItemInfo<TodoItem>): JSX.Element {
+    private renderTodoItem(itemInfo: ListRenderItemInfo<TodoItem>) {
         const todoItem = itemInfo.item;
 
         return (
@@ -121,13 +224,24 @@ export default class TodoListView extends React.Component<Props> {
 const styles = StyleSheet.create({
     category: {
         height: 24,
+        paddingHorizontal: 8,
         backgroundColor: '#eee',
         justifyContent: 'center'
     },
     categoryText: {
-        marginLeft: 8,
-        marginRight: 8,
         fontSize: 12,
         color: '#555'
+    },
+    summary: {
+        paddingHorizontal: 8,
+        backgroundColor: '#884400',
+    },
+    summaryText: {
+        color: '#ffffff',
+        fontSize: 12
+    },
+    summaryValueText: {
+        color: '#FF8800',
+        fontSize: 12
     }
 });

@@ -55,7 +55,7 @@ export interface FetchArgs {
  * @class BaseAPI
  */
 export class BaseAPI {
-    protected configuration: Configuration;
+    protected configuration?: Configuration;
 
     constructor(configuration?: Configuration, protected basePath: string = BASE_PATH, protected fetch: FetchAPI = portableFetch) {
         if (configuration) {
@@ -63,7 +63,7 @@ export class BaseAPI {
             this.basePath = configuration.basePath || this.basePath;
         }
     }
-};
+}
 
 /**
  * 
@@ -72,7 +72,8 @@ export class BaseAPI {
  * @extends {Error}
  */
 export class RequiredError extends Error {
-    name: "RequiredError"
+    name: string = "RequiredError";
+
     constructor(public field: string, msg?: string) {
         super(msg);
     }
@@ -331,7 +332,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} accessToken 
+     * @param {string} accessToken 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -343,14 +344,14 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} grantType 
-     * @param {} [code] 
-     * @param {} [responseType] 
-     * @param {} [redirectUri] 
-     * @param {} [state] 
-     * @param {} [clientId] 
-     * @param {} [refreshToken] 
-     * @param {} [scope] 
+     * @param {string} grantType 
+     * @param {string} [code] 
+     * @param {string} [responseType] 
+     * @param {string} [redirectUri] 
+     * @param {string} [state] 
+     * @param {string} [clientId] 
+     * @param {string} [refreshToken] 
+     * @param {string} [scope] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi

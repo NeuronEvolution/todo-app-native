@@ -7,43 +7,56 @@ import DropdownList, { Item } from '../_react_native_common/DropdownList';
 import { TodoVisibility, UserProfile } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUserProfileUpdateTodoVisibility, RootState } from '../redux';
-import { apiUserLogout } from '../redux_login';
 import ToastView from '../ToastView';
 
 export interface Props extends NavigationScreenProps<void> {
     userProfile: UserProfile;
-    apiUserLogout: () => Dispatchable;
     apiTodoUserProfileUpdateTodoVisibility: (visibility: TodoVisibility) => Dispatchable;
 }
 
 class SettingsScreen extends React.Component<Props> {
     public componentWillMount() {
-        this.onLogoutPressed = this.onLogoutPressed.bind(this);
         this.onTodoVisibilitySelected = this.onTodoVisibilitySelected.bind(this);
         this.onUserNamePressed = this.onUserNamePressed.bind(this);
+        this.onAccountSettingsPressed = this.onAccountSettingsPressed.bind(this);
     }
 
     public render() {
         return (
-            <View style={[commonStyles.screen, {paddingHorizontal: 16, paddingTop: 48}]}>
+            <View style={[{flex: 1, backgroundColor: '#eee'}]}>
+                {this.renderAccountSettings()}
+                <View style={[commonStyles.line]}/>
                 {this.renderNameSetting()}
-                <View style={[commonStyles.line]}/>
                 {this.renderVisibilitySetting()}
-                <View style={[commonStyles.line]}/>
-                <View style={[commonStyles.flexRowCentered, {marginTop: 240}]}>
-                    {this.renderLogoutButton()}
-                </View>
                 <ToastView/>
             </View>
         );
     }
 
-    private renderNameSetting(): JSX.Element {
+    private renderAccountSettings() {
+        return (
+            <TouchableOpacity
+                style={[commonStyles.flexRowLeft, {
+                    backgroundColor: '#fff',
+                    marginTop: 24,
+                    paddingHorizontal: 8
+                }]}
+                onPressIn={this.onAccountSettingsPressed}
+            >
+                <Text style={[commonStyles.text]}>帐号</Text>
+            </TouchableOpacity>
+        );
+    }
+
+    private renderNameSetting() {
         const userName = this.props.userProfile.userName;
 
         return (
             <TouchableOpacity
-                style={[commonStyles.flexRowSpaceBetween]}
+                style={[commonStyles.flexRowSpaceBetween, {
+                    backgroundColor: '#fff',
+                    paddingHorizontal: 8
+                }]}
                 onPressIn={this.onUserNamePressed}>
                 <Text style={[commonStyles.text]}>你的名字</Text>
                 <Text style={[commonStyles.text]}>{userName}</Text>
@@ -51,9 +64,13 @@ class SettingsScreen extends React.Component<Props> {
         );
     }
 
-    private renderVisibilitySetting(): JSX.Element {
+    private renderVisibilitySetting() {
         return (
-            <View style={[commonStyles.flexRowSpaceBetween]}>
+            <View style={[commonStyles.flexRowSpaceBetween, {
+                backgroundColor: '#fff',
+                marginTop: 24,
+                paddingHorizontal: 8
+            }]}>
                 <Text style={[commonStyles.text]}>计划是否公开</Text>
                 <DropdownList
                     items={[
@@ -68,22 +85,12 @@ class SettingsScreen extends React.Component<Props> {
         );
     }
 
+    private onAccountSettingsPressed() {
+        this.props.navigation.navigate('AccountSettings');
+    }
+
     private onTodoVisibilitySelected(item: Item): void {
         this.props.apiTodoUserProfileUpdateTodoVisibility(item.value);
-    }
-
-    private renderLogoutButton(): JSX.Element {
-        return (
-            <TouchableOpacity
-                style={[commonStyles.windowButton, styles.logoutButton]}
-                onPress={this.onLogoutPressed}>
-                <Text style={[commonStyles.buttonText]}>退出当前帐号</Text>
-            </TouchableOpacity>
-        );
-    }
-
-    private onLogoutPressed() {
-        this.props.apiUserLogout();
     }
 
     private onUserNamePressed() {
@@ -96,7 +103,6 @@ const selectProps = (rootState: RootState) => ({
 });
 
 export default connect(selectProps, {
-    apiUserLogout,
     apiTodoUserProfileUpdateTodoVisibility
 })(SettingsScreen);
 

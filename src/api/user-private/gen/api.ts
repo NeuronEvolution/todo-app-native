@@ -55,7 +55,7 @@ export interface FetchArgs {
  * @class BaseAPI
  */
 export class BaseAPI {
-    protected configuration: Configuration;
+    protected configuration?: Configuration;
 
     constructor(configuration?: Configuration, protected basePath: string = BASE_PATH, protected fetch: FetchAPI = portableFetch) {
         if (configuration) {
@@ -63,7 +63,7 @@ export class BaseAPI {
             this.basePath = configuration.basePath || this.basePath;
         }
     }
-};
+}
 
 /**
  * 
@@ -72,7 +72,8 @@ export class BaseAPI {
  * @extends {Error}
  */
 export class RequiredError extends Error {
-    name: "RequiredError"
+    name: string = "RequiredError";
+
     constructor(public field: string, msg?: string) {
         super(msg);
     }
@@ -439,8 +440,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} token 
-     * @param {} refreshToken 
+     * @param {string} token 
+     * @param {string} refreshToken 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -452,9 +453,9 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} redirectUri 
-     * @param {} authorizationCode 
-     * @param {} state 
+     * @param {string} redirectUri 
+     * @param {string} authorizationCode 
+     * @param {string} state 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -466,7 +467,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} queryString 
+     * @param {string} queryString 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -478,7 +479,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} refreshToken 
+     * @param {string} refreshToken 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi

@@ -125,7 +125,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                 <Text style={[commonStyles.text, styles.nameText]}>状态</Text>
                 <DropdownList
                     buttonStyle={{width: 80, alignItems: 'flex-start'}}
-                    buttonTextStyle={[getTodoStatusTextColor(status)]}
+                    buttonTextStyle={[commonStyles.text]}
                     items={[
                         {label: '进行中', value: TodoStatus.Ongoing},
                         {label: '已完成', value: TodoStatus.Completed},

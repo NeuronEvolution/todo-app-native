@@ -4,6 +4,7 @@ import { StackNavigator } from 'react-navigation';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import SettingsScreen from './SettingsScreen';
 import UserNameScreen from './UserNameScreen';
+import AccountSettingsScreen from "./AccountSettingsScreen";
 
 const mainTabIconSettings = require('../../resource/main_settings_tab_icon.png');
 
@@ -19,6 +20,16 @@ export const SettingsScreenStack = StackNavigator({
             headerLeft: (
                 <Text style={[commonStyles.stackHeaderText, {marginLeft: 8}]}>设置</Text>
             )
+        }
+    },
+    AccountSettings: {
+        screen: AccountSettingsScreen,
+        navigationOptions: {
+            headerTintColor: defaultHeaderTintColor,
+            headerTitle: '帐号设置',
+            headerTitleStyle: [commonStyles.stackHeaderText],
+            tabBarVisible: false,
+            headerStyle: [commonStyles.stackHeader],
         }
     },
     UserName: {

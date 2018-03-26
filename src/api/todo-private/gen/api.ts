@@ -55,7 +55,7 @@ export interface FetchArgs {
  * @class BaseAPI
  */
 export class BaseAPI {
-    protected configuration: Configuration;
+    protected configuration?: Configuration;
 
     constructor(configuration?: Configuration, protected basePath: string = BASE_PATH, protected fetch: FetchAPI = portableFetch) {
         if (configuration) {
@@ -63,7 +63,7 @@ export class BaseAPI {
             this.basePath = configuration.basePath || this.basePath;
         }
     }
-};
+}
 
 /**
  * 
@@ -72,7 +72,8 @@ export class BaseAPI {
  * @extends {Error}
  */
 export class RequiredError extends Error {
-    name: "RequiredError"
+    name: string = "RequiredError";
+
     constructor(public field: string, msg?: string) {
         super(msg);
     }
@@ -124,7 +125,7 @@ export interface FriendInfoList {
     nextPageToken: string;
     /**
      * 
-     * @type {Array&lt;FriendInfo&gt;}
+     * @type {Array<FriendInfo>}
      * @memberof FriendInfoList
      */
     items: Array<FriendInfo>;
@@ -188,7 +189,7 @@ export interface TodoItemGroup {
     category: string;
     /**
      * 
-     * @type {Array&lt;TodoItem&gt;}
+     * @type {Array<TodoItem>}
      * @memberof TodoItemGroup
      */
     todoItemList: Array<TodoItem>;
@@ -1139,7 +1140,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} todoItem 
+     * @param {TodoItem} todoItem 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1162,7 +1163,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} friendID 
+     * @param {string} friendID 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1174,8 +1175,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} [pageSize] 
-     * @param {} [pageToken] 
+     * @param {number} [pageSize] 
+     * @param {string} [pageToken] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1187,7 +1188,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} todoId 
+     * @param {string} todoId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1199,7 +1200,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} [friendID] 
+     * @param {string} [friendID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1211,7 +1212,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} [friendID] 
+     * @param {string} [friendID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1234,7 +1235,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} todoId 
+     * @param {string} todoId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1246,8 +1247,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} todoId 
-     * @param {} todoItem 
+     * @param {string} todoId 
+     * @param {TodoItem} todoItem 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1259,7 +1260,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} [userProfile] 
+     * @param {UserProfile} [userProfile] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1271,7 +1272,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} visibility 
+     * @param {TodoVisibility} visibility 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1283,7 +1284,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 
-     * @param {} userName 
+     * @param {string} userName 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
