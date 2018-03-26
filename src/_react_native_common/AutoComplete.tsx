@@ -75,7 +75,7 @@ export default class AutoComplete extends React.Component<Props, State> {
                 <TouchableOpacity style={[{flex: 1}]} onPressIn={this.closeModal}>
                     <TextInput
                         underlineColorAndroid={'transparent'}
-                        // autoFocus={true}
+                        autoFocus={true}
                         style={[
                             this.props.style,
                             {
@@ -173,6 +173,10 @@ export default class AutoComplete extends React.Component<Props, State> {
 
     private closeModal() {
         this.setState({showModal: false});
+
+        if (this.textInputRef) {
+            this.textInputRef.focus();
+        }
     }
 
     private onFocus() {

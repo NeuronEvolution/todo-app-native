@@ -1,24 +1,35 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity , View } from 'react-native';
+import { Modal, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import DropdownList, { Item } from '../_react_native_common/DropdownList';
 import { TodoVisibility, UserProfile } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUserProfileUpdateTodoVisibility, RootState } from '../redux';
 import ToastView from '../ToastView';
+import { getTodoVisibilityName } from '../utils';
 
 export interface Props extends NavigationScreenProps<void> {
     userProfile: UserProfile;
     apiTodoUserProfileUpdateTodoVisibility: (visibility: TodoVisibility) => Dispatchable;
 }
 
-class SettingsScreen extends React.Component<Props> {
+interface State {
+    showVisibilitySelectionPanel: boolean;
+}
+
+class SettingsScreen extends React.Component<Props, State> {
     public componentWillMount() {
         this.onTodoVisibilitySelected = this.onTodoVisibilitySelected.bind(this);
         this.onUserNamePressed = this.onUserNamePressed.bind(this);
         this.onAccountSettingsPressed = this.onAccountSettingsPressed.bind(this);
+        this.showVisibilitySelectionPanel = this.showVisibilitySelectionPanel.bind(this);
+        this.closeVisibilitySelectionPanel = this.closeVisibilitySelectionPanel.bind(this);
+
+        const initialState: State = {
+            showVisibilitySelectionPanel: false
+        };
+        this.setState(initialState);
     }
 
     public render() {
@@ -66,31 +77,83 @@ class SettingsScreen extends React.Component<Props> {
 
     private renderVisibilitySetting() {
         return (
-            <View style={[commonStyles.flexRowSpaceBetween, {
-                backgroundColor: '#fff',
-                marginTop: 24,
-                paddingHorizontal: 8
-            }]}>
+            <TouchableOpacity
+                style={[commonStyles.flexRowSpaceBetween, {
+                    backgroundColor: '#fff',
+                    marginTop: 24,
+                    paddingHorizontal: 8
+                }]}
+                onPress={this.showVisibilitySelectionPanel}
+            >
                 <Text style={[commonStyles.text]}>计划是否公开</Text>
-                <DropdownList
-                    items={[
-                        {label: '公开的', value: TodoVisibility.Public},
-                        {label: '仅朋友可见', value: TodoVisibility.Friend},
-                        {label: '保密的', value: TodoVisibility.Private}
-                    ]}
-                    selectedIndex={0}
-                    buttonStyle={[styles.visibilityDropDownButton]}
-                    onSelect={this.onTodoVisibilitySelected}/>
-            </View>
+                <Text style={[commonStyles.text]}>{getTodoVisibilityName(this.props.userProfile.todoVisibility)}</Text>
+                {this.renderVisibilitySelectionPanel()}
+            </TouchableOpacity>
         );
+    }
+
+    private renderVisibilitySelectionPanel() {
+        return (
+            <Modal onRequestClose={this.closeVisibilitySelectionPanel}
+                   visible={this.state.showVisibilitySelectionPanel}
+                   transparent={true}>
+                <TouchableOpacity
+                    style={[{
+                        backgroundColor: '#00000050',
+                        flex: 1,
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }]}
+                    onPress={this.closeVisibilitySelectionPanel}
+                >
+                    <TouchableHighlight
+                        underlayColor={'#eee'}
+                        style={styles.visibilityButton}
+                        onPress={() => {
+                            this.onTodoVisibilitySelected(TodoVisibility.Public);
+                        }}
+                    >
+                        <Text>公开的</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        underlayColor={'#eee'}
+                        style={styles.visibilityButton}
+                        onPress={() => {
+                            this.onTodoVisibilitySelected(TodoVisibility.Friend);
+                        }}
+                    >
+                        <Text>仅朋友可见</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        underlayColor={'#eee'}
+                        style={styles.visibilityButton}
+                        onPress={() => {
+                            this.onTodoVisibilitySelected(TodoVisibility.Private);
+                        }}
+                    >
+                        <Text>保密的</Text>
+                    </TouchableHighlight>
+                </TouchableOpacity>
+            </Modal>
+        );
+    }
+
+    private showVisibilitySelectionPanel() {
+        this.setState({showVisibilitySelectionPanel: true});
+    }
+
+    private closeVisibilitySelectionPanel() {
+        this.setState({showVisibilitySelectionPanel: false});
     }
 
     private onAccountSettingsPressed() {
         this.props.navigation.navigate('AccountSettings');
     }
 
-    private onTodoVisibilitySelected(item: Item): void {
-        this.props.apiTodoUserProfileUpdateTodoVisibility(item.value);
+    private onTodoVisibilitySelected(todoVisibility: TodoVisibility): void {
+        this.closeVisibilitySelectionPanel();
+        this.props.apiTodoUserProfileUpdateTodoVisibility(todoVisibility);
     }
 
     private onUserNamePressed() {
@@ -107,12 +170,12 @@ export default connect(selectProps, {
 })(SettingsScreen);
 
 const styles = StyleSheet.create({
-    logoutButton: {
-        backgroundColor: 'red'
-    },
-    visibilityDropDownButton: {
-        width: 120,
-        borderBottomWidth: 0,
-        alignItems: 'flex-end'
+    visibilityButton: {
+        width: 180,
+        height: 48,
+        backgroundColor: '#FFFFFFFF',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });

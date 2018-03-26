@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-    Alert, FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View
+    Alert, FlatList, ListRenderItemInfo, Modal, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View
 } from 'react-native';
 import { TodoItem, TodoItemGroup, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
@@ -14,25 +14,53 @@ export interface Props {
 }
 
 interface State {
+    filterTodoItemGroup: TodoItemGroup | null;
+    showFilterPanel: boolean;
+    todoCategoryCount: number;
     todoTotalCount: number;
     todoOngoingCount: number;
     todoCompletedCount: number;
     todoDiscardedCount: number;
     todoProgressRatio: string;
 }
-const initialState: State = {
-    todoTotalCount: 0,
-    todoOngoingCount: 0,
-    todoCompletedCount: 0,
-    todoDiscardedCount: 0,
-    todoProgressRatio: '0'
-};
 
 export default class TodoListView extends React.Component<Props, State> {
-    private static renderCategory(category?: string) {
+    private static renderCategory(todoItemList: TodoItem[], category?: string) {
+        let ongoingCount = 0;
+        let completeCount = 0;
+        let discardCount = 0;
+        if (todoItemList) {
+            todoItemList.forEach((todoItem: TodoItem) => {
+                switch (todoItem.status) {
+                    case TodoStatus.Ongoing:
+                        return ongoingCount++;
+                    case TodoStatus.Completed:
+                        return completeCount++;
+                    case TodoStatus.Discard:
+                        return discardCount++;
+                    default:
+                        return;
+                }
+            });
+        }
+        const todoCount = ongoingCount + completeCount + discardCount;
+
         return (
             <View style={[styles.category]}>
                 <Text style={styles.categoryText}>{category}</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={styles.categoryText}>
+                        共
+                        <Text style={styles.categoryValueText}>{todoCount}</Text>
+                        个计划,
+                        <Text style={styles.categoryValueText}>{ongoingCount}</Text>
+                        进行中,
+                        <Text style={styles.categoryValueText}>{completeCount}</Text>
+                        已完成,
+                        <Text style={styles.categoryValueText}>{discardCount}</Text>
+                        已放弃
+                    </Text>
+                </View>
             </View>
         );
     }
@@ -55,7 +83,20 @@ export default class TodoListView extends React.Component<Props, State> {
         this.renderTodoItemGroup = this.renderTodoItemGroup.bind(this);
         this.renderTodoItem = this.renderTodoItem.bind(this);
         this.onLongPress = this.onLongPress.bind(this);
+        this.showFilterPanel = this.showFilterPanel.bind(this);
+        this.closeFilterPanel = this.closeFilterPanel.bind(this);
+        this.renderFilterCategory = this.renderFilterCategory.bind(this);
 
+        const initialState: State = {
+            filterTodoItemGroup: null,
+            showFilterPanel: false,
+            todoCategoryCount: 0,
+            todoTotalCount: 0,
+            todoOngoingCount: 0,
+            todoCompletedCount: 0,
+            todoDiscardedCount: 0,
+            todoProgressRatio: '0'
+        };
         this.setState(initialState);
     }
 
@@ -68,11 +109,14 @@ export default class TodoListView extends React.Component<Props, State> {
     }
 
     public render() {
+        const {filterTodoItemGroup} = this.state;
+        const items = filterTodoItemGroup ? [filterTodoItemGroup] : this.props.todoListByCategory;
+
         return (
-            <View>
+            <View style={[commonStyles.screen]}>
                 {this.renderSummary()}
                 <FlatList
-                    data={this.props.todoListByCategory}
+                    data={items}
                     renderItem={this.renderTodoItemGroup}
                     keyExtractor={TodoListView.getItemGroupKey}
                     ItemSeparatorComponent={TodoListView.renderSeparatorLine}/>
@@ -83,6 +127,7 @@ export default class TodoListView extends React.Component<Props, State> {
     private updateSummary(todoListByCategory: TodoItemGroup[]) {
         if (!todoListByCategory) {
             return this.setState({
+                todoCategoryCount: 0,
                 todoTotalCount: 0,
                 todoOngoingCount: 0,
                 todoCompletedCount: 0,
@@ -91,6 +136,7 @@ export default class TodoListView extends React.Component<Props, State> {
             });
         }
 
+        const todoCategoryCount = todoListByCategory.length;
         let todoOngoingCount = 0;
         let todoCompletedCount = 0;
         let todoDiscardedCount = 0;
@@ -112,9 +158,11 @@ export default class TodoListView extends React.Component<Props, State> {
             }
         });
         const todoTotalCount = todoOngoingCount + todoCompletedCount + todoDiscardedCount;
-        const todoProgressRatio = ((todoTotalCount - todoOngoingCount) * 100 / todoTotalCount).toFixed(2);
+        const todoProgressRatio = todoTotalCount === 0
+            ? '0' : ((todoTotalCount - todoOngoingCount) * 100 / todoTotalCount).toFixed(2);
 
         this.setState({
+            todoCategoryCount,
             todoTotalCount,
             todoOngoingCount,
             todoCompletedCount,
@@ -125,6 +173,7 @@ export default class TodoListView extends React.Component<Props, State> {
 
     private renderSummary() {
         const {
+            todoCategoryCount,
             todoTotalCount,
             todoOngoingCount,
             todoDiscardedCount,
@@ -136,36 +185,137 @@ export default class TodoListView extends React.Component<Props, State> {
             <View style={[commonStyles.flexRowSpaceBetween, styles.summary]}>
                 <View style={[{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start'}]}>
                     <View style={[{flexDirection: 'row', height: 24, justifyContent: 'center', alignItems: 'center'}]}>
-                        <Text style={styles.summaryText}>共</Text>
-                        <Text style={styles.summaryValueText}>{todoTotalCount}</Text>
-                        <Text style={styles.summaryText}>个计划，完成进度：</Text>
-                        <Text style={styles.summaryValueText}>{todoProgressRatio}%</Text>
+                        <Text style={styles.summaryText}>
+                            <Text style={styles.summaryValueText}>{todoCategoryCount}</Text>
+                            个分类共
+                            <Text style={styles.summaryValueText}>{todoTotalCount}</Text>
+                            个计划，完成进度：
+                            <Text style={styles.summaryValueText}>{todoProgressRatio}%</Text>
+                        </Text>
                     </View>
                     <View style={[{flexDirection: 'row', height: 24, justifyContent: 'center', alignItems: 'center'}]}>
-                        <Text style={styles.summaryValueText}>{todoOngoingCount}</Text>
-                        <Text style={styles.summaryText}>个进行中，</Text>
-                        <Text style={styles.summaryValueText}>{todoCompletedCount}</Text>
-                        <Text style={styles.summaryText}>个已完成，</Text>
-                        <Text style={styles.summaryValueText}>{todoDiscardedCount}</Text>
-                        <Text style={styles.summaryText}>个已放弃</Text>
+                        <Text style={styles.summaryText}>
+                            <Text style={styles.summaryValueText}>{todoOngoingCount}</Text>
+                            个进行中，
+                            <Text style={styles.summaryValueText}>{todoCompletedCount}</Text>
+                            个已完成，
+                            <Text style={styles.summaryValueText}>{todoDiscardedCount}</Text>
+                            个已放弃
+                        </Text>
                     </View>
                 </View>
-                <View>
-                    <Text style={styles.summaryText}>筛选</Text>
-                </View>
+                {this.renderFilterButton()}
             </View>
         );
     }
 
+    private renderFilterButton() {
+        const color = this.state.filterTodoItemGroup ? '#ff8800' : '#fff';
+
+        return (
+            <TouchableOpacity
+                style={{
+                    width: 80,
+                    height: 48,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}
+                onPress={this.showFilterPanel}
+            >
+                <Text style={{fontSize: 14, color}}>筛选</Text>
+                {this.renderFilterPanel()}
+            </TouchableOpacity>
+        );
+    }
+
+    private renderFilterPanel() {
+        const {todoTotalCount} = this.state;
+
+        return (
+            <Modal
+                onRequestClose={this.closeFilterPanel}
+                visible={this.state.showFilterPanel}
+                transparent={true}
+            >
+                <TouchableOpacity
+                    style={[{
+                        backgroundColor: '#00000050',
+                        flex: 1,
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }]}
+                    onPress={this.closeFilterPanel}
+                >
+                    <TouchableHighlight
+                        underlayColor={'#eee'}
+                        style={[{marginTop: 96}]}
+                        onPress={() => {
+                            this.onFilterCategorySelect(null);
+                        }}
+                    >
+                        <View style={styles.filterCategoryButton}>
+                            <Text style={[commonStyles.text]}>所有分类</Text>
+                            <Text style={[commonStyles.text]}>{todoTotalCount}个计划</Text>
+                        </View>
+                    </TouchableHighlight>
+                    <View style={commonStyles.line}/>
+                    <FlatList
+                        data={this.props.todoListByCategory}
+                        renderItem={this.renderFilterCategory}
+                        keyExtractor={(todoItemGroup: TodoItemGroup) => todoItemGroup.category}
+                        ItemSeparatorComponent={TodoListView.renderSeparatorLine}
+                    />
+                </TouchableOpacity>
+            </Modal>
+        );
+    }
+
+    private renderFilterCategory(info: ListRenderItemInfo<TodoItemGroup>) {
+        const {category, todoItemList} = info.item;
+        const todoCount = todoItemList ? todoItemList.length : 0;
+
+        return (
+            <TouchableHighlight
+                underlayColor={'#eee'}
+                onPress={() => {
+                    this.onFilterCategorySelect(info.item);
+                }}
+            >
+                <View style={styles.filterCategoryButton}>
+                    <Text style={[commonStyles.text]}>{category}</Text>
+                    <Text style={[commonStyles.text]}>{todoCount}个计划</Text>
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    private onFilterCategorySelect(todoItemGroup: TodoItemGroup| null) {
+        this.closeFilterPanel();
+        this.setState({filterTodoItemGroup: todoItemGroup});
+    }
+
+    private showFilterPanel() {
+        this.setState({
+            showFilterPanel: true
+        });
+    }
+
+    private closeFilterPanel() {
+        this.setState({
+            showFilterPanel: false
+        });
+    }
+
     private renderTodoItemGroup(info: ListRenderItemInfo<TodoItemGroup>) {
-        const data = info.item.todoItemList;
+        const {todoItemList, category} = info.item;
 
         return (
             <View>
-                {TodoListView.renderCategory(info.item.category)}
-                {data ?
+                {TodoListView.renderCategory(todoItemList, category)}
+                {todoItemList ?
                     <FlatList
-                        data={data}
+                        data={todoItemList}
                         renderItem={this.renderTodoItem}
                         keyExtractor={TodoListView.getItemKey}
                         ItemSeparatorComponent={TodoListView.renderSeparatorLine}/>
@@ -223,25 +373,40 @@ export default class TodoListView extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
     category: {
+        flexDirection: 'row',
         height: 24,
         paddingHorizontal: 8,
         backgroundColor: '#eee',
-        justifyContent: 'center'
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     categoryText: {
         fontSize: 12,
         color: '#555'
     },
+    categoryValueText: {
+        fontSize: 12,
+        color: '#FF8800',
+    },
     summary: {
         paddingHorizontal: 8,
-        backgroundColor: '#884400',
+        backgroundColor: '#332200',
     },
     summaryText: {
         color: '#ffffff',
         fontSize: 12
     },
     summaryValueText: {
-        color: '#FF8800',
+        color: '#88FF00',
         fontSize: 12
+    },
+    filterCategoryButton: {
+        height: 48,
+        width: 280,
+        backgroundColor: '#FFFFFFFF',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16
     }
 });
