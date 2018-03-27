@@ -4,7 +4,6 @@ import { NavigationScreenProps, StackNavigator } from 'react-navigation';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import TodoAddScreen from './TodoAddScreen';
 import TodoDetailScreen from './TodoDetailScreen';
-import TodoEditCategoryScreen from './TodoEditCategoryScreen';
 import TodoListScreen from './TodoListScreen';
 const mainTabIconTodo = require('../../resource/main_todo_tab_icon.png');
 
@@ -49,17 +48,6 @@ export const TodoScreenStack = StackNavigator({
         navigationOptions: () => ({
             headerTintColor: defaultHeaderTintColor,
             headerTitle: '计划详情',
-            headerTitleStyle: [commonStyles.stackHeaderText],
-            headerStyle: [commonStyles.stackHeader],
-            tabBarVisible: false,
-            swipeEnabled: false
-        })
-    },
-    TodoEditCategory: {
-        screen: TodoEditCategoryScreen,
-        navigationOptions: () => ({
-            headerTintColor: defaultHeaderTintColor,
-            headerTitle: '选择或新建分类',
             headerTitleStyle: [commonStyles.stackHeaderText],
             headerStyle: [commonStyles.stackHeader],
             tabBarVisible: false,

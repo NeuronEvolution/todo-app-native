@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
     findNodeHandle,
     FlatList, ListRenderItemInfo, Modal, StyleProp, StyleSheet, Text, TextInput, TextInputProperties, TextStyle,
+    TouchableHighlight,
     TouchableOpacity, UIManager, View,
 } from 'react-native';
 import { commonStyles } from '../commonStyles';
@@ -46,7 +47,12 @@ export default class AutoComplete extends React.Component<Props, State> {
     }
 
     public render() {
-        return this.state.showModal ? this.renderWithModal() : this.renderNormal();
+        return (
+            <View>
+                {!this.state.showModal && this.renderNormal()}
+                {this.renderWithModal()}
+            </View>
+        );
     }
 
     private renderNormal(): JSX.Element {
@@ -71,8 +77,13 @@ export default class AutoComplete extends React.Component<Props, State> {
             <Modal
                 onRequestClose={this.closeModal}
                 transparent={true}
+                visible={this.state.showModal}
             >
-                <TouchableOpacity style={[{flex: 1}]} onPress={this.closeModal}>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    style={[{flex: 1}]}
+                    onPress={this.closeModal}
+                >
                     <TextInput
                         underlineColorAndroid={'transparent'}
                         autoFocus={true}
@@ -122,7 +133,7 @@ export default class AutoComplete extends React.Component<Props, State> {
 
     private renderItem(info: ListRenderItemInfo<string>): JSX.Element {
         return (
-            <TouchableOpacity
+            <TouchableHighlight underlayColor={'#eee'}
                 style={[
                     styles.defaultItem,
                     {
@@ -136,7 +147,7 @@ export default class AutoComplete extends React.Component<Props, State> {
                 <Text style={[styles.defaultItemText]}>
                     {info.item}
                 </Text>
-            </TouchableOpacity>
+            </TouchableHighlight>
         );
     }
 

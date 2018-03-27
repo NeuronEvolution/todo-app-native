@@ -4,6 +4,7 @@ import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { fastClick } from '../_common/fastClick';
+import AutoComplete from '../_react_native_common/AutoComplete';
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
@@ -56,32 +57,17 @@ class TodoAddScreen extends React.Component<Props, State> {
     }
 
     private renderCategory() {
-        const {category} = this.state;
-        const text = category === ''
-            ? '点击选择或新建分类' : category;
-        const color = category === '' ? '#ccc' : '#444';
-
         return (
             <View style={[commonStyles.flexRowLeft]}>
                 <Text style={[styles.nameText]}>分类</Text>
-                <TouchableOpacity
-                    style={[
-                        styles.contentRight,
-                        {
-                            alignItems: 'flex-start',
-                            height: 48,
-                            flex: 1,
-                            justifyContent: 'center',
-                            borderBottomWidth: 1,
-                            borderBottomColor: '#eee'
-                        }
-                    ]}
-                    onPress={this.onCategoryFocus}
-                >
-                    <Text
-                        style={[commonStyles.text, {color}]}
-                    >{text}</Text>
-                </TouchableOpacity>
+                <AutoComplete
+                    style={[commonStyles.textInput, styles.contentRight]}
+                    value={this.state.category}
+                    placeholder={'最多' + GlobalConstants.MAX_CATEGORY_NAME_LENGTH + '个字符'}
+                    onChangeText={this.onCategoryChanged}
+                    items={this.props.categoryNameList}
+                    onFocus={this.onCategoryFocused}
+                />
             </View>
         );
     }

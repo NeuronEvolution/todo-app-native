@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
@@ -38,7 +38,7 @@ class SettingsScreen extends React.Component<Props, State> {
 
     public render() {
         return (
-            <View style={[{flex: 1, backgroundColor: '#eee'}]}>
+            <View style={[styles.screen]}>
                 {this.renderAccountSettings()}
                 <View style={[commonStyles.line]}/>
                 {this.renderNameSetting()}
@@ -63,16 +63,15 @@ class SettingsScreen extends React.Component<Props, State> {
 
     private renderAccountSettings() {
         return (
-            <TouchableOpacity
-                style={[commonStyles.flexRowLeft, {
-                    backgroundColor: '#fff',
-                    marginTop: 24,
-                    paddingHorizontal: 8
-                }]}
+            <TouchableHighlight
+                underlayColor={underlayColor}
+                style={[styles.settingItem, styles.blank]}
                 onPress={this.onAccountSettingsPressed}
             >
-                <Text style={[commonStyles.text]}>帐号与安全</Text>
-            </TouchableOpacity>
+                <View style={[commonStyles.flexRowSpaceBetween]}>
+                    <Text style={[commonStyles.text]}>帐号与安全</Text>
+                </View>
+            </TouchableHighlight>
         );
     }
 
@@ -80,58 +79,62 @@ class SettingsScreen extends React.Component<Props, State> {
         const userName = this.props.userProfile.userName;
 
         return (
-            <TouchableOpacity
-                style={[commonStyles.flexRowSpaceBetween, {
-                    backgroundColor: '#fff',
-                    paddingHorizontal: 8
-                }]}
-                onPress={this.onUserNamePressed}>
-                <Text style={[commonStyles.text]}>你的名字</Text>
-                <Text style={[commonStyles.text]}>{userName}</Text>
-            </TouchableOpacity>
+            <TouchableHighlight
+                underlayColor={underlayColor}
+                style={[styles.settingItem]}
+                onPress={this.onUserNamePressed}
+            >
+                <View style={[commonStyles.flexRowSpaceBetween]}>
+                    <Text style={[commonStyles.text]}>你的名字</Text>
+                    <Text style={[commonStyles.text]}>{userName}</Text>
+                </View>
+            </TouchableHighlight>
         );
     }
 
     private renderVisibilitySetting() {
+        const {userProfile} = this.props;
+        const todoVisibility = getTodoVisibilityName(userProfile && userProfile.todoVisibility);
+
         return (
-            <TouchableOpacity
-                style={[commonStyles.flexRowSpaceBetween, {
-                    backgroundColor: '#fff',
-                    marginTop: 24,
-                    paddingHorizontal: 8
-                }]}
+            <TouchableHighlight
+                underlayColor={underlayColor}
+                style={[styles.settingItem, styles.blank]}
                 onPress={this.showVisibilitySelectionPanel}
             >
-                <Text style={[commonStyles.text]}>计划是否公开</Text>
-                <Text style={[commonStyles.text]}>{getTodoVisibilityName(this.props.userProfile.todoVisibility)}</Text>
-            </TouchableOpacity>
+                <View style={[commonStyles.flexRowSpaceBetween]}>
+                    <Text style={[commonStyles.text]}>计划是否公开</Text>
+                    <Text style={[commonStyles.text]}>{todoVisibility}</Text>
+                </View>
+            </TouchableHighlight>
         );
     }
 
     private renderAbout() {
         return (
-            <TouchableOpacity
-                style={[commonStyles.flexRowSpaceBetween, {
-                    backgroundColor: '#fff',
-                    paddingHorizontal: 8
-                }]}
-                onPress={this.onAboutPressed}>
-                <Text style={[commonStyles.text]}>关于火星计划</Text>
-            </TouchableOpacity>
+            <TouchableHighlight
+                underlayColor={underlayColor}
+                style={[styles.settingItem]}
+                onPress={this.onAboutPressed}
+            >
+                <View style={[commonStyles.flexRowSpaceBetween]}>
+                    <Text style={[commonStyles.text]}>关于火星计划</Text>
+                </View>
+            </TouchableHighlight>
         );
     }
 
     private renderHelp() {
         return (
-            <TouchableOpacity
-                style={[commonStyles.flexRowSpaceBetween, {
-                    backgroundColor: '#fff',
-                    paddingHorizontal: 8,
-                    marginTop: 24
-                }]}
-                onPress={this.onHelpPressed}>
-                <Text style={[commonStyles.text]}>帮助与反馈</Text>
-            </TouchableOpacity>
+            <TouchableHighlight
+                underlayColor={underlayColor}
+                style={[styles.settingItem, styles.blank]}
+                onPress={this.onHelpPressed}
+            >
+                <View style={[commonStyles.flexRowSpaceBetween]}>
+                    <Text style={[commonStyles.text]}>帮助与反馈</Text>
+                </View>
+            </TouchableHighlight>
         );
     }
 
@@ -172,3 +175,18 @@ export default connect(selectProps, {
     onGlobalToast,
     apiTodoUserProfileUpdateTodoVisibility
 })(SettingsScreen);
+
+const underlayColor = '#bbb';
+const styles = StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: '#eee'
+    },
+    settingItem: {
+        backgroundColor: '#fff',
+        paddingHorizontal: 8
+    },
+    blank: {
+      marginTop: 24
+    }
+});

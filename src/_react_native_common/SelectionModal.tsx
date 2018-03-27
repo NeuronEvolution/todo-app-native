@@ -27,9 +27,11 @@ export default class SelectionModal extends React.Component<Props> {
                    visible={this.props.visible}
                    transparent={true}>
                 <TouchableOpacity
+                    activeOpacity={1}
                     style={[styles.modal]}
                     onPress={this.props.onClose}>
                     <FlatList
+                        contentContainerStyle={{backgroundColor: 'red'}}
                         data={this.props.items}
                         renderItem={this.renderSelectionItem}
                         keyExtractor={(item: SelectionItem) => item.label}

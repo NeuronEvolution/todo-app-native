@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-    Alert, FlatList, ListRenderItemInfo, Modal, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View
+    Alert, Dimensions, FlatList, ListRenderItemInfo, Modal, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View
 } from 'react-native';
 import { TodoItem, TodoItemGroup, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
@@ -262,25 +262,27 @@ export default class TodoListView extends React.Component<Props, State> {
                     }]}
                     onPress={this.closeFilterPanel}
                 >
-                    <TouchableHighlight
-                        underlayColor={'#eee'}
-                        onPress={() => {
-                            this.onFilterCategorySelect(null);
-                        }}
-                    >
-                        <View
-                            style={[styles.filterCategoryButton]}>
-                            <Text style={[commonStyles.text]}>所有分类</Text>
-                            <Text style={[commonStyles.text]}>{todoTotalCount}个计划</Text>
-                        </View>
-                    </TouchableHighlight>
-                    <View style={commonStyles.line}/>
-                    <FlatList
-                        data={this.props.todoListByCategory}
-                        renderItem={this.renderFilterCategory}
-                        keyExtractor={(todoItemGroup: TodoItemGroup) => todoItemGroup.category}
-                        ItemSeparatorComponent={TodoListView.renderSeparatorLine}
-                    />
+                    <View>
+                        <TouchableHighlight
+                            underlayColor={'#eee'}
+                            onPress={() => {
+                                this.onFilterCategorySelect(null);
+                            }}
+                        >
+                            <View
+                                style={[styles.filterCategoryButton]}>
+                                <Text style={[commonStyles.text]}>选择分类</Text>
+                                <Text style={[commonStyles.text, {color: '#0088FF'}]}>清除筛选</Text>
+                            </View>
+                        </TouchableHighlight>
+                        <View style={commonStyles.line}/>
+                        <FlatList
+                            data={this.props.todoListByCategory}
+                            renderItem={this.renderFilterCategory}
+                            keyExtractor={(todoItemGroup: TodoItemGroup) => todoItemGroup.category}
+                            ItemSeparatorComponent={TodoListView.renderSeparatorLine}
+                        />
+                    </View>
                 </TouchableOpacity>
             </Modal>
         );
@@ -290,11 +292,11 @@ export default class TodoListView extends React.Component<Props, State> {
         const {category, todoItemList} = info.item;
         const todoCount = todoItemList ? todoItemList.length : 0;
 
-        const backgroundColor = this.state.filterTodoItemGroup === info.item ? '#ffffeeFF' : '#FFFFFFFF';
+        const backgroundColor = this.state.filterTodoItemGroup === info.item ? '#ffffddFF' : '#FFFFFFFF';
 
         return (
             <TouchableHighlight
-                underlayColor={'#eee'}
+                underlayColor={'#ddddddFF'}
                 onPress={() => {
                     this.onFilterCategorySelect(info.item);
                 }}
@@ -419,7 +421,7 @@ const styles = StyleSheet.create({
     },
     filterCategoryButton: {
         height: 48,
-        width: 280,
+        width: Dimensions.get('window').width - 48,
         backgroundColor: '#FFFFFFFF',
         flexDirection: 'row',
         justifyContent: 'space-between',
