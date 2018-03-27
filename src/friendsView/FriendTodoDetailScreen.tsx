@@ -15,7 +15,8 @@ const navigationOptionsFunc
         headerTitle: userName + '的计划',
         headerTitleStyle: [commonStyles.stackHeaderText],
         tabBarVisible: false,
-        headerStyle: [commonStyles.stackHeader]
+        headerStyle: [commonStyles.stackHeader],
+        swipeEnabled: false
     };
 };
 

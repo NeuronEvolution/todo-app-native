@@ -65,7 +65,7 @@ export default class DropdownList extends React.Component<Props, State> {
                         styles.defaultButton,
                         this.props.buttonStyle
                     ]}
-                    onPressIn={this.openModal}>
+                    onPress={this.openModal}>
                     <View pointerEvents={'none'}>
                         <Text style={[styles.defaultButtonText, this.props.buttonTextStyle]}>
                             {this.state.selectedItem ? this.state.selectedItem.label : null}
@@ -125,7 +125,7 @@ export default class DropdownList extends React.Component<Props, State> {
                     {width: this.state.width - 2 * defaultBorderWidth},
                     styles.defaultItem
                 ]}
-                onPressIn={() => {
+                onPress={() => {
                     this.onSelect(info.index, info.item);
                 }}
             >

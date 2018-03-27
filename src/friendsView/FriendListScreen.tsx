@@ -3,9 +3,9 @@ import { FlatList, ListRenderItemInfo, Text, TouchableOpacity, View } from 'reac
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import { FriendInfo, TodoVisibility } from '../api/todo-private/gen';
+import { FriendInfo, getFriendsListParams, TodoVisibility } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
-import { FriendsListWithPage, RootState } from '../redux';
+import { apiTodoGetFriendsList, FriendsListWithPage, RootState } from '../redux';
 import ToastView, { onGlobalToast } from '../ToastView';
 import { getTodoVisibilityName } from '../utils';
 
@@ -13,6 +13,7 @@ export interface Props extends NavigationScreenProps<void> {
     userID: string;
     friendList: FriendsListWithPage;
     onGlobalToast: (text: string) => Dispatchable;
+    apiTodoGetFriendsList: (p: getFriendsListParams) => Dispatchable;
 }
 
 class FriendListScreen extends React.Component<Props> {
@@ -45,6 +46,7 @@ class FriendListScreen extends React.Component<Props> {
 
     public componentWillMount() {
         this.renderFriendInfo = this.renderFriendInfo.bind(this);
+        this.props.apiTodoGetFriendsList({pageToken: '', pageSize: 40});
     }
 
     public render() {
@@ -110,5 +112,6 @@ const selectProps = (rootState: RootState) => ({
 });
 
 export default connect(selectProps, {
-    onGlobalToast
+    onGlobalToast,
+    apiTodoGetFriendsList
 })(FriendListScreen);

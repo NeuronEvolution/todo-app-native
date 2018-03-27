@@ -33,7 +33,7 @@ export function getTodoVisibilityName(p?: TodoVisibility): string {
         case TodoVisibility.Private:
             return '保密的';
         case TodoVisibility.Friend:
-            return '仅朋友可见';
+            return '好友可见';
         case TodoVisibility.Public:
             return '公开的';
         default:

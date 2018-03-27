@@ -3,12 +3,12 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { checkPhone } from '../_common/common';
+import { countdown } from '../_common/countdown';
 import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiAccountResetPassword, apiAccountSmsCode } from '../redux_login';
 import ToastView, { onGlobalToast } from '../ToastView';
-import {checkPhone} from "../_common/common";
-import {countdown} from "../_common/countdown";
 
 export interface Props extends NavigationScreenProps<any> {
     onGlobalToast: (text: string) => Dispatchable;

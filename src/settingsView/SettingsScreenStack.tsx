@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Image, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
+import AccountSettingsScreen from './AccountSettingsScreen';
 import SettingsScreen from './SettingsScreen';
 import UserNameScreen from './UserNameScreen';
-import AccountSettingsScreen from "./AccountSettingsScreen";
 
 const mainTabIconSettings = require('../../resource/main_settings_tab_icon.png');
 
@@ -30,6 +30,7 @@ export const SettingsScreenStack = StackNavigator({
             headerTitleStyle: [commonStyles.stackHeaderText],
             tabBarVisible: false,
             headerStyle: [commonStyles.stackHeader],
+            swipeEnabled: false
         }
     },
     UserName: {
@@ -40,6 +41,7 @@ export const SettingsScreenStack = StackNavigator({
             headerTitleStyle: [commonStyles.stackHeaderText],
             tabBarVisible: false,
             headerStyle: [commonStyles.stackHeader],
+            swipeEnabled: false
         }
     }
 });

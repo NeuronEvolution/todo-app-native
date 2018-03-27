@@ -3,10 +3,9 @@ import { StyleSheet, Text, TextInput, TouchableOpacity , View } from 'react-nati
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import AutoComplete from '../_react_native_common/AutoComplete';
+import SelectionModal, { SelectionItem } from '../_react_native_common/SelectionModal';
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
-import SelectionModal, { SelectionItem } from '../component/SelectionModal';
 import * as GlobalConstants from '../GlobalConstants';
 import {
     apiTodoGetCategoryNameList, apiTodoGetTodoListByCategory, apiTodoUpdate,
@@ -47,6 +46,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
         this.showStatusSelection = this.showStatusSelection.bind(this);
         this.closeStatusSelection = this.closeStatusSelection.bind(this);
         this.onStatusSelected = this.onStatusSelected.bind(this);
+        this.onCategoryFocus = this.onCategoryFocus.bind(this);
 
         const todoItem: TodoItem = this.props.navigation.state.params.todoItem;
         const {todoId, category, title, desc, status, priority} = todoItem;
@@ -75,18 +75,32 @@ class TodoDetailScreen extends React.Component<Props, State> {
     }
 
     private renderCategory() {
-        const category = this.state.todoItemMutate.category;
+        const {category} = this.state.todoItemMutate;
+        const text = category === ''
+            ? '点击选择或新建分类' : category;
+        const color = category === '' ? '#ccc' : '#444';
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
                 <Text style={[styles.nameText]}>分类</Text>
-                <AutoComplete
-                    style={[commonStyles.textInput, styles.contentRight]}
-                    value={category}
-                    placeholder={'最多' + GlobalConstants.MAX_CATEGORY_NAME_LENGTH + '个字符'}
-                    onChangeText={this.onCategoryChanged}
-                    items={this.props.categoryNameList}
-                    onFocus={this.onCategoryFocused}/>
+                <TouchableOpacity
+                    style={[
+                        styles.contentRight,
+                        {
+                            alignItems: 'flex-start',
+                            height: 48,
+                            flex: 1,
+                            justifyContent: 'center',
+                            borderBottomWidth: 1,
+                            borderBottomColor: '#eee'
+                        }
+                    ]}
+                    onPress={this.onCategoryFocus}
+                >
+                    <Text
+                        style={[commonStyles.text, {color}]}
+                    >{text}</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -130,7 +144,15 @@ class TodoDetailScreen extends React.Component<Props, State> {
             <View style={[commonStyles.flexRowLeft]}>
                 <Text style={[styles.nameText]}>状态</Text>
                 <TouchableOpacity
-                    style={{width: 80, alignItems: 'flex-start'}}
+                    style={[
+                        styles.contentRight,
+                        {
+                            alignItems: 'flex-start',
+                            height: 48,
+                            flex: 1,
+                            justifyContent: 'center'
+                        }
+                    ]}
                     onPress={this.showStatusSelection}
                 >
                     <Text style={[commonStyles.text]}>{getTodoStatusName(status)}</Text>
@@ -162,6 +184,10 @@ class TodoDetailScreen extends React.Component<Props, State> {
                 </TouchableOpacity>
             </View>
         );
+    }
+
+    private onCategoryFocus() {
+        this.props.navigation.navigate('TodoEditCategory');
     }
 
     private showStatusSelection() {

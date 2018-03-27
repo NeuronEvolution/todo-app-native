@@ -51,7 +51,7 @@ export const apiTodoUserProfileUpdateTodoVisibility = (visibility: TodoVisibilit
     return apiCall(() => {
         return todoPrivateApi.updateUserProfileTodoVisibility(visibility).then(() => {
             dispatch(apiTodoGetUserProfile());
-            dispatch(onGlobalToast('已更新'));
+            dispatch(onGlobalToast('已保存'));
         });
     });
 };

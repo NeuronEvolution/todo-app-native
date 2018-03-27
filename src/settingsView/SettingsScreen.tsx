@@ -3,15 +3,16 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import SelectionModal, { SelectionItem } from '../_react_native_common/SelectionModal';
 import { TodoVisibility, UserProfile } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
-import VisibilitySelectionModal from '../component/VisibilitySelectionModal';
 import { apiTodoUserProfileUpdateTodoVisibility, RootState } from '../redux';
-import ToastView from '../ToastView';
+import ToastView, { onGlobalToast } from '../ToastView';
 import { getTodoVisibilityName } from '../utils';
 
 export interface Props extends NavigationScreenProps<void> {
     userProfile: UserProfile;
+    onGlobalToast: (text: string) => Dispatchable;
     apiTodoUserProfileUpdateTodoVisibility: (visibility: TodoVisibility) => Dispatchable;
 }
 
@@ -26,6 +27,8 @@ class SettingsScreen extends React.Component<Props, State> {
         this.onAccountSettingsPressed = this.onAccountSettingsPressed.bind(this);
         this.showVisibilitySelectionPanel = this.showVisibilitySelectionPanel.bind(this);
         this.closeVisibilitySelectionPanel = this.closeVisibilitySelectionPanel.bind(this);
+        this.onAboutPressed = this.onAboutPressed.bind(this);
+        this.onHelpPressed = this.onHelpPressed.bind(this);
 
         const initialState: State = {
             showVisibilitySelectionPanel: false
@@ -40,7 +43,20 @@ class SettingsScreen extends React.Component<Props, State> {
                 <View style={[commonStyles.line]}/>
                 {this.renderNameSetting()}
                 {this.renderVisibilitySetting()}
+                {this.renderHelp()}
+                <View style={[commonStyles.line]}/>
+                {this.renderAbout()}
                 <ToastView/>
+                <SelectionModal
+                    items={[
+                        {label: getTodoVisibilityName(TodoVisibility.Public), value: TodoVisibility.Public},
+                        {label: getTodoVisibilityName(TodoVisibility.Friend), value: TodoVisibility.Friend},
+                        {label: getTodoVisibilityName(TodoVisibility.Private), value: TodoVisibility.Private}
+                    ]}
+                    visible={this.state.showVisibilitySelectionPanel}
+                    onClose={this.closeVisibilitySelectionPanel}
+                    onSelect={this.onTodoVisibilitySelected}
+                />
             </View>
         );
     }
@@ -53,9 +69,9 @@ class SettingsScreen extends React.Component<Props, State> {
                     marginTop: 24,
                     paddingHorizontal: 8
                 }]}
-                onPressIn={this.onAccountSettingsPressed}
+                onPress={this.onAccountSettingsPressed}
             >
-                <Text style={[commonStyles.text]}>帐号</Text>
+                <Text style={[commonStyles.text]}>帐号与安全</Text>
             </TouchableOpacity>
         );
     }
@@ -69,7 +85,7 @@ class SettingsScreen extends React.Component<Props, State> {
                     backgroundColor: '#fff',
                     paddingHorizontal: 8
                 }]}
-                onPressIn={this.onUserNamePressed}>
+                onPress={this.onUserNamePressed}>
                 <Text style={[commonStyles.text]}>你的名字</Text>
                 <Text style={[commonStyles.text]}>{userName}</Text>
             </TouchableOpacity>
@@ -88,11 +104,33 @@ class SettingsScreen extends React.Component<Props, State> {
             >
                 <Text style={[commonStyles.text]}>计划是否公开</Text>
                 <Text style={[commonStyles.text]}>{getTodoVisibilityName(this.props.userProfile.todoVisibility)}</Text>
-                <VisibilitySelectionModal
-                    visible={this.state.showVisibilitySelectionPanel}
-                    onClose={this.closeVisibilitySelectionPanel}
-                    onSelect={this.onTodoVisibilitySelected}
-                />
+            </TouchableOpacity>
+        );
+    }
+
+    private renderAbout() {
+        return (
+            <TouchableOpacity
+                style={[commonStyles.flexRowSpaceBetween, {
+                    backgroundColor: '#fff',
+                    paddingHorizontal: 8
+                }]}
+                onPress={this.onAboutPressed}>
+                <Text style={[commonStyles.text]}>关于火星计划</Text>
+            </TouchableOpacity>
+        );
+    }
+
+    private renderHelp() {
+        return (
+            <TouchableOpacity
+                style={[commonStyles.flexRowSpaceBetween, {
+                    backgroundColor: '#fff',
+                    paddingHorizontal: 8,
+                    marginTop: 24
+                }]}
+                onPress={this.onHelpPressed}>
+                <Text style={[commonStyles.text]}>帮助与反馈</Text>
             </TouchableOpacity>
         );
     }
@@ -105,8 +143,8 @@ class SettingsScreen extends React.Component<Props, State> {
         this.setState({showVisibilitySelectionPanel: false});
     }
 
-    private onTodoVisibilitySelected(todoVisibility: TodoVisibility): void {
-        this.props.apiTodoUserProfileUpdateTodoVisibility(todoVisibility);
+    private onTodoVisibilitySelected(item: SelectionItem): void {
+        this.props.apiTodoUserProfileUpdateTodoVisibility(item.value);
     }
 
     private onAccountSettingsPressed() {
@@ -116,6 +154,14 @@ class SettingsScreen extends React.Component<Props, State> {
     private onUserNamePressed() {
         this.props.navigation.navigate('UserName');
     }
+
+    private onHelpPressed() {
+        this.props.onGlobalToast('功能暂未开放');
+    }
+
+    private onAboutPressed() {
+        this.props.onGlobalToast('功能暂未开放');
+    }
 }
 
 const selectProps = (rootState: RootState) => ({
@@ -123,5 +169,6 @@ const selectProps = (rootState: RootState) => ({
 });
 
 export default connect(selectProps, {
+    onGlobalToast,
     apiTodoUserProfileUpdateTodoVisibility
 })(SettingsScreen);

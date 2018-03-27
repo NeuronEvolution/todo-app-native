@@ -224,7 +224,7 @@ export default class TodoListView extends React.Component<Props, State> {
     }
 
     private renderFilterButton() {
-        const color = this.state.filterTodoItemGroup ? '#ff8888FF' : '#fff';
+        const color = this.state.filterTodoItemGroup ? 'red' : '#fff';
 
         return (
             <TouchableOpacity
@@ -253,14 +253,14 @@ export default class TodoListView extends React.Component<Props, State> {
             >
                 <TouchableOpacity
                     style={[{
-                        backgroundColor: '#00000050',
+                        backgroundColor: '#00000060',
                         flex: 1,
                         flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center',
                         paddingTop: 96
                     }]}
-                    onPressIn={this.closeFilterPanel}
+                    onPress={this.closeFilterPanel}
                 >
                     <TouchableHighlight
                         underlayColor={'#eee'}
@@ -290,7 +290,7 @@ export default class TodoListView extends React.Component<Props, State> {
         const {category, todoItemList} = info.item;
         const todoCount = todoItemList ? todoItemList.length : 0;
 
-        const backgroundColor = this.state.filterTodoItemGroup === info.item ? '#ffffaaFF' : '#FFFFFFFF';
+        const backgroundColor = this.state.filterTodoItemGroup === info.item ? '#ffffeeFF' : '#FFFFFFFF';
 
         return (
             <TouchableHighlight

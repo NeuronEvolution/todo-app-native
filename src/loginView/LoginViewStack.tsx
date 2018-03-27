@@ -20,7 +20,8 @@ export const LoginViewStack = StackNavigator(
                 headerTintColor: defaultHeaderTintColor,
                 title: '注册',
                 headerTitleStyle: [commonStyles.stackHeaderText],
-                headerStyle: [commonStyles.stackHeader]
+                headerStyle: [commonStyles.stackHeader],
+                swipeEnabled: false
             }
         },
         ResetPassword: {
@@ -29,7 +30,8 @@ export const LoginViewStack = StackNavigator(
                 headerTintColor: defaultHeaderTintColor,
                 title: '找回密码',
                 headerTitleStyle: [commonStyles.stackHeaderText],
-                headerStyle: [commonStyles.stackHeader]
+                headerStyle: [commonStyles.stackHeader],
+                swipeEnabled: false
             }
         }
     },

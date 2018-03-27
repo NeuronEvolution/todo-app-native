@@ -11,7 +11,7 @@ export const FriendsScreenStack = StackNavigator({
     FriendList: {
         screen: FriendListScreen,
         navigationOptions: {
-            tabBarLabel: '朋友的计划',
+            tabBarLabel: '好友的计划',
             tabBarIcon: () => (
                 <Image source={mainTabIconFriends}/>
             ),
