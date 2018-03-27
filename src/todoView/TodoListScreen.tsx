@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { getTodoListParams, TodoItem, TodoItemGroup } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
+import TodoListView from '../component/TodoListView';
 import { apiTodoGetTodoListByCategory, apiTodoRemove, RootState } from '../redux';
 import ToastView from '../ToastView';
-import TodoListView from './TodoListView';
 
 export interface Props extends NavigationScreenProps<void> {
     todoListByCategory: TodoItemGroup[];

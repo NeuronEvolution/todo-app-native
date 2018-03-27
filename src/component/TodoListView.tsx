@@ -105,6 +105,20 @@ export default class TodoListView extends React.Component<Props, State> {
         const todoListByCategoryNext = nextProps.todoListByCategory;
         if (todoListByCategoryNext !== todoListByCategoryOld) {
             this.updateSummary(todoListByCategoryNext);
+
+            if (this.state.filterTodoItemGroup) {
+                this.setState({filterTodoItemGroup: null});
+
+                const {category} = this.state.filterTodoItemGroup;
+                if (todoListByCategoryNext) {
+                    for (const todoItemGroup of todoListByCategoryNext) {
+                        if (todoItemGroup.category === category) {
+                            this.setState({filterTodoItemGroup: todoItemGroup});
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -210,7 +224,7 @@ export default class TodoListView extends React.Component<Props, State> {
     }
 
     private renderFilterButton() {
-        const color = this.state.filterTodoItemGroup ? '#ff8800' : '#fff';
+        const color = this.state.filterTodoItemGroup ? '#ff8888FF' : '#fff';
 
         return (
             <TouchableOpacity
@@ -243,18 +257,19 @@ export default class TodoListView extends React.Component<Props, State> {
                         flex: 1,
                         flexDirection: 'column',
                         justifyContent: 'center',
-                        alignItems: 'center'
+                        alignItems: 'center',
+                        paddingTop: 96
                     }]}
-                    onPress={this.closeFilterPanel}
+                    onPressIn={this.closeFilterPanel}
                 >
                     <TouchableHighlight
                         underlayColor={'#eee'}
-                        style={[{marginTop: 96}]}
                         onPress={() => {
                             this.onFilterCategorySelect(null);
                         }}
                     >
-                        <View style={styles.filterCategoryButton}>
+                        <View
+                            style={[styles.filterCategoryButton]}>
                             <Text style={[commonStyles.text]}>所有分类</Text>
                             <Text style={[commonStyles.text]}>{todoTotalCount}个计划</Text>
                         </View>
@@ -275,6 +290,8 @@ export default class TodoListView extends React.Component<Props, State> {
         const {category, todoItemList} = info.item;
         const todoCount = todoItemList ? todoItemList.length : 0;
 
+        const backgroundColor = this.state.filterTodoItemGroup === info.item ? '#ffffaaFF' : '#FFFFFFFF';
+
         return (
             <TouchableHighlight
                 underlayColor={'#eee'}
@@ -282,7 +299,7 @@ export default class TodoListView extends React.Component<Props, State> {
                     this.onFilterCategorySelect(info.item);
                 }}
             >
-                <View style={styles.filterCategoryButton}>
+                <View style={[styles.filterCategoryButton, {backgroundColor}]}>
                     <Text style={[commonStyles.text]}>{category}</Text>
                     <Text style={[commonStyles.text]}>{todoCount}个计划</Text>
                 </View>

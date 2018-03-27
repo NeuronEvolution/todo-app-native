@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import AutoComplete from '../_react_native_common/AutoComplete';
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
@@ -57,7 +58,7 @@ class TodoAddScreen extends React.Component<Props, State> {
     private renderCategory(): JSX.Element {
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>分类</Text>
+                <Text style={[styles.nameText]}>分类</Text>
                 <AutoComplete
                     style={[commonStyles.textInput, styles.contentRight]}
                     value={this.state.category}
@@ -73,7 +74,7 @@ class TodoAddScreen extends React.Component<Props, State> {
     private renderTitle(): JSX.Element {
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>标题</Text>
+                <Text style={[styles.nameText]}>标题</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentRight]}
@@ -88,7 +89,7 @@ class TodoAddScreen extends React.Component<Props, State> {
     private renderDesc(): JSX.Element {
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>描述</Text>
+                <Text style={[styles.nameText]}>描述</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentRight]}
@@ -100,7 +101,7 @@ class TodoAddScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderSummitButton(): JSX.Element {
+    private renderSummitButton() {
         return (
             <View style={[commonStyles.flexRowCentered]}>
                 <TouchableOpacity
@@ -134,6 +135,10 @@ class TodoAddScreen extends React.Component<Props, State> {
     }
 
     private onAddPressed() {
+        if (fastClick()) {
+            return;
+        }
+
         const {category, title, desc} = this.state;
 
         this.props.apiTodoAddTodo(
@@ -161,6 +166,9 @@ export default connect(selectProps, {
 
 const styles = StyleSheet.create({
     nameText: {
+        color: '#888',
+        textAlign: 'center',
+        fontSize: 14,
         width: 48
     },
     contentRight: {

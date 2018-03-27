@@ -87,7 +87,7 @@ export const commonStyles = StyleSheet.create({
     },
     line: {
         height: 1,
-        backgroundColor: '#eee'
+        backgroundColor: '#EEEEEE'
     },
     contentWidth: {
         width: 300

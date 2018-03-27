@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { FriendInfo, getTodoListParams, TodoItem, TodoItemGroup } from '../api/todo-private/gen';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
+import TodoListView from '../component/TodoListView';
 import { apiTodoGetTodoListByCategory, RootState } from '../redux';
 import ToastView from '../ToastView';
-import TodoListView from '../todoView/TodoListView';
 
 export interface Props extends NavigationScreenProps<{friendInfo: FriendInfo}> {
     friendTodoListByCategory: TodoItemGroup[];

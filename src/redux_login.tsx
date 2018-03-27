@@ -76,7 +76,7 @@ export const apiUserLogout = (): Dispatchable => (dispatch) => {
 export const apiAccountSmsCode = (p: smsCodeParams): Dispatchable => (dispatch) => {
     return accountApi.smsCode(p.scene, p.phone, p.captchaId, p.captchaCode)
         .then(() => {
-            dispatch(onGlobalToast('已发送,验证码1234'));
+            dispatch(onGlobalToast('已发送'));
         }).catch((err) => {
             dispatch(onApiError(err, accountApiHost + '/smsCode'));
         });

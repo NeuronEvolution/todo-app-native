@@ -4,16 +4,16 @@ import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import AutoComplete from '../_react_native_common/AutoComplete';
-import DropdownList, { Item } from '../_react_native_common/DropdownList';
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
+import SelectionModal, { SelectionItem } from '../component/SelectionModal';
 import * as GlobalConstants from '../GlobalConstants';
 import {
     apiTodoGetCategoryNameList, apiTodoGetTodoListByCategory, apiTodoUpdate,
     RootState
 } from '../redux';
 import ToastView, { onGlobalToast } from '../ToastView';
-import { getTodoStatusTextColor } from '../utils';
+import { getTodoStatusName } from '../utils';
 
 export interface Props extends NavigationScreenProps<{todoItem: TodoItem}> {
     apiTodoUpdate: (todoId: string, todoItemMutate: TodoItem, onSuccess: () => void) => Dispatchable;
@@ -27,6 +27,7 @@ interface State {
     todoItem: TodoItem;
     todoItemMutate: TodoItem;
     changed: boolean;
+    showStatusSelection: boolean;
 }
 
 class TodoDetailScreen extends React.Component<Props, State> {
@@ -43,14 +44,19 @@ class TodoDetailScreen extends React.Component<Props, State> {
         this.renderStatus = this.renderStatus.bind(this);
         this.renderSummitButton = this.renderSummitButton.bind(this);
         this.onUpdateSuccess = this.onUpdateSuccess.bind(this);
+        this.showStatusSelection = this.showStatusSelection.bind(this);
+        this.closeStatusSelection = this.closeStatusSelection.bind(this);
+        this.onStatusSelected = this.onStatusSelected.bind(this);
 
         const todoItem: TodoItem = this.props.navigation.state.params.todoItem;
         const {todoId, category, title, desc, status, priority} = todoItem;
-        this.setState({
+        const initialState: State = {
             todoItem,
             todoItemMutate: {todoId, category, title, desc, status, priority},
-            changed: false
-        });
+            changed: false,
+            showStatusSelection: false
+        };
+        this.setState(initialState);
     }
 
     public render() {
@@ -68,12 +74,12 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderCategory(): JSX.Element {
+    private renderCategory() {
         const category = this.state.todoItemMutate.category;
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>分类</Text>
+                <Text style={[styles.nameText]}>分类</Text>
                 <AutoComplete
                     style={[commonStyles.textInput, styles.contentRight]}
                     value={category}
@@ -85,12 +91,12 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderTitle(): JSX.Element {
+    private renderTitle() {
         const title = this.state.todoItemMutate.title;
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>标题</Text>
+                <Text style={[styles.nameText]}>标题</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentRight]}
@@ -101,12 +107,12 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderDesc(): JSX.Element {
+    private renderDesc() {
         const desc = this.state.todoItemMutate.desc;
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>描述</Text>
+                <Text style={[styles.nameText]}>描述</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentRight]}
@@ -117,27 +123,32 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderStatus(): JSX.Element {
+    private renderStatus() {
         const status = this.state.todoItemMutate.status;
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>状态</Text>
-                <DropdownList
-                    buttonStyle={{width: 80, alignItems: 'flex-start'}}
-                    buttonTextStyle={[commonStyles.text]}
+                <Text style={[styles.nameText]}>状态</Text>
+                <TouchableOpacity
+                    style={{width: 80, alignItems: 'flex-start'}}
+                    onPress={this.showStatusSelection}
+                >
+                    <Text style={[commonStyles.text]}>{getTodoStatusName(status)}</Text>
+                </TouchableOpacity>
+                <SelectionModal
                     items={[
-                        {label: '进行中', value: TodoStatus.Ongoing},
-                        {label: '已完成', value: TodoStatus.Completed},
-                        {label: '已放弃', value: TodoStatus.Discard}
+                        {label: getTodoStatusName(TodoStatus.Ongoing), value: TodoStatus.Ongoing},
+                        {label: getTodoStatusName(TodoStatus.Completed), value: TodoStatus.Completed},
+                        {label: getTodoStatusName(TodoStatus.Discard), value: TodoStatus.Discard}
                     ]}
-                    selectedValue={status}
+                    visible={this.state.showStatusSelection}
+                    onClose={this.closeStatusSelection}
                     onSelect={this.onStatusSelected}/>
             </View>
         );
     }
 
-    private renderSummitButton(): JSX.Element {
+    private renderSummitButton() {
         const backgroundColor = this.state.changed ? null : {backgroundColor: '#eee'};
         const color = this.state.changed ? null : {color: '#aaa'};
 
@@ -153,6 +164,21 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
+    private showStatusSelection() {
+        this.setState({showStatusSelection: true});
+    }
+
+    private closeStatusSelection() {
+        this.setState({showStatusSelection: false});
+    }
+
+    private onStatusSelected(item: SelectionItem): void {
+        const todoItemMutate = this.state.todoItemMutate;
+        todoItemMutate.status = item.value;
+        this.setState({todoItemMutate});
+        this.updateChanged(todoItemMutate);
+    }
+
     private updateChanged(todoItem: TodoItem) {
         const {category, title, desc, status, priority} = this.state.todoItem;
 
@@ -164,13 +190,6 @@ class TodoDetailScreen extends React.Component<Props, State> {
             || todoItem.priority !== priority;
 
         this.setState({changed});
-    }
-
-    private onStatusSelected(item: Item) {
-        const todoItemMutate = this.state.todoItemMutate;
-        todoItemMutate.status = item.value;
-        this.setState({todoItemMutate});
-        this.updateChanged(todoItemMutate);
     }
 
     private onCategoryChanged(text: string) {
@@ -226,6 +245,9 @@ export default connect(selectProps, {
 
 const styles = StyleSheet.create({
     nameText: {
+        color: '#888',
+        textAlign: 'center',
+        fontSize: 14,
         width: 48
     },
     contentRight: {

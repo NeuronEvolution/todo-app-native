@@ -4,7 +4,7 @@ import { NavigationScreenProps } from 'react-navigation';
 import { FriendInfo, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import ToastView from '../ToastView';
-import { getTodoStatusName, getTodoStatusTextColor } from '../utils';
+import { getTodoStatusName } from '../utils';
 
 const navigationOptionsFunc
     = ({navigation}: NavigationScreenProps<{friendInfo: FriendInfo, todoItem: TodoItem}>) => {
@@ -26,7 +26,7 @@ export default class FriendTodoDetailScreen
     private static renderCategory(category: string): JSX.Element {
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>分类</Text>
+                <Text style={[styles.nameText]}>分类</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentRight]}
@@ -40,7 +40,7 @@ export default class FriendTodoDetailScreen
     private static renderTitle(title: string): JSX.Element {
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>标题</Text>
+                <Text style={[styles.nameText]}>标题</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentRight]}
@@ -53,7 +53,7 @@ export default class FriendTodoDetailScreen
     private static renderDesc(desc: string): JSX.Element {
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>描述</Text>
+                <Text style={[styles.nameText]}>描述</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentRight]}
@@ -64,15 +64,14 @@ export default class FriendTodoDetailScreen
     }
 
     private static renderStatus(status: TodoStatus): JSX.Element {
-        const statusColor = getTodoStatusTextColor(status);
         const statusName = getTodoStatusName(status);
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text, styles.nameText]}>状态</Text>
+                <Text style={[styles.nameText]}>状态</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
-                    style={[commonStyles.textInput, styles.contentRight, statusColor]}
+                    style={[commonStyles.textInput, styles.contentRight]}
                     value={statusName}
                     editable={false}/>
             </View>
@@ -97,6 +96,9 @@ export default class FriendTodoDetailScreen
 
 const styles = StyleSheet.create({
     nameText: {
+        color: '#888',
+        textAlign: 'center',
+        fontSize: 14,
         width: 60
     },
     contentRight: {
