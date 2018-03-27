@@ -4,7 +4,6 @@ import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { fastClick } from '../_common/fastClick';
-import AutoComplete from '../_react_native_common/AutoComplete';
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
@@ -13,6 +12,7 @@ import {
     RootState
 } from '../redux';
 import ToastView, { onGlobalToast } from '../ToastView';
+import { TodoEditCategoryScreenNavigationParams } from './TodoEditCategoryScreen';
 
 export interface Props extends NavigationScreenProps<void> {
     onGlobalToast: (text: string) => Dispatchable;
@@ -37,7 +37,7 @@ class TodoAddScreen extends React.Component<Props, State> {
         this.onDescChanged = this.onDescChanged.bind(this);
         this.onAddPressed = this.onAddPressed.bind(this);
         this.onAddSuccess = this.onAddSuccess.bind(this);
-        this.onCategoryFocus = this.onCategoryFocus.bind(this);
+        this.onCategoryPress = this.onCategoryPress.bind(this);
 
         this.setState(initialState);
     }
@@ -57,17 +57,22 @@ class TodoAddScreen extends React.Component<Props, State> {
     }
 
     private renderCategory() {
+        const {category} = this.state;
+        const text = category === ''
+            ? '点击设置该计划的分类' : category;
+        const color = category === '' ? '#ccc' : '#444';
+
         return (
             <View style={[commonStyles.flexRowLeft]}>
                 <Text style={[styles.nameText]}>分类</Text>
-                <AutoComplete
-                    style={[commonStyles.textInput, styles.contentRight]}
-                    value={this.state.category}
-                    placeholder={'最多' + GlobalConstants.MAX_CATEGORY_NAME_LENGTH + '个字符'}
-                    onChangeText={this.onCategoryChanged}
-                    items={this.props.categoryNameList}
-                    onFocus={this.onCategoryFocused}
-                />
+                <TouchableOpacity
+                    style={[styles.contentButton]}
+                    onPress={this.onCategoryPress}
+                >
+                    <Text style={[commonStyles.text, {color}]}>
+                        {text}
+                    </Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -78,7 +83,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                 <Text style={[styles.nameText]}>标题</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
-                    style={[commonStyles.textInput, styles.contentRight]}
+                    style={[commonStyles.textInput, styles.contentWidth]}
                     onChangeText={this.onTitleChanged}
                     value={this.state.title}
                     placeholder={'最多' + GlobalConstants.MAX_TITLE_NAME_LENGTH + '个字符'}
@@ -93,7 +98,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                 <Text style={[styles.nameText]}>描述</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
-                    style={[commonStyles.textInput, styles.contentRight]}
+                    style={[commonStyles.textInput, styles.contentWidth]}
                     onChangeText={this.onDescChanged}
                     value={this.state.desc}
                     placeholder={'最多' + GlobalConstants.MAX_DESC_TEXT_LENGTH + '个字符'}
@@ -114,8 +119,13 @@ class TodoAddScreen extends React.Component<Props, State> {
         );
     }
 
-    private onCategoryFocus() {
-        this.props.navigation.navigate('TodoEditCategory');
+    private onCategoryPress() {
+        const {category} = this.state;
+        const params: TodoEditCategoryScreenNavigationParams = {
+            category,
+            onBack: this.onCategoryChanged
+        };
+        this.props.navigation.navigate('TodoEditCategory', params);
     }
 
     private onCategoryChanged(text: string) {
@@ -145,6 +155,12 @@ class TodoAddScreen extends React.Component<Props, State> {
         }
 
         const {category, title, desc} = this.state;
+        if (!category || category === '') {
+            return this.props.onGlobalToast('分类不能为空');
+        }
+        if (!title || title === '') {
+            return this.props.onGlobalToast('标题不能为空');
+        }
 
         this.props.apiTodoAddTodo(
             {
@@ -176,8 +192,17 @@ const styles = StyleSheet.create({
         fontSize: 14,
         width: 48
     },
-    contentRight: {
+    contentWidth: {
         width: 240
+    },
+    contentButton: {
+        width: 240,
+        alignItems: 'flex-start',
+        height: 48,
+        flex: 1,
+        justifyContent: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee'
     },
     summitButton: {
         marginTop: 24

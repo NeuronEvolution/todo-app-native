@@ -55,6 +55,7 @@ class FriendListScreen extends React.Component<Props> {
         return (
             <View style={[commonStyles.screen]}>
                 <FlatList
+                    keyboardShouldPersistTaps={'always'}
                     data={data}
                     renderItem={this.renderFriendInfo}
                     keyExtractor={FriendListScreen.getItemKey}

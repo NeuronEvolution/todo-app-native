@@ -48,10 +48,11 @@ class SettingsScreen extends React.Component<Props, State> {
                 {this.renderAbout()}
                 <ToastView/>
                 <SelectionModal
+                    title={'选择计划谁可以看到'}
                     items={[
-                        {label: getTodoVisibilityName(TodoVisibility.Public), value: TodoVisibility.Public},
-                        {label: getTodoVisibilityName(TodoVisibility.Friend), value: TodoVisibility.Friend},
-                        {label: getTodoVisibilityName(TodoVisibility.Private), value: TodoVisibility.Private}
+                        {label: '公开的，所有人都可以看到', value: TodoVisibility.Public},
+                        {label: '好友可见，只有最好的朋友才可以看见', value: TodoVisibility.Friend},
+                        {label: '保密的，只有自己才能看到', value: TodoVisibility.Private}
                     ]}
                     visible={this.state.showVisibilitySelectionPanel}
                     onClose={this.closeVisibilitySelectionPanel}

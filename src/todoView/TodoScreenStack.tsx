@@ -4,6 +4,7 @@ import { NavigationScreenProps, StackNavigator } from 'react-navigation';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import TodoAddScreen from './TodoAddScreen';
 import TodoDetailScreen from './TodoDetailScreen';
+import TodoEditCategoryScreen from './TodoEditCategoryScreen';
 import TodoListScreen from './TodoListScreen';
 const mainTabIconTodo = require('../../resource/main_todo_tab_icon.png');
 
@@ -53,5 +54,8 @@ export const TodoScreenStack = StackNavigator({
             tabBarVisible: false,
             swipeEnabled: false
         })
+    },
+    TodoEditCategory: {
+        screen: TodoEditCategoryScreen
     }
 });

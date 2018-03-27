@@ -14,7 +14,10 @@ export interface Props {
 }
 
 interface State {
+    filterTodoItemGroupSelecting: TodoItemGroup | null;
+    filterTodoStatusSelecting: TodoStatus | null;
     filterTodoItemGroup: TodoItemGroup | null;
+    filterTodoStatus: TodoStatus | null;
     showFilterPanel: boolean;
     todoCategoryCount: number;
     todoTotalCount: number;
@@ -25,46 +28,6 @@ interface State {
 }
 
 export default class TodoListView extends React.Component<Props, State> {
-    private static renderCategory(todoItemList: TodoItem[], category?: string) {
-        let ongoingCount = 0;
-        let completeCount = 0;
-        let discardCount = 0;
-        if (todoItemList) {
-            todoItemList.forEach((todoItem: TodoItem) => {
-                switch (todoItem.status) {
-                    case TodoStatus.Ongoing:
-                        return ongoingCount++;
-                    case TodoStatus.Completed:
-                        return completeCount++;
-                    case TodoStatus.Discard:
-                        return discardCount++;
-                    default:
-                        return;
-                }
-            });
-        }
-        const todoCount = ongoingCount + completeCount + discardCount;
-
-        return (
-            <View style={[styles.category]}>
-                <Text style={styles.categoryText}>{category}</Text>
-                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                    <Text style={styles.categoryText}>
-                        共
-                        <Text style={styles.categoryValueText}>{todoCount}</Text>
-                        个计划,
-                        <Text style={styles.categoryValueText}>{ongoingCount}</Text>
-                        进行中,
-                        <Text style={styles.categoryValueText}>{completeCount}</Text>
-                        已完成,
-                        <Text style={styles.categoryValueText}>{discardCount}</Text>
-                        已放弃
-                    </Text>
-                </View>
-            </View>
-        );
-    }
-
     private static getItemGroupKey(item: TodoItemGroup, index: number): string {
         return item.category ? item.category : index.toString();
     }
@@ -86,9 +49,15 @@ export default class TodoListView extends React.Component<Props, State> {
         this.showFilterPanel = this.showFilterPanel.bind(this);
         this.closeFilterPanel = this.closeFilterPanel.bind(this);
         this.renderFilterCategory = this.renderFilterCategory.bind(this);
+        this.resetFilter = this.resetFilter.bind(this);
+        this.confirmFilterPressed = this.confirmFilterPressed.bind(this);
+        this.onFilterStatusSelect = this.onFilterStatusSelect.bind(this);
 
         const initialState: State = {
+            filterTodoItemGroupSelecting: null,
+            filterTodoStatusSelecting: null,
             filterTodoItemGroup: null,
+            filterTodoStatus: null,
             showFilterPanel: false,
             todoCategoryCount: 0,
             todoTotalCount: 0,
@@ -113,7 +82,10 @@ export default class TodoListView extends React.Component<Props, State> {
                 if (todoListByCategoryNext) {
                     for (const todoItemGroup of todoListByCategoryNext) {
                         if (todoItemGroup.category === category) {
-                            this.setState({filterTodoItemGroup: todoItemGroup});
+                            this.setState({
+                                filterTodoItemGroup: todoItemGroup,
+                                filterTodoItemGroupSelecting: todoItemGroup
+                            });
                             break;
                         }
                     }
@@ -130,10 +102,12 @@ export default class TodoListView extends React.Component<Props, State> {
             <View style={[commonStyles.screen]}>
                 {this.renderSummary()}
                 <FlatList
+                    keyboardShouldPersistTaps={'always'}
                     data={items}
+                    extraData={this.state.filterTodoStatus}
                     renderItem={this.renderTodoItemGroup}
                     keyExtractor={TodoListView.getItemGroupKey}
-                    ItemSeparatorComponent={TodoListView.renderSeparatorLine}/>
+                />
             </View>
         );
     }
@@ -224,7 +198,7 @@ export default class TodoListView extends React.Component<Props, State> {
     }
 
     private renderFilterButton() {
-        const color = this.state.filterTodoItemGroup ? 'red' : '#fff';
+        const color = this.state.filterTodoItemGroup ? '#FF8800' : '#fff';
 
         return (
             <TouchableOpacity
@@ -243,7 +217,8 @@ export default class TodoListView extends React.Component<Props, State> {
     }
 
     private renderFilterPanel() {
-        const {todoTotalCount} = this.state;
+        const {filterTodoItemGroupSelecting} = this.state;
+        const currentCategory = filterTodoItemGroupSelecting && filterTodoItemGroupSelecting.category;
 
         return (
             <Modal
@@ -252,47 +227,114 @@ export default class TodoListView extends React.Component<Props, State> {
                 transparent={true}
             >
                 <TouchableOpacity
-                    style={[{
-                        backgroundColor: '#00000060',
-                        flex: 1,
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        paddingTop: 96
-                    }]}
+                    activeOpacity={1}
+                    style={[styles.filterModal]}
                     onPress={this.closeFilterPanel}
                 >
-                    <View>
-                        <TouchableHighlight
-                            underlayColor={'#eee'}
-                            onPress={() => {
-                                this.onFilterCategorySelect(null);
-                            }}
-                        >
-                            <View
-                                style={[styles.filterCategoryButton]}>
-                                <Text style={[commonStyles.text]}>选择分类</Text>
-                                <Text style={[commonStyles.text, {color: '#0088FF'}]}>清除筛选</Text>
-                            </View>
-                        </TouchableHighlight>
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        style={{
+                            width: Dimensions.get('window').width - 96,
+                            backgroundColor: '#fff'
+                        }}
+                    >
+                        <View style={[styles.filterTitleContainer]}>
+                            <Text style={[styles.filterTitleText]}>选择状态:</Text>
+                        </View>
+                        {this.renderFilterStatusContainer()}
+                        <View style={commonStyles.line}/>
+                        <View style={[styles.filterTitleContainer, {marginTop: 24}]}>
+                            <Text style={[styles.filterTitleText]}>选择分类:</Text>
+                            <Text style={[styles.filterTitleText]}>{currentCategory}</Text>
+                        </View>
                         <View style={commonStyles.line}/>
                         <FlatList
+                            keyboardShouldPersistTaps={'always'}
+                            style={{height: 270}}
                             data={this.props.todoListByCategory}
+                            extraData={{
+                                filterTodoItemGroup:
+                                this.state.filterTodoItemGroup
+                            }}
                             renderItem={this.renderFilterCategory}
                             keyExtractor={(todoItemGroup: TodoItemGroup) => todoItemGroup.category}
                             ItemSeparatorComponent={TodoListView.renderSeparatorLine}
                         />
-                    </View>
+                        <View style={commonStyles.line}/>
+                        {this.renderFilterBottom()}
+                    </TouchableOpacity>
                 </TouchableOpacity>
             </Modal>
+        );
+    }
+
+    private renderFilterStatus(todoStatus: TodoStatus) {
+        const status = this.state.filterTodoStatusSelecting;
+        const backgroundColor = status === todoStatus ? '#FF8800' : '#fff';
+        const color = status === todoStatus ? '#fff' : '#444';
+
+        return (
+            <TouchableOpacity
+                activeOpacity={1}
+                style={[
+                    styles.filterStatusButton,
+                    {
+                        backgroundColor,
+                        borderRightWidth: 1,
+                        borderRightColor: '#eee'
+                    }
+                ]}
+                onPress={() => {
+                    this.onFilterStatusSelect(todoStatus);
+                }}
+            >
+                <Text style={{color}}>{getTodoStatusName(todoStatus)}</Text>
+            </TouchableOpacity>
+        );
+    }
+
+    private renderFilterStatusContainer() {
+        return (
+            <View style={[commonStyles.flexRow]}>
+                {this.renderFilterStatus(TodoStatus.Ongoing)}
+                {this.renderFilterStatus(TodoStatus.Completed)}
+                {this.renderFilterStatus(TodoStatus.Discard)}
+            </View>
+        );
+    }
+
+    private renderFilterBottom() {
+        return (
+            <View
+                style={[commonStyles.flexRowSpaceBetween]}>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    style={[styles.filterButton]}
+                    onPress={this.resetFilter}
+                >
+                    <Text style={[styles.filterButtonText, {color: '#0088FF'}]}>
+                        重置
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    style={[styles.filterButton, {backgroundColor: '#0088FF'}]}
+                    onPress={this.confirmFilterPressed}
+                >
+                    <Text style={[styles.filterButtonText, {color: '#FFFFFF'}]}>
+                        确定
+                    </Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 
     private renderFilterCategory(info: ListRenderItemInfo<TodoItemGroup>) {
         const {category, todoItemList} = info.item;
         const todoCount = todoItemList ? todoItemList.length : 0;
-
-        const backgroundColor = this.state.filterTodoItemGroup === info.item ? '#ffffddFF' : '#FFFFFFFF';
+        const selected = this.state.filterTodoItemGroupSelecting === info.item;
+        const backgroundColor = selected ? '#FF8800' : '#FFFFFFFF';
+        const color = selected ? {color: '#fff'} : null;
 
         return (
             <TouchableHighlight
@@ -302,16 +344,37 @@ export default class TodoListView extends React.Component<Props, State> {
                 }}
             >
                 <View style={[styles.filterCategoryButton, {backgroundColor}]}>
-                    <Text style={[commonStyles.text]}>{category}</Text>
-                    <Text style={[commonStyles.text]}>{todoCount}个计划</Text>
+                    <Text style={[commonStyles.text, color]}>{category}</Text>
+                    <Text style={[commonStyles.text, color]}>{todoCount}个计划</Text>
                 </View>
             </TouchableHighlight>
         );
     }
 
-    private onFilterCategorySelect(todoItemGroup: TodoItemGroup| null) {
+    private onFilterCategorySelect(todoItemGroup: TodoItemGroup) {
+        this.setState({filterTodoItemGroupSelecting: todoItemGroup});
+    }
+
+    private onFilterStatusSelect(todoStatus: TodoStatus) {
+        this.setState({
+            filterTodoStatusSelecting: todoStatus
+        });
+    }
+
+    private resetFilter() {
+        this.setState({
+            filterTodoItemGroupSelecting: null,
+            filterTodoStatusSelecting: null
+        });
+    }
+
+    private confirmFilterPressed() {
         this.closeFilterPanel();
-        this.setState({filterTodoItemGroup: todoItemGroup});
+
+        this.setState({
+            filterTodoItemGroup: this.state.filterTodoItemGroupSelecting,
+            filterTodoStatus: this.state.filterTodoStatusSelecting
+        });
     }
 
     private showFilterPanel() {
@@ -331,35 +394,110 @@ export default class TodoListView extends React.Component<Props, State> {
 
         return (
             <View>
-                {TodoListView.renderCategory(todoItemList, category)}
+                {this.renderCategory(todoItemList, category)}
                 {todoItemList ?
                     <FlatList
+                        keyboardShouldPersistTaps={'always'}
                         data={todoItemList}
+                        extraData={this.state.filterTodoStatus}
                         renderItem={this.renderTodoItem}
                         keyExtractor={TodoListView.getItemKey}
-                        ItemSeparatorComponent={TodoListView.renderSeparatorLine}/>
+                    />
                     : null}
+            </View>
+        );
+    }
+
+    private renderCategory(todoItemList: TodoItem[], category?: string) {
+        let ongoingCount = 0;
+        let completeCount = 0;
+        let discardCount = 0;
+        if (todoItemList) {
+            todoItemList.forEach((todoItem: TodoItem) => {
+                switch (todoItem.status) {
+                    case TodoStatus.Ongoing:
+                        return ongoingCount++;
+                    case TodoStatus.Completed:
+                        return completeCount++;
+                    case TodoStatus.Discard:
+                        return discardCount++;
+                    default:
+                        return;
+                }
+            });
+        }
+        const todoCount = ongoingCount + completeCount + discardCount;
+        const statusFilter = this.state.filterTodoStatus;
+        switch (statusFilter) {
+            case TodoStatus.Ongoing:
+                if (ongoingCount === 0) {
+                    return null;
+                }
+                break;
+            case TodoStatus.Completed:
+                if (completeCount === 0) {
+                    return null;
+                }
+                break;
+            case TodoStatus.Discard:
+                if (discardCount === 0) {
+                    return null;
+                }
+                break;
+            default:
+                break;
+        }
+
+        return (
+            <View style={[styles.category]}>
+                <Text style={styles.categoryText}>{category}</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={styles.categoryText}>
+                        共
+                        <Text style={styles.categoryValueText}>{todoCount}</Text>
+                        个计划,
+                        <Text style={styles.categoryValueText}>{ongoingCount}</Text>
+                        进行中,
+                        <Text style={styles.categoryValueText}>{completeCount}</Text>
+                        已完成,
+                        <Text style={styles.categoryValueText}>{discardCount}</Text>
+                        已放弃
+                    </Text>
+                </View>
             </View>
         );
     }
 
     private renderTodoItem(itemInfo: ListRenderItemInfo<TodoItem>) {
         const todoItem = itemInfo.item;
+        const status = this.state.filterTodoStatus;
+        if (status && todoItem.status !== status) {
+            return null;
+        }
 
         return (
-            <TouchableOpacity
-                style={[commonStyles.flexRowSpaceBetween, {paddingHorizontal: 8}]}
+            <TouchableHighlight underlayColor={'#bbb'}
                 onPress={() => {
                     this.props.onItemPress(todoItem);
                 }}
                 onLongPress={() => {
                     this.onLongPress(todoItem);
                 }}>
-                <Text style={[commonStyles.text]}>{todoItem.title}</Text>
-                <Text style={[{fontSize: 12}, getTodoStatusTextColor(todoItem.status)]}>
-                    {getTodoStatusName(todoItem.status)}
-                </Text>
-            </TouchableOpacity>
+                <View
+                    style={[
+                        commonStyles.flexRowSpaceBetween,
+                        {
+                            paddingHorizontal: 8,
+                            borderBottomWidth: 1,
+                            borderBottomColor: '#eee'
+                        }
+                    ]}>
+                    <Text style={[commonStyles.text]}>{todoItem.title}</Text>
+                    <Text style={[{fontSize: 12}, getTodoStatusTextColor(todoItem.status)]}>
+                        {getTodoStatusName(todoItem.status)}
+                    </Text>
+                </View>
+            </TouchableHighlight>
         );
     }
 
@@ -416,16 +554,53 @@ const styles = StyleSheet.create({
         fontSize: 12
     },
     summaryValueText: {
-        color: '#88FF00',
+        color: '#FF8800',
         fontSize: 12
     },
-    filterCategoryButton: {
-        height: 48,
-        width: Dimensions.get('window').width - 48,
+    filterModal: {
+        backgroundColor: '#00000070',
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    filterButton: {
         backgroundColor: '#FFFFFFFF',
+        paddingHorizontal: 16,
+        flex: 1,
+        height: 48,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    filterButtonText: {
+        fontSize: 18
+    },
+    filterTitleContainer: {
+        height: 24,
+        paddingHorizontal: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 16
+    },
+    filterTitleText: {
+        fontSize: 12,
+        color: '#FF8800'
+    },
+    filterCategoryButton: {
+        backgroundColor: '#FFFFFFFF',
+        paddingHorizontal: 16,
+        height: 48,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    filterStatusButton: {
+        height: 48,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });

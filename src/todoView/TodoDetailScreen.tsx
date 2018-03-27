@@ -3,7 +3,6 @@ import { StyleSheet, Text, TextInput, TouchableOpacity , View } from 'react-nati
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
-import AutoComplete from '../_react_native_common/AutoComplete';
 import SelectionModal, { SelectionItem } from '../_react_native_common/SelectionModal';
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
@@ -14,6 +13,7 @@ import {
 } from '../redux';
 import ToastView, { onGlobalToast } from '../ToastView';
 import { getTodoStatusName } from '../utils';
+import { TodoEditCategoryScreenNavigationParams } from './TodoEditCategoryScreen';
 
 export interface Props extends NavigationScreenProps<{todoItem: TodoItem}> {
     apiTodoUpdate: (todoId: string, todoItemMutate: TodoItem, onSuccess: () => void) => Dispatchable;
@@ -47,7 +47,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
         this.showStatusSelection = this.showStatusSelection.bind(this);
         this.closeStatusSelection = this.closeStatusSelection.bind(this);
         this.onStatusSelected = this.onStatusSelected.bind(this);
-        this.onCategoryFocus = this.onCategoryFocus.bind(this);
+        this.onCategoryPress = this.onCategoryPress.bind(this);
 
         const todoItem: TodoItem = this.props.navigation.state.params.todoItem;
         const {todoId, category, title, desc, status, priority} = todoItem;
@@ -76,18 +76,22 @@ class TodoDetailScreen extends React.Component<Props, State> {
     }
 
     private renderCategory() {
-        const category = this.state.todoItemMutate.category;
+        const {category} = this.state.todoItemMutate;
+        const text = category === ''
+            ? '点击设置该计划的分类' : category;
+        const color = category === '' ? '#ccc' : '#444';
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
                 <Text style={[styles.nameText]}>分类</Text>
-                <AutoComplete
-                    style={[commonStyles.textInput, styles.contentRight]}
-                    value={category}
-                    placeholder={'最多' + GlobalConstants.MAX_CATEGORY_NAME_LENGTH + '个字符'}
-                    onChangeText={this.onCategoryChanged}
-                    items={this.props.categoryNameList}
-                    onFocus={this.onCategoryFocused}/>
+                <TouchableOpacity
+                    style={[styles.contentButton]}
+                    onPress={this.onCategoryPress}
+                >
+                    <Text style={[commonStyles.text, {color}]}>
+                        {text}
+                    </Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -100,7 +104,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                 <Text style={[styles.nameText]}>标题</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
-                    style={[commonStyles.textInput, styles.contentRight]}
+                    style={[commonStyles.textInput, styles.contentWidth]}
                     onChangeText={this.onTitleChanged}
                     value={title}
                     placeholder={'最多' + GlobalConstants.MAX_TITLE_NAME_LENGTH + '个字符'}/>
@@ -116,7 +120,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                 <Text style={[styles.nameText]}>描述</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
-                    style={[commonStyles.textInput, styles.contentRight]}
+                    style={[commonStyles.textInput, styles.contentWidth]}
                     onChangeText={this.onDescChanged}
                     value={desc}
                     placeholder={'最多' + GlobalConstants.MAX_DESC_TEXT_LENGTH + '个字符'}/>
@@ -131,20 +135,13 @@ class TodoDetailScreen extends React.Component<Props, State> {
             <View style={[commonStyles.flexRowLeft]}>
                 <Text style={[styles.nameText]}>状态</Text>
                 <TouchableOpacity
-                    style={[
-                        styles.contentRight,
-                        {
-                            alignItems: 'flex-start',
-                            height: 48,
-                            flex: 1,
-                            justifyContent: 'center'
-                        }
-                    ]}
+                    style={[styles.contentButton]}
                     onPress={this.showStatusSelection}
                 >
                     <Text style={[commonStyles.text]}>{getTodoStatusName(status)}</Text>
                 </TouchableOpacity>
                 <SelectionModal
+                    title={'选择计划状态'}
                     items={[
                         {label: getTodoStatusName(TodoStatus.Ongoing), value: TodoStatus.Ongoing},
                         {label: getTodoStatusName(TodoStatus.Completed), value: TodoStatus.Completed},
@@ -173,8 +170,13 @@ class TodoDetailScreen extends React.Component<Props, State> {
         );
     }
 
-    private onCategoryFocus() {
-        this.props.navigation.navigate('TodoEditCategory');
+    private onCategoryPress() {
+        const {category} = this.state.todoItemMutate;
+        const params: TodoEditCategoryScreenNavigationParams = {
+            category,
+            onBack: this.onCategoryChanged
+        };
+        this.props.navigation.navigate('TodoEditCategory', params);
     }
 
     private showStatusSelection() {
@@ -241,6 +243,17 @@ class TodoDetailScreen extends React.Component<Props, State> {
             return this.props.onGlobalToast('todoId为空');
         }
 
+        const {category, title, status} = this.state.todoItemMutate;
+        if (!category || category === '') {
+            return this.props.onGlobalToast('分类不能为空');
+        }
+        if (!title || title === '') {
+            return this.props.onGlobalToast('标题不能为空');
+        }
+        if (!status) {
+            return this.props.onGlobalToast('状态不能为空');
+        }
+
         this.props.apiTodoUpdate(todoId, this.state.todoItemMutate, this.onUpdateSuccess);
     }
 }
@@ -263,8 +276,17 @@ const styles = StyleSheet.create({
         fontSize: 14,
         width: 48
     },
-    contentRight: {
+    contentWidth: {
         width: 240
+    },
+    contentButton: {
+        width: 240,
+        alignItems: 'flex-start',
+        height: 48,
+        flex: 1,
+        justifyContent: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee'
     },
     summitButton: {
         marginTop: 24
