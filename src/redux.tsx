@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import {
+    CategoryInfo,
     DefaultApiFactory as TodoPrivateApi, FriendInfo,
     getFriendsListParams, getTodoListParams, TodoItem, TodoItemGroup,
     TodoVisibility, UserProfile
@@ -30,7 +31,7 @@ export interface RootState {
     todoListByCategory: TodoItemGroup[];
     friendsList: FriendsListWithPage;
     friendTodoListByCategory: TodoItemGroup[];
-    categoryNameList: string[];
+    categoryNameList: CategoryInfo[];
 }
 
 export interface FriendsListWithPage {

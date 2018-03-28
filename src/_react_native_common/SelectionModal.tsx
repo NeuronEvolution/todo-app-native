@@ -16,6 +16,7 @@ export interface Props {
     onClose: () => void;
     onSelect: (item: SelectionItem) => void;
     title?: string;
+    selectedValue?: any;
 }
 
 export default class SelectionModal extends React.Component<Props> {
@@ -61,11 +62,13 @@ export default class SelectionModal extends React.Component<Props> {
 
     private renderSelectionItem(info: ListRenderItemInfo<SelectionItem>) {
         const {label} = info.item;
+        const selected = this.props.selectedValue === info.item.value;
+        const backgroundColor = selected ? '#FF8800' : '#FFFFFF';
 
         return (
             <TouchableHighlight
                 underlayColor={'#eee'}
-                style={styles.selectionButton}
+                style={[styles.selectionButton, {backgroundColor}]}
                 onPress={() => {
                     this.props.onSelect(info.item);
                     this.props.onClose();

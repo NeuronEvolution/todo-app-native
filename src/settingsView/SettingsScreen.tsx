@@ -54,6 +54,7 @@ class SettingsScreen extends React.Component<Props, State> {
                         {label: '好友可见，只有最好的朋友才可以看见', value: TodoVisibility.Friend},
                         {label: '保密的，只有自己才能看到', value: TodoVisibility.Private}
                     ]}
+                    selectedValue={this.props.userProfile.todoVisibility}
                     visible={this.state.showVisibilitySelectionPanel}
                     onClose={this.closeVisibilitySelectionPanel}
                     onSelect={this.onTodoVisibilitySelected}

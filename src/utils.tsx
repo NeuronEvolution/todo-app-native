@@ -2,7 +2,7 @@ import { TextStyle } from 'react-native';
 import { TodoStatus, TodoVisibility } from './api/todo-private/gen';
 import { commonStyles } from './commonStyles';
 
-export function getTodoStatusName(p?: TodoStatus): string {
+export function getTodoStatusName(p?: TodoStatus | null): string {
     switch (p) {
         case TodoStatus.Ongoing:
             return '进行中';
@@ -10,8 +10,10 @@ export function getTodoStatusName(p?: TodoStatus): string {
             return '已完成';
         case TodoStatus.Discard:
             return '已放弃';
+        case null:
+            return '';
         default:
-            return '未知的';
+            return '';
     }
 }
 

@@ -198,7 +198,7 @@ export default class TodoListView extends React.Component<Props, State> {
     }
 
     private renderFilterButton() {
-        const color = this.state.filterTodoItemGroup ? '#FF8800' : '#fff';
+        const color = this.state.filterTodoItemGroup || this.state.filterTodoStatus ? '#FF8800' : '#fff';
 
         return (
             <TouchableOpacity
@@ -217,8 +217,9 @@ export default class TodoListView extends React.Component<Props, State> {
     }
 
     private renderFilterPanel() {
-        const {filterTodoItemGroupSelecting} = this.state;
+        const {filterTodoItemGroupSelecting, filterTodoStatusSelecting} = this.state;
         const currentCategory = filterTodoItemGroupSelecting && filterTodoItemGroupSelecting.category;
+        const currentStatus = getTodoStatusName(filterTodoStatusSelecting);
 
         return (
             <Modal
@@ -234,12 +235,13 @@ export default class TodoListView extends React.Component<Props, State> {
                     <TouchableOpacity
                         activeOpacity={1}
                         style={{
-                            width: Dimensions.get('window').width - 96,
+                            width: Dimensions.get('window').width - 48,
                             backgroundColor: '#fff'
                         }}
                     >
                         <View style={[styles.filterTitleContainer]}>
                             <Text style={[styles.filterTitleText]}>选择状态:</Text>
+                            <Text style={[styles.filterTitleText]}>{currentStatus}</Text>
                         </View>
                         {this.renderFilterStatusContainer()}
                         <View style={commonStyles.line}/>
@@ -516,13 +518,13 @@ export default class TodoListView extends React.Component<Props, State> {
 
         Alert.alert('删除计划？', title, [
             {
+                text: '取消'
+            },
+            {
                 text: '确定',
                 onPress: () => {
                     this.onRemoveConfirm(todoId);
                 }
-            },
-            {
-                text: '取消'
             }
         ]);
     }

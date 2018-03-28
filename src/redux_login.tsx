@@ -1,3 +1,4 @@
+import { AsyncStorage } from 'react-native';
 import { REDUX_STORE } from '../App';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
@@ -10,6 +11,7 @@ import {
 } from './api/account-private/gen/';
 import { AuthorizationCode, DefaultApiFactory as OauthPrivateApi } from './api/oauth-private/gen';
 import {DefaultApiFactory as UserPrivateApi, OauthJumpResponse, Token } from './api/user-private/gen';
+import { STORAGE_KEY_USER_REFRESH_TOKEN } from './GlobalConstants';
 import { apiTodoGetUserProfile } from './redux';
 import { onGlobalToast } from './ToastView';
 
@@ -51,6 +53,7 @@ const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
                         .then((oauthJumpResponseData: OauthJumpResponse) => {
                             dispatch(onGlobalToast('登录成功'));
                             dispatch({type: ACTION_USER_OAUTH_JUMP_SUCCESS, payload: oauthJumpResponseData});
+                            dispatch(saveUserRefreshToken(oauthJumpResponseData.token.refreshToken));
                             dispatch(apiTodoGetUserProfile());
                         }).catch((err) => {
                             dispatch(onApiError(err, userPrivateApiHost + '/oauthJump'));
@@ -68,6 +71,7 @@ export const apiUserLogout = (): Dispatchable => (dispatch) => {
     return userPrivateApi.logout(t.accessToken, t.refreshToken).then(() => {
         dispatch(onGlobalToast('您已退出登录'));
         dispatch({type: ACTION_USER_LOGOUT_SUCCESS});
+        dispatch(saveUserRefreshToken(''));
     }).catch((err) => {
         dispatch(onApiError(err, userPrivateApiHost + '/logout'));
     });
@@ -120,12 +124,44 @@ export const apiAccountResetPassword = (p: resetPasswordParams, onSuccess: () =>
         });
 };
 
+const saveUserRefreshToken = (refreshToken: string): Dispatchable => (dispatch) => {
+    AsyncStorage.setItem(STORAGE_KEY_USER_REFRESH_TOKEN, refreshToken)
+        .then()
+        .catch((err) => {
+            dispatch(onApiError(err, 'saveUserRefreshToken#AsyncStorage.setItem'));
+        });
+};
+
+export const autoLogin = (): Dispatchable => (dispatch) => {
+    AsyncStorage.getItem(STORAGE_KEY_USER_REFRESH_TOKEN)
+        .then((refreshToken: string) => {
+            if (!refreshToken || refreshToken === '') {
+                return;
+            }
+
+            userPrivateApi.refreshToken(refreshToken)
+                .then((data: Token) => {
+                    dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
+                    dispatch(saveUserRefreshToken(data.refreshToken));
+                })
+                .catch((err) => {
+                    dispatch(onApiError(err, 'userPrivateApi.refreshToken'));
+                });
+        })
+        .catch((err) => {
+            dispatch(onApiError(err, 'autoLogin#AsyncStorage.getItem'));
+        });
+};
+
 const refreshUserToken = (refreshToken: string): Promise<void> => {
-    return userPrivateApi.refreshToken(refreshToken).then((data: Token) => {
-        REDUX_STORE.dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
-    }).catch((err) => {
-        REDUX_STORE.dispatch(onApiError(err, userPrivateApiHost + 'refreshToken'));
-    });
+    return userPrivateApi.refreshToken(refreshToken)
+        .then((data: Token) => {
+            REDUX_STORE.dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
+            REDUX_STORE.dispatch(saveUserRefreshToken(data.refreshToken));
+        })
+        .catch((err) => {
+            REDUX_STORE.dispatch(onApiError(err, userPrivateApiHost + ' refreshToken'));
+        });
 };
 
 const isUnauthorizedError = (err: any): boolean => {
@@ -135,7 +171,7 @@ const isUnauthorizedError = (err: any): boolean => {
 
 export const apiCall = (f: () => Promise<any>): void => {
     f().then(() => {
-        console.log('progress end'); // todo 防止同时刷新
+        console.log('apiCall progress end'); // todo 防止同时刷新
     }).catch((err) => {
         if (!isUnauthorizedError(err)) {
             REDUX_STORE.dispatch(onApiError(err, ''));
@@ -148,7 +184,7 @@ export const apiCall = (f: () => Promise<any>): void => {
             return null;
         }
 
-        return refreshUserToken(refreshToken).then(() => {
+        return refreshUserToken(refreshToken).then(() => { // FIXME action可能还没执行
             return f().catch((errAgain: any) => {
                 if (!isUnauthorizedError(errAgain)) {
                     REDUX_STORE.dispatch(onApiError(errAgain, ''));
@@ -158,7 +194,6 @@ export const apiCall = (f: () => Promise<any>): void => {
                 REDUX_STORE.dispatch({type: REQUIRE_LOGIN});
             });
         });
-
     });
 };
 

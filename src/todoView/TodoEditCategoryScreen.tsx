@@ -6,6 +6,7 @@ import {
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { CategoryInfo } from '../api/todo-private/gen';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
 import { apiTodoGetCategoryNameList, RootState } from '../redux';
@@ -17,7 +18,7 @@ export interface TodoEditCategoryScreenNavigationParams {
 
 export interface Props extends NavigationScreenProps<TodoEditCategoryScreenNavigationParams> {
     apiTodoGetCategoryNameList: () => Dispatchable;
-    categoryNameList: string[];
+    categoryNameList: CategoryInfo[];
 }
 
 interface State {
@@ -93,19 +94,19 @@ class TodoEditCategoryScreen extends React.Component<Props, State> {
                     data={this.props.categoryNameList}
                     extraData={this.state.category}
                     renderItem={this.renderCategory}
-                    keyExtractor={(category: string) => category}
+                    keyExtractor={(categoryInfo: CategoryInfo) => categoryInfo.category}
                 />
             </View>
         );
     }
 
-    private renderCategory(item: ListRenderItemInfo<string>) {
-        const itemCategory = item.item;
-        const category = this.state.category;
-        if (category === itemCategory) {
+    private renderCategory(item: ListRenderItemInfo<CategoryInfo>) {
+        const {category, todoCount} = item.item;
+        const currentCategory = this.state.category;
+        if (currentCategory === category) {
             return null;
         }
-        if (category && !itemCategory.startsWith(category)) {
+        if (currentCategory && !category.startsWith(currentCategory)) {
             return null;
         }
 
@@ -117,10 +118,11 @@ class TodoEditCategoryScreen extends React.Component<Props, State> {
                     styles.categoryItem
                 ]}
                 onPress={() => {
-                    this.onCategoryChanged(itemCategory);
+                    this.onCategoryChanged(category);
                 }}
             >
-                <Text style={commonStyles.text}>{itemCategory}</Text>
+                <Text style={commonStyles.text}>{category}</Text>
+                <Text style={styles.todoCountText}>{todoCount}个计划</Text>
             </TouchableOpacity>
         );
     }
@@ -147,5 +149,9 @@ const styles = StyleSheet.create({
     categoryItem: {
        borderBottomWidth: 1,
        borderBottomColor: '#eee'
+    },
+    todoCountText: {
+        fontSize: 12,
+        color: '#888'
     }
 });

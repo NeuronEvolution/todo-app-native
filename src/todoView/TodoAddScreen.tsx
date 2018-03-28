@@ -7,10 +7,7 @@ import { fastClick } from '../_common/fastClick';
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
-import {
-    apiTodoAddTodo, apiTodoGetCategoryNameList, apiTodoGetTodoListByCategory,
-    RootState
-} from '../redux';
+import { apiTodoAddTodo, apiTodoGetTodoListByCategory } from '../redux';
 import ToastView, { onGlobalToast } from '../ToastView';
 import { TodoEditCategoryScreenNavigationParams } from './TodoEditCategoryScreen';
 
@@ -19,7 +16,6 @@ export interface Props extends NavigationScreenProps<void> {
     apiTodoAddTodo: (p: TodoItem, onSuccess: () => void) => Dispatchable;
     apiTodoGetTodoListByCategory: (p: getTodoListParams) => Dispatchable;
     apiTodoGetCategoryNameList: () => Dispatchable;
-    categoryNameList: string[];
 }
 
 interface State {
@@ -174,15 +170,10 @@ class TodoAddScreen extends React.Component<Props, State> {
     }
 }
 
-const selectProps = (rootState: RootState) => ({
-    categoryNameList: rootState.categoryNameList
-});
-
-export default connect(selectProps, {
+export default connect(null, {
     onGlobalToast,
     apiTodoAddTodo,
-    apiTodoGetTodoListByCategory,
-    apiTodoGetCategoryNameList
+    apiTodoGetTodoListByCategory
 })(TodoAddScreen);
 
 const styles = StyleSheet.create({

@@ -7,7 +7,9 @@ import { checkPhone } from '../_common/common';
 import { countdown } from '../_common/countdown';
 import { loginParams, smsCodeParams, smsLoginParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup } from '../redux_login';
+import {
+    apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup
+} from '../redux_login';
 import ToastView, { onGlobalToast } from '../ToastView';
 
 export interface Props extends NavigationScreenProps<void> {
@@ -261,7 +263,7 @@ export default connect(null, {
     apiAccountLogin,
     apiAccountSmsCode,
     apiAccountSmsLogin,
-    apiAccountSmsSignup,
+    apiAccountSmsSignup
 })(LoginScreen);
 
 const styles = StyleSheet.create({

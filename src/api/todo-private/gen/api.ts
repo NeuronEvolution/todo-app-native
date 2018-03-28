@@ -82,6 +82,26 @@ export class RequiredError extends Error {
 /**
  * 
  * @export
+ * @interface CategoryInfo
+ */
+export interface CategoryInfo {
+    /**
+     * 
+     * @type {string}
+     * @memberof CategoryInfo
+     */
+    category: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof CategoryInfo
+     */
+    todoCount: number;
+}
+
+/**
+ * 
+ * @export
  * @interface FriendInfo
  */
 export interface FriendInfo {
@@ -766,7 +786,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getCategoryNameList(options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<string>> {
+        getCategoryNameList(options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<CategoryInfo>> {
             const localVarFetchArgs = DefaultApiFetchParamCreator(configuration).getCategoryNameList(options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {

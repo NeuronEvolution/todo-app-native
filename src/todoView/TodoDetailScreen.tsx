@@ -7,10 +7,7 @@ import SelectionModal, { SelectionItem } from '../_react_native_common/Selection
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
-import {
-    apiTodoGetCategoryNameList, apiTodoGetTodoListByCategory, apiTodoUpdate,
-    RootState
-} from '../redux';
+import { apiTodoGetTodoListByCategory, apiTodoUpdate } from '../redux';
 import ToastView, { onGlobalToast } from '../ToastView';
 import { getTodoStatusName } from '../utils';
 import { TodoEditCategoryScreenNavigationParams } from './TodoEditCategoryScreen';
@@ -20,7 +17,6 @@ export interface Props extends NavigationScreenProps<{todoItem: TodoItem}> {
     apiTodoGetCategoryNameList: () => Dispatchable;
     apiTodoGetTodoListByCategory: (p: getTodoListParams) => Dispatchable;
     onGlobalToast: (text: string) => Dispatchable;
-    categoryNameList: string[];
 }
 
 interface State {
@@ -142,6 +138,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
                 </TouchableOpacity>
                 <SelectionModal
                     title={'选择计划状态'}
+                    selectedValue={status}
                     items={[
                         {label: getTodoStatusName(TodoStatus.Ongoing), value: TodoStatus.Ongoing},
                         {label: getTodoStatusName(TodoStatus.Completed), value: TodoStatus.Completed},
@@ -258,13 +255,8 @@ class TodoDetailScreen extends React.Component<Props, State> {
     }
 }
 
-const selectProps = (rootState: RootState) => ({
-    categoryNameList: rootState.categoryNameList
-});
-
-export default connect(selectProps, {
+export default connect(null, {
     apiTodoUpdate,
-    apiTodoGetCategoryNameList,
     onGlobalToast,
     apiTodoGetTodoListByCategory
 })(TodoDetailScreen);
