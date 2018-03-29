@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity , View } from 'react-nati
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import SelectionModal, { SelectionItem } from '../_react_native_common/SelectionModal';
 import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
@@ -113,7 +114,7 @@ class TodoDetailScreen extends React.Component<Props, State> {
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[styles.nameText]}>描述</Text>
+                <Text style={[styles.nameText]}>备注</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentWidth]}
@@ -235,6 +236,10 @@ class TodoDetailScreen extends React.Component<Props, State> {
     }
 
     private onSummitPressed() {
+        if (fastClick()) {
+            return;
+        }
+
         const todoId = this.state.todoItem.todoId;
         if (!todoId) {
             return this.props.onGlobalToast('todoId为空');

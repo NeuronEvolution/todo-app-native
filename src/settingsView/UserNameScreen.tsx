@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUserProfileUpdateUserName, RootState } from '../redux';
 import ToastView, { onGlobalToast } from '../ToastView';
@@ -73,10 +74,16 @@ class UserNameScreen extends React.Component<Props, State> {
     }
 
     private onSaveSuccess() {
+        fastClick(); // todo 避免在此之前再点击
+
         this.props.navigation.goBack();
     }
 
     private onSave() {
+        if (fastClick()) {
+            return;
+        }
+
         const userName = this.state.userName;
         if (userName === '') {
             return this.props.onGlobalToast('名字不能为空');

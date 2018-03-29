@@ -143,9 +143,10 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
                 .then((data: Token) => {
                     dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
                     dispatch(saveUserRefreshToken(data.refreshToken));
+                    dispatch(onGlobalToast('登录成功'));
                 })
                 .catch((err) => {
-                    dispatch(onApiError(err, 'userPrivateApi.refreshToken'));
+                    console.log('autoLogin', 'userPrivateApi.refreshToken', err); // todo: more
                 });
         })
         .catch((err) => {

@@ -54,7 +54,7 @@ export default class FriendTodoDetailScreen
     private static renderDesc(desc: string): JSX.Element {
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[styles.nameText]}>描述</Text>
+                <Text style={[styles.nameText]}>备注</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentRight]}

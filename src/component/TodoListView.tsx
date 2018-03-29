@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
     Alert, Dimensions, FlatList, ListRenderItemInfo, Modal, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View
 } from 'react-native';
+import { fastClick } from '../_common/fastClick';
 import { TodoItem, TodoItemGroup, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { getTodoStatusName, getTodoStatusTextColor } from '../utils';
@@ -52,6 +53,7 @@ export default class TodoListView extends React.Component<Props, State> {
         this.resetFilter = this.resetFilter.bind(this);
         this.confirmFilterPressed = this.confirmFilterPressed.bind(this);
         this.onFilterStatusSelect = this.onFilterStatusSelect.bind(this);
+        this.onItemPress = this.onItemPress.bind(this);
 
         const initialState: State = {
             filterTodoItemGroupSelecting: null,
@@ -478,9 +480,10 @@ export default class TodoListView extends React.Component<Props, State> {
         }
 
         return (
-            <TouchableHighlight underlayColor={'#bbb'}
+            <TouchableHighlight
+                underlayColor={'#bbb'}
                 onPress={() => {
-                    this.props.onItemPress(todoItem);
+                    this.onItemPress(todoItem);
                 }}
                 onLongPress={() => {
                     this.onLongPress(todoItem);
@@ -503,6 +506,10 @@ export default class TodoListView extends React.Component<Props, State> {
         );
     }
 
+    private onItemPress(todoItem: TodoItem) {
+        this.props.onItemPress(todoItem);
+    }
+
     private onRemoveConfirm(todoId: string) {
         if (todoId && this.props.onRemoveItem) {
             this.props.onRemoveItem(todoId);
@@ -511,6 +518,10 @@ export default class TodoListView extends React.Component<Props, State> {
 
     private onLongPress(todoItem: TodoItem) {
         if (!this.props.editable) {
+            return;
+        }
+
+        if (fastClick()) {
             return;
         }
 

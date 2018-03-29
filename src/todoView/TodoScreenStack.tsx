@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Image, Text, TouchableOpacity } from 'react-native';
 import { NavigationScreenProps, StackNavigator } from 'react-navigation';
+import { fastClick } from '../_common/fastClick';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import TodoAddScreen from './TodoAddScreen';
 import TodoDetailScreen from './TodoDetailScreen';
@@ -26,6 +27,10 @@ export const TodoScreenStack = StackNavigator({
                         backgroundColor: '#0088FF', borderRadius: 2,
                         justifyContent: 'center', alignItems: 'center'}]}
                     onPress={() => {
+                        if (fastClick()) {
+                            return;
+                        }
+
                         navigation.navigate('TodoAdd');
                     }}>
                     <Text style={[{fontSize: 14, color: '#fff'}]}>新计划</Text>

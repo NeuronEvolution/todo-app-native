@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { checkPhone } from '../_common/common';
 import { countdown } from '../_common/countdown';
+import { fastClick } from '../_common/fastClick';
 import { loginParams, smsCodeParams, smsLoginParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import {
@@ -217,6 +218,10 @@ class LoginScreen extends React.Component<Props, State> {
             return this.props.onGlobalToast('手机号格式不正确');
         }
 
+        if (fastClick()) {
+            return;
+        }
+
         const COUNT_DOWN_SECONDS = 60;
         countdown(COUNT_DOWN_SECONDS, (n: number) => {
             this.setState({smsCodeCountdown: n});
@@ -235,6 +240,9 @@ class LoginScreen extends React.Component<Props, State> {
                 return this.props.onGlobalToast('请输入密码');
             }
 
+            if (fastClick()) {
+                return;
+            }
             this.props.apiAccountLogin({name: loginName, password: loginPassword});
         } else {
             const {loginPhone, loginSmsCode} = this.state;
@@ -245,15 +253,24 @@ class LoginScreen extends React.Component<Props, State> {
                 return this.props.onGlobalToast('请输入验证码');
             }
 
+            if (fastClick()) {
+                return;
+            }
             this.props.apiAccountSmsLogin({phone: loginPhone, smsCode: loginSmsCode});
         }
     }
 
     private onSignupPressed() {
+        if (fastClick()) {
+            return;
+        }
         this.props.navigation.navigate('Signup');
     }
 
     private onResetPasswordPressed() {
+        if (fastClick()) {
+            return;
+        }
         this.props.navigation.navigate('ResetPassword');
     }
 }

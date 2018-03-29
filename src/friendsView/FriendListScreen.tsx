@@ -3,6 +3,7 @@ import { FlatList, ListRenderItemInfo, Text, TouchableOpacity, View } from 'reac
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import { FriendInfo, getFriendsListParams, TodoVisibility } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoGetFriendsList, FriendsListWithPage, RootState } from '../redux';
@@ -96,11 +97,19 @@ class FriendListScreen extends React.Component<Props> {
         const {userID, todoVisibility} = friendInfo;
 
         if (userID === this.props.userID) {
+            if (fastClick()) {
+                return;
+            }
+
             return this.props.navigation.navigate('Todo');
         }
 
         if (todoVisibility !== TodoVisibility.Public) {
             return this.props.onGlobalToast('该用户的计划不可见');
+        }
+
+        if (fastClick()) {
+            return;
         }
 
         this.props.navigation.navigate('FriendTodoList', {friendInfo});

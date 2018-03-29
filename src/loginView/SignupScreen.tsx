@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { checkPhone } from '../_common/common';
 import { countdown } from '../_common/countdown';
+import { fastClick } from '../_common/fastClick';
 import { smsCodeParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiAccountSmsCode, apiAccountSmsSignup } from '../redux_login';
@@ -142,6 +143,10 @@ class SignupScreen extends React.Component<Props, State> {
             return this.props.onGlobalToast('手机号格式不正确');
         }
 
+        if (fastClick()) {
+            return;
+        }
+
         const COUNT_DOWN_SECONDS = 60;
         countdown(COUNT_DOWN_SECONDS, (n: number) => {
             this.setState({smsCodeCountdown: n});
@@ -166,6 +171,10 @@ class SignupScreen extends React.Component<Props, State> {
 
         if (signupPassword === '') {
             return this.props.onGlobalToast('请输入登录密码');
+        }
+
+        if (fastClick()) {
+            return;
         }
 
         this.props.apiAccountSmsSignup({

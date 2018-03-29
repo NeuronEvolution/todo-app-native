@@ -1,4 +1,4 @@
-const minClickInterval: number = 1000;
+const minClickInterval: number = 500;
 let lastClickTime: Date = new Date(0);
 
 export const fastClick = (): boolean => {

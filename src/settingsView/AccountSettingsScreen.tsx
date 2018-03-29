@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import { commonStyles } from '../commonStyles';
 import { apiUserLogout } from '../redux_login';
 
@@ -39,6 +40,10 @@ class AccountSettingsScreen extends React.Component<Props> {
     }
 
     private onLogoutPressed() {
+        if (fastClick()) {
+            return;
+        }
+
         this.props.apiUserLogout();
     }
 }

@@ -42,6 +42,10 @@ class ToastView extends React.Component<ToastInfo> {
         const text = this.props.text;
         const timestamp = this.props.timestamp;
 
+        if (!text || text === '') {
+            return null;
+        }
+
         return (
             <View
                 pointerEvents={'none'}
@@ -60,7 +64,7 @@ class ToastView extends React.Component<ToastInfo> {
                             </Text>
                         </View>
                     }
-                    intervalMillSec={2000}
+                    intervalMillSec={1500}
                     visible={text !== ''}
                 />
             </View>

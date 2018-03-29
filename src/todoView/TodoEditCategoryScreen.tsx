@@ -6,6 +6,7 @@ import {
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import { CategoryInfo } from '../api/todo-private/gen';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
@@ -42,6 +43,10 @@ const navigationOptionsFunc = ({navigation}: NavigationScreenProps<TodoEditCateg
                     justifyContent: 'center', alignItems: 'center'
                 }]}
                 onPress={() => {
+                    if (fastClick()) {
+                        return;
+                    }
+
                     navigation.goBack();
                     navigation.state.params.onBack(categoryForNavigation);
                 }}>

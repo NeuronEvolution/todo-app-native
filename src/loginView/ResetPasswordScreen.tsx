@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { checkPhone } from '../_common/common';
 import { countdown } from '../_common/countdown';
+import { fastClick } from '../_common/fastClick';
 import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiAccountResetPassword, apiAccountSmsCode } from '../redux_login';
@@ -138,6 +139,10 @@ class ResetPasswordScreen extends React.Component<Props, State> {
             return this.props.onGlobalToast('手机号格式不正确');
         }
 
+        if (fastClick()) {
+            return;
+        }
+
         const COUNT_DOWN_SECONDS = 60;
         countdown(COUNT_DOWN_SECONDS, (n: number) => {
             this.setState({smsCodeCountdown: n});
@@ -147,6 +152,8 @@ class ResetPasswordScreen extends React.Component<Props, State> {
     }
 
     private onResetSuccess() {
+        fastClick(); // todo 避免在此之前再点击
+
         this.props.navigation.goBack();
     }
 
@@ -163,6 +170,10 @@ class ResetPasswordScreen extends React.Component<Props, State> {
 
         if (inputNewPassword === '') {
             return this.props.onGlobalToast('请输入新密码');
+        }
+
+        if (fastClick()) {
+            return;
         }
 
         this.props.apiAccountResetPassword(

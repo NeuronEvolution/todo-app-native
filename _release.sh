@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-PROD_IP=${PROD_IP}
-scp ./android/app/app-release.apk root@${PROD_IP}:/nginx/static/files
+ossutilmac64 cp -f ./android/app/app-release.apk \
+oss://neuron-public/files/neuron-todo/app-release.apk

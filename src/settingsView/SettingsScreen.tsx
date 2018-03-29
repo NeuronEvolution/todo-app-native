@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import SelectionModal, { SelectionItem } from '../_react_native_common/SelectionModal';
 import { TodoVisibility, UserProfile } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
@@ -153,18 +154,34 @@ class SettingsScreen extends React.Component<Props, State> {
     }
 
     private onAccountSettingsPressed() {
+        if (fastClick()) {
+            return;
+        }
+
         this.props.navigation.navigate('AccountSettings');
     }
 
     private onUserNamePressed() {
+        if (fastClick()) {
+            return;
+        }
+
         this.props.navigation.navigate('UserName');
     }
 
     private onHelpPressed() {
+        if (fastClick()) {
+            return;
+        }
+
         this.props.onGlobalToast('功能暂未开放');
     }
 
     private onAboutPressed() {
+        if (fastClick()) {
+            return;
+        }
+
         this.props.onGlobalToast('功能暂未开放');
     }
 }

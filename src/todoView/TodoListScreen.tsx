@@ -8,6 +8,7 @@ import { commonStyles } from '../commonStyles';
 import TodoListView from '../component/TodoListView';
 import { apiTodoGetTodoListByCategory, apiTodoRemove, RootState } from '../redux';
 import ToastView from '../ToastView';
+import {fastClick} from "../_common/fastClick";
 
 export interface Props extends NavigationScreenProps<void> {
     todoListByCategory: TodoItemGroup[];
@@ -36,10 +37,18 @@ class TodoListScreen extends React.Component<Props> {
     }
 
     private onItemPress(todoItem: TodoItem) {
+        if (fastClick()) {
+            return;
+        }
+
         this.props.navigation.navigate('TodoDetail', {todoItem});
     }
 
     private onRemoveItem(todoId: string) {
+        if (fastClick()) {
+            return;
+        }
+
         this.props.apiTodoRemove(todoId);
     }
 }

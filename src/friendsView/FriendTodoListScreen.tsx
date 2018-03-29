@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import { FriendInfo, getTodoListParams, TodoItem, TodoItemGroup } from '../api/todo-private/gen';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
 import TodoListView from '../component/TodoListView';
@@ -55,6 +56,10 @@ class FriendTodoListScreen extends React.Component<Props, State> {
     }
 
     private onItemPress(todoItem: TodoItem) {
+        if (fastClick()) {
+            return;
+        }
+
         this.props.navigation.navigate(
             'FriendTodoDetail', {
                 todoItem,

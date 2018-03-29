@@ -91,7 +91,7 @@ class TodoAddScreen extends React.Component<Props, State> {
     private renderDesc() {
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[styles.nameText]}>描述</Text>
+                <Text style={[styles.nameText]}>备注</Text>
                 <TextInput
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, styles.contentWidth]}
