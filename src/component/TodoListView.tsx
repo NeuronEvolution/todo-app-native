@@ -454,7 +454,7 @@ export default class TodoListView extends React.Component<Props, State> {
 
         return (
             <View style={[styles.category]}>
-                <Text style={styles.categoryText}>{category}</Text>
+                <Text style={styles.categoryValueText}>{category}</Text>
                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                     <Text style={styles.categoryText}>
                         共
@@ -529,7 +529,7 @@ export default class TodoListView extends React.Component<Props, State> {
 
         Alert.alert('删除计划？', title, [
             {
-                text: '取消'
+                text: '取消',
             },
             {
                 text: '确定',
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
     },
     categoryValueText: {
         fontSize: 12,
-        color: '#FF8800',
+        color: '#008888',
     },
     summary: {
         paddingHorizontal: 8,
@@ -598,7 +598,7 @@ const styles = StyleSheet.create({
     },
     filterTitleText: {
         fontSize: 12,
-        color: '#FF8800'
+        color: '#008888'
     },
     filterCategoryButton: {
         backgroundColor: '#FFFFFFFF',

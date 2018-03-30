@@ -31,7 +31,7 @@ const initialState = {
 
 class SignupScreen extends React.Component<Props, State> {
     private static renderTitle(): JSX.Element {
-        return (<Text style={[commonStyles.text, styles.title]}>注册火星帐号</Text>);
+        return (<Text style={[styles.title]}>注册火星帐号</Text>);
     }
 
     public componentWillMount() {
@@ -74,7 +74,7 @@ class SignupScreen extends React.Component<Props, State> {
     private renderSmsCode(): JSX.Element {
         const {smsCodeCountdown} = this.state;
         const disabled = smsCodeCountdown > 0;
-        const color = disabled ? '#888' : '#0088FF';
+        const color = disabled ? '#888' : '#008888';
 
         return (
             <View style={[commonStyles.flexRowCentered]}>
@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         marginTop: 48,
-        marginBottom: 12
+        marginBottom: 12,
+        color: '#FF8800'
     }
 });

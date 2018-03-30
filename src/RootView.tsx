@@ -44,12 +44,12 @@ class RootView extends React.Component<Props, State> {
     }
 
     public render() {
+        const token = this.props.token;
+        const logged = token && token.accessToken && token.accessToken !== '';
+
         if (this.state.loading) {
             return RootView.renderLoading();
         }
-
-        const token = this.props.token;
-        const logged = token && token.accessToken && token.accessToken !== '';
 
         return logged ? <MainTabs/> : <LoginViewStack/>;
     }

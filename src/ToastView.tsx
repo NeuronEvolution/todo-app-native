@@ -52,7 +52,7 @@ class ToastView extends React.Component<ToastInfo> {
                 pointerEvents={'none'}
                 style={{
                     position: 'absolute',
-                    top: height * 0.1,
+                    top: height * 0.2,
                     width,
                     alignItems: 'center'
                 }}>

@@ -41,7 +41,7 @@ const initialState = {
 
 class LoginScreen extends React.Component<Props, State> {
     private static renderTitle(): JSX.Element {
-        return (<Text style={[commonStyles.text, styles.title]}>登录火星</Text>);
+        return (<Text style={[styles.title]}>登录火星</Text>);
     }
 
     public componentWillMount() {
@@ -88,12 +88,12 @@ class LoginScreen extends React.Component<Props, State> {
         return (
             <View style={[styles.links]}>
                 <Text
-                    style={[commonStyles.text]}
+                    style={[styles.linkText]}
                     onPress={this.onResetPasswordPressed}>
                     &nbsp;&nbsp;&nbsp;&nbsp;忘记密码？
                 </Text>
                 <Text
-                    style={[commonStyles.text]}
+                    style={[styles.linkText]}
                     onPress={this.onSignupPressed}>
                     新用户注册&nbsp;&nbsp;&nbsp;&nbsp;
                 </Text>
@@ -102,20 +102,20 @@ class LoginScreen extends React.Component<Props, State> {
     }
 
     private renderTabHeader() {
-        const accountColor = this.state.tabIndex === 0 ? {backgroundColor: '#eee'} : {backgroundColor: '#fff'};
-        const smsColor = this.state.tabIndex === 1 ? {backgroundColor: '#eee'} : {backgroundColor: '#fff'};
+        const accountColor = this.state.tabIndex === 0 ? {backgroundColor: '#f4f4f4'} : {backgroundColor: '#fff'};
+        const smsColor = this.state.tabIndex === 1 ? {backgroundColor: '#f4f4f4'} : {backgroundColor: '#fff'};
 
         return (
             <View style={[commonStyles.flexRowCentered]}>
                 <TouchableOpacity
                     style={[commonStyles.button, styles.loginMethodTabButton, accountColor]}
                     onPress={this.onPressTabAccountLogin}>
-                    <Text style={[commonStyles.text]}>帐号密码登录</Text>
+                    <Text style={[styles.tabHeaderText]}>帐号密码登录</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[commonStyles.button, styles.loginMethodTabButton, smsColor]}
                     onPress={this.onPressTabSmsLogin}>
-                    <Text style={[commonStyles.text]}>短信验证码登录</Text>
+                    <Text style={[styles.tabHeaderText]}>短信验证码登录</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -167,7 +167,7 @@ class LoginScreen extends React.Component<Props, State> {
     private renderSmsLogin() {
         const {smsCodeCountdown} = this.state;
         const disabled = smsCodeCountdown > 0;
-        const color = disabled ? '#888' : '#0088FF';
+        const color = disabled ? '#888' : '#008888';
 
         return (
             <View style={[commonStyles.flexColumnCentered]}>
@@ -287,7 +287,8 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         marginTop: 48,
-        marginBottom: 12
+        marginBottom: 12,
+        color: '#FF8800'
     },
     loginMethodTabButton: {
         minWidth: 140,
@@ -299,5 +300,13 @@ const styles = StyleSheet.create({
         width: 300,
         flexDirection: 'row',
         justifyContent: 'space-between'
+    },
+    tabHeaderText: {
+        fontSize: 14,
+        color: '#008888'
+    },
+    linkText: {
+        fontSize: 14,
+        color: '#008888'
     }
 });

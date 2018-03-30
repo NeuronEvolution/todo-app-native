@@ -71,7 +71,7 @@ class ResetPasswordScreen extends React.Component<Props, State> {
     private renderSmsCode(): JSX.Element {
         const {smsCodeCountdown} = this.state;
         const disabled = smsCodeCountdown > 0;
-        const color = disabled ? '#888' : '#0088FF';
+        const color = disabled ? '#888' : '#008888';
 
         return (
             <View style={[commonStyles.flexRowCentered]}>

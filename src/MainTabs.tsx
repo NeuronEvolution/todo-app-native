@@ -56,5 +56,6 @@ export const MainTabs = TabNavigator(
             style: {
                 backgroundColor: '#fff',
             },
+            activeTintColor: '#FF8800'
         },
     });

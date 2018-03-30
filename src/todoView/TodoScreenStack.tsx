@@ -24,7 +24,7 @@ export const TodoScreenStack = StackNavigator({
             headerRight: (
                 <TouchableOpacity
                     style={[{marginRight: 8, width: 64, height: 32,
-                        backgroundColor: '#0088FF', borderRadius: 2,
+                        backgroundColor: '#008888', borderRadius: 2,
                         justifyContent: 'center', alignItems: 'center'}]}
                     onPress={() => {
                         if (fastClick()) {
@@ -33,7 +33,7 @@ export const TodoScreenStack = StackNavigator({
 
                         navigation.navigate('TodoAdd');
                     }}>
-                    <Text style={[{fontSize: 14, color: '#fff'}]}>新计划</Text>
+                    <Text style={[{fontSize: 14, color: '#FFFFFF'}]}>新计划</Text>
                 </TouchableOpacity>
             ),
         })

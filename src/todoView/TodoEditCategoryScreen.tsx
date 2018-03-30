@@ -39,7 +39,7 @@ const navigationOptionsFunc = ({navigation}: NavigationScreenProps<TodoEditCateg
             <TouchableOpacity
                 style={[{
                     marginRight: 8, width: 64, height: 32,
-                    backgroundColor: '#0088FF', borderRadius: 2,
+                    backgroundColor: '#008888', borderRadius: 2,
                     justifyContent: 'center', alignItems: 'center'
                 }]}
                 onPress={() => {

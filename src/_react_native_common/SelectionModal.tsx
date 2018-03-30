@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     },
     cancelText: {
         fontSize: 18,
-        color: '#0088FF'
+        color: '#008888'
     },
     selectionButton: {
         width: Dimensions.get('window').width - 48,
