@@ -11,10 +11,10 @@ import { commonStyles } from '../commonStyles';
 import {
     apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup
 } from '../redux_login';
-import ToastView, { onGlobalToast } from '../ToastView';
+import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 
 export interface Props extends NavigationScreenProps<void> {
-    onGlobalToast: (text: string) => Dispatchable;
+    onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
     apiAccountLogin: (p: loginParams) => Dispatchable;
     apiAccountSmsCode: (p: smsCodeParams) => Dispatchable;
     apiAccountSmsLogin: (p: smsLoginParams) => Dispatchable;
@@ -211,11 +211,11 @@ class LoginScreen extends React.Component<Props, State> {
     private onGetSmsCodePressed() {
         const phone = this.state.loginPhone;
         if (phone === '') {
-            return this.props.onGlobalToast('请输入手机号');
+            return this.props.onGlobalToast('请输入手机号', TOAST_SLOW);
         }
 
         if (!checkPhone(phone)) {
-            return this.props.onGlobalToast('手机号格式不正确');
+            return this.props.onGlobalToast('手机号格式不正确', TOAST_SLOW);
         }
 
         if (fastClick()) {
@@ -234,10 +234,10 @@ class LoginScreen extends React.Component<Props, State> {
         if (this.state.tabIndex === 0) {
             const {loginName, loginPassword} = this.state;
             if (loginName === '') {
-                return this.props.onGlobalToast('请输入帐号');
+                return this.props.onGlobalToast('请输入帐号', TOAST_SLOW);
             }
             if (loginPassword === '') {
-                return this.props.onGlobalToast('请输入密码');
+                return this.props.onGlobalToast('请输入密码', TOAST_SLOW);
             }
 
             if (fastClick()) {
@@ -247,10 +247,10 @@ class LoginScreen extends React.Component<Props, State> {
         } else {
             const {loginPhone, loginSmsCode} = this.state;
             if (loginPhone === '') {
-                return this.props.onGlobalToast('请输入手机号');
+                return this.props.onGlobalToast('请输入手机号', TOAST_SLOW);
             }
             if (loginSmsCode === '') {
-                return this.props.onGlobalToast('请输入验证码');
+                return this.props.onGlobalToast('请输入验证码', TOAST_SLOW);
             }
 
             if (fastClick()) {

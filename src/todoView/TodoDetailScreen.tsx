@@ -9,7 +9,7 @@ import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
 import { apiTodoGetTodoListByCategory, apiTodoUpdate } from '../redux';
-import ToastView, { onGlobalToast } from '../ToastView';
+import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 import { getTodoStatusName } from '../utils';
 import { TodoEditCategoryScreenNavigationParams } from './TodoEditCategoryScreen';
 
@@ -17,7 +17,7 @@ export interface Props extends NavigationScreenProps<{todoItem: TodoItem}> {
     apiTodoUpdate: (todoId: string, todoItemMutate: TodoItem, onSuccess: () => void) => Dispatchable;
     apiTodoGetCategoryNameList: () => Dispatchable;
     apiTodoGetTodoListByCategory: (p: getTodoListParams) => Dispatchable;
-    onGlobalToast: (text: string) => Dispatchable;
+    onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
 }
 
 interface State {
@@ -242,18 +242,18 @@ class TodoDetailScreen extends React.Component<Props, State> {
 
         const todoId = this.state.todoItem.todoId;
         if (!todoId) {
-            return this.props.onGlobalToast('todoId为空');
+            return this.props.onGlobalToast('todoId为空', TOAST_SLOW);
         }
 
         const {category, title, status} = this.state.todoItemMutate;
         if (!category || category === '') {
-            return this.props.onGlobalToast('分类不能为空');
+            return this.props.onGlobalToast('分类不能为空', TOAST_SLOW);
         }
         if (!title || title === '') {
-            return this.props.onGlobalToast('标题不能为空');
+            return this.props.onGlobalToast('标题不能为空', TOAST_SLOW);
         }
         if (!status) {
-            return this.props.onGlobalToast('状态不能为空');
+            return this.props.onGlobalToast('状态不能为空', TOAST_SLOW);
         }
 
         this.props.apiTodoUpdate(todoId, this.state.todoItemMutate, this.onUpdateSuccess);

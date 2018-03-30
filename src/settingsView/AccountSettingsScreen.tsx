@@ -30,7 +30,7 @@ class AccountSettingsScreen extends React.Component<Props> {
                     commonStyles.windowButton,
                     styles.logoutButton,
                     {
-                        marginTop: 48
+                        marginTop: 360
                     }
                 ]}
                 onPress={this.onLogoutPressed}>

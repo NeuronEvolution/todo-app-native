@@ -61,6 +61,10 @@ export default class TimedComponent extends React.Component<Props, State> {
     }
 
     private show(timestamp: Date, intervalMillSec: number) {
+        if (intervalMillSec <= 0) {
+            intervalMillSec = 1000;
+        }
+
         if (new Date().getTime() - timestamp.getTime() > intervalMillSec) {
             return;
         }

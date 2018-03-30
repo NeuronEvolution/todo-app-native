@@ -3,12 +3,12 @@ import { View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
+import { fastClick } from '../_common/fastClick';
 import { getTodoListParams, TodoItem, TodoItemGroup } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import TodoListView from '../component/TodoListView';
 import { apiTodoGetTodoListByCategory, apiTodoRemove, RootState } from '../redux';
 import ToastView from '../ToastView';
-import {fastClick} from "../_common/fastClick";
 
 export interface Props extends NavigationScreenProps<void> {
     todoListByCategory: TodoItemGroup[];

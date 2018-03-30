@@ -8,11 +8,11 @@ import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
 import { apiTodoAddTodo, apiTodoGetTodoListByCategory } from '../redux';
-import ToastView, { onGlobalToast } from '../ToastView';
+import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 import { TodoEditCategoryScreenNavigationParams } from './TodoEditCategoryScreen';
 
 export interface Props extends NavigationScreenProps<void> {
-    onGlobalToast: (text: string) => Dispatchable;
+    onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
     apiTodoAddTodo: (p: TodoItem, onSuccess: () => void) => Dispatchable;
     apiTodoGetTodoListByCategory: (p: getTodoListParams) => Dispatchable;
     apiTodoGetCategoryNameList: () => Dispatchable;
@@ -152,10 +152,10 @@ class TodoAddScreen extends React.Component<Props, State> {
 
         const {category, title, desc} = this.state;
         if (!category || category === '') {
-            return this.props.onGlobalToast('分类不能为空');
+            return this.props.onGlobalToast('分类不能为空', TOAST_SLOW);
         }
         if (!title || title === '') {
-            return this.props.onGlobalToast('标题不能为空');
+            return this.props.onGlobalToast('标题不能为空', TOAST_SLOW);
         }
 
         this.props.apiTodoAddTodo(

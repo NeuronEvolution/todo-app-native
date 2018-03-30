@@ -10,7 +10,7 @@ import {
 } from './api/todo-private/gen';
 import { Token } from './api/user-private/gen';
 import { apiCall, getAccessToken, token, userID } from './redux_login';
-import { globalToast, onGlobalToast, ToastInfo } from './ToastView';
+import { globalToast, onGlobalToast, TOAST_FAST, ToastInfo } from './ToastView';
 
 export const ACTION_TODO_GET_USER_PROFILE_SUCCESS = 'ACTION_TODO_GET_USER_PROFILE_SUCCESS';
 export const ACTION_TODO_LIST_BY_CATEGORY_SUCCESS = 'ACTION_TODO_LIST_BY_CATEGORY_SUCCESS';
@@ -52,7 +52,7 @@ export const apiTodoUserProfileUpdateTodoVisibility = (visibility: TodoVisibilit
     return apiCall(() => {
         return todoPrivateApi.updateUserProfileTodoVisibility(visibility).then(() => {
             dispatch(apiTodoGetUserProfile());
-            dispatch(onGlobalToast('已保存'));
+            dispatch(onGlobalToast('已保存', TOAST_FAST));
         });
     });
 };
@@ -82,7 +82,7 @@ export const apiTodoGetTodoListByCategory = (p: getTodoListParams): Dispatchable
 export const apiTodoAddTodo = (p: TodoItem, onSuccess: () => void): Dispatchable => (dispatch) => {
     return apiCall(() => {
         return todoPrivateApi.addTodo(p).then(() => {
-            dispatch(onGlobalToast('已添加'));
+            dispatch(onGlobalToast('已添加', TOAST_FAST));
             onSuccess();
         });
     });
@@ -91,7 +91,7 @@ export const apiTodoAddTodo = (p: TodoItem, onSuccess: () => void): Dispatchable
 export const apiTodoRemove = (todoId: string): Dispatchable => (dispatch) => {
     return apiCall(() => {
         return todoPrivateApi.removeTodo(todoId).then(() => {
-            dispatch(onGlobalToast('已删除'));
+            dispatch(onGlobalToast('已删除', TOAST_FAST));
             dispatch(apiTodoGetTodoListByCategory({})); // refresh
         });
     });
@@ -101,7 +101,7 @@ export const apiTodoUpdate = (todoId: string, todoItem: TodoItem, onSuccess: () 
     : Dispatchable => (dispatch) => {
     return apiCall(() => {
         return todoPrivateApi.updateTodo(todoId, todoItem).then(() => {
-            dispatch(onGlobalToast('已更新'));
+            dispatch(onGlobalToast('已更新' , TOAST_FAST));
             dispatch(apiTodoGetTodoListByCategory({}));
             onSuccess();
         });

@@ -8,12 +8,12 @@ import SelectionModal, { SelectionItem } from '../_react_native_common/Selection
 import { TodoVisibility, UserProfile } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUserProfileUpdateTodoVisibility, RootState } from '../redux';
-import ToastView, { onGlobalToast } from '../ToastView';
+import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 import { getTodoVisibilityName } from '../utils';
 
 export interface Props extends NavigationScreenProps<void> {
     userProfile: UserProfile;
-    onGlobalToast: (text: string) => Dispatchable;
+    onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
     apiTodoUserProfileUpdateTodoVisibility: (visibility: TodoVisibility) => Dispatchable;
 }
 
@@ -174,7 +174,7 @@ class SettingsScreen extends React.Component<Props, State> {
             return;
         }
 
-        this.props.onGlobalToast('功能暂未开放');
+        this.props.navigation.navigate('HelpScreen');
     }
 
     private onAboutPressed() {
@@ -182,7 +182,7 @@ class SettingsScreen extends React.Component<Props, State> {
             return;
         }
 
-        this.props.onGlobalToast('功能暂未开放');
+        this.props.navigation.navigate('AboutScreen');
     }
 }
 

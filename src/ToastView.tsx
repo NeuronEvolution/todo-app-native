@@ -6,28 +6,30 @@ import TimedComponent from './_react_native_common/TimedComponent';
 import { commonStyles } from './commonStyles';
 import { RootState } from './redux';
 
+export const TOAST_SLOW = 3000;
+export const TOAST_FAST = 1000;
+
 const GLOBAL_TOAST_ACTION = 'GLOBAL_TOAST_ACTION';
 
 export interface ToastInfo {
     text: string;
     timestamp: Date;
+    intervalMsec: number;
 }
 
-export const onGlobalToast = (text: string): Dispatchable => (dispatch) => {
+export const onGlobalToast = (text: string, intervalMsec: number): Dispatchable => (dispatch) => {
     dispatch({
         type: GLOBAL_TOAST_ACTION,
         payload: {
             text,
+            intervalMsec,
             timestamp: new Date()
         }
     });
 };
 
-export const globalToast = (state: ToastInfo, action: StandardAction): ToastInfo => {
-    if (state === undefined) {
-        return {text: '', timestamp: new Date()};
-    }
-
+const initGlobalToast: ToastInfo = {text: '', timestamp: new Date(), intervalMsec: 3000};
+export const globalToast = (state: ToastInfo= initGlobalToast, action: StandardAction): ToastInfo => {
     switch (action.type) {
         case GLOBAL_TOAST_ACTION:
             return action.payload;
@@ -38,13 +40,12 @@ export const globalToast = (state: ToastInfo, action: StandardAction): ToastInfo
 
 class ToastView extends React.Component<ToastInfo> {
     public render() {
-        const {width, height} = Dimensions.get('window');
-        const text = this.props.text;
-        const timestamp = this.props.timestamp;
-
+        const {text, timestamp, intervalMsec} = this.props;
         if (!text || text === '') {
             return null;
         }
+
+        const {width, height} = Dimensions.get('window');
 
         return (
             <View
@@ -64,7 +65,7 @@ class ToastView extends React.Component<ToastInfo> {
                             </Text>
                         </View>
                     }
-                    intervalMillSec={1500}
+                    intervalMillSec={intervalMsec}
                     visible={text !== ''}
                 />
             </View>
@@ -74,7 +75,8 @@ class ToastView extends React.Component<ToastInfo> {
 
 const selectProps = (rootState: RootState) => ({
     text: rootState.globalToast.text,
-    timestamp: rootState.globalToast.timestamp
+    timestamp: rootState.globalToast.timestamp,
+    intervalMsec: rootState.globalToast.intervalMsec
 });
 
 export default connect(selectProps, {})(ToastView);

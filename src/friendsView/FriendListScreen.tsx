@@ -7,13 +7,13 @@ import { fastClick } from '../_common/fastClick';
 import { FriendInfo, getFriendsListParams, TodoVisibility } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoGetFriendsList, FriendsListWithPage, RootState } from '../redux';
-import ToastView, { onGlobalToast } from '../ToastView';
+import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 import { getTodoVisibilityName } from '../utils';
 
 export interface Props extends NavigationScreenProps<void> {
     userID: string;
     friendList: FriendsListWithPage;
-    onGlobalToast: (text: string) => Dispatchable;
+    onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
     apiTodoGetFriendsList: (p: getFriendsListParams) => Dispatchable;
 }
 
@@ -105,7 +105,7 @@ class FriendListScreen extends React.Component<Props> {
         }
 
         if (todoVisibility !== TodoVisibility.Public) {
-            return this.props.onGlobalToast('该用户的计划不可见');
+            return this.props.onGlobalToast('该用户的计划不可见', TOAST_SLOW);
         }
 
         if (fastClick()) {

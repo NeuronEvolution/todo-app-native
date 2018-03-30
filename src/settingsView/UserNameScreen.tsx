@@ -6,11 +6,11 @@ import { Dispatchable } from '../_common/action';
 import { fastClick } from '../_common/fastClick';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUserProfileUpdateUserName, RootState } from '../redux';
-import ToastView, { onGlobalToast } from '../ToastView';
+import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 
 export interface Props extends NavigationScreenProps<void> {
     userName: string;
-    onGlobalToast: (text: string) => Dispatchable;
+    onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
     apiTodoUserProfileUpdateUserName: (userName: string, onSuccess: () => void) => Dispatchable;
 }
 
@@ -86,7 +86,7 @@ class UserNameScreen extends React.Component<Props, State> {
 
         const userName = this.state.userName;
         if (userName === '') {
-            return this.props.onGlobalToast('名字不能为空');
+            return this.props.onGlobalToast('名字不能为空', TOAST_SLOW);
         }
 
         this.props.apiTodoUserProfileUpdateUserName(userName, this.onSaveSuccess);

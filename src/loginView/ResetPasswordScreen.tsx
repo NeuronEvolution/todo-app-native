@@ -9,10 +9,10 @@ import { fastClick } from '../_common/fastClick';
 import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiAccountResetPassword, apiAccountSmsCode } from '../redux_login';
-import ToastView, { onGlobalToast } from '../ToastView';
+import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 
 export interface Props extends NavigationScreenProps<any> {
-    onGlobalToast: (text: string) => Dispatchable;
+    onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
     apiAccountSmsCode: (p: smsCodeParams) => Dispatchable;
     apiAccountResetPassword: (p: resetPasswordParams, onSuccess: () => void) => Dispatchable;
 }
@@ -132,11 +132,11 @@ class ResetPasswordScreen extends React.Component<Props, State> {
     private onGetSmsCodePressed() {
         const phone = this.state.inputPhone;
         if (phone === '') {
-            return this.props.onGlobalToast('请输入手机号');
+            return this.props.onGlobalToast('请输入手机号', TOAST_SLOW);
         }
 
         if (!checkPhone(phone)) {
-            return this.props.onGlobalToast('手机号格式不正确');
+            return this.props.onGlobalToast('手机号格式不正确', TOAST_SLOW);
         }
 
         if (fastClick()) {
@@ -161,15 +161,15 @@ class ResetPasswordScreen extends React.Component<Props, State> {
         const {inputPhone, inputSmsCode, inputNewPassword} = this.state;
 
         if (inputPhone === '') {
-            return this.props.onGlobalToast('请输入手机号');
+            return this.props.onGlobalToast('请输入手机号', TOAST_SLOW);
         }
 
         if (inputSmsCode === '') {
-            return this.props.onGlobalToast('请输入短信验证码');
+            return this.props.onGlobalToast('请输入短信验证码', TOAST_SLOW);
         }
 
         if (inputNewPassword === '') {
-            return this.props.onGlobalToast('请输入新密码');
+            return this.props.onGlobalToast('请输入新密码', TOAST_SLOW);
         }
 
         if (fastClick()) {

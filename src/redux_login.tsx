@@ -11,9 +11,10 @@ import {
 } from './api/account-private/gen/';
 import { AuthorizationCode, DefaultApiFactory as OauthPrivateApi } from './api/oauth-private/gen';
 import {DefaultApiFactory as UserPrivateApi, OauthJumpResponse, Token } from './api/user-private/gen';
-import { STORAGE_KEY_USER_REFRESH_TOKEN } from './GlobalConstants';
 import { apiTodoGetUserProfile } from './redux';
-import { onGlobalToast } from './ToastView';
+import { onGlobalToast, TOAST_FAST, TOAST_SLOW } from './ToastView';
+
+const STORAGE_KEY_USER_REFRESH_TOKEN = 'USER_REFRESH_TOKEN';
 
 export const REQUIRE_LOGIN = 'REQUIRE_LOGIN';
 export const ACTION_USER_OAUTH_JUMP_SUCCESS = 'ACTION_USER_OAUTH_JUMP_SUCCESS';
@@ -37,7 +38,7 @@ export const onApiError = (err: any, message: string): Dispatchable => (dispatch
     const text = (errString === 'TypeError: Network request failed' || errString === 'TypeError: Failed to fetch') ?
         '网络连接失败' + (message ? ':' : '') + message : (err.message ? err.message : err.toString());
 
-    dispatch(onGlobalToast(text));
+    dispatch(onGlobalToast(text, TOAST_SLOW));
 };
 
 const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
@@ -51,7 +52,7 @@ const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
                     }
                     return userPrivateApi.oauthJump('fromApp', authCode, state)
                         .then((oauthJumpResponseData: OauthJumpResponse) => {
-                            dispatch(onGlobalToast('登录成功'));
+                            dispatch(onGlobalToast('登录成功', TOAST_FAST));
                             dispatch({type: ACTION_USER_OAUTH_JUMP_SUCCESS, payload: oauthJumpResponseData});
                             dispatch(saveUserRefreshToken(oauthJumpResponseData.token.refreshToken));
                             dispatch(apiTodoGetUserProfile());
@@ -69,7 +70,7 @@ const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
 export const apiUserLogout = (): Dispatchable => (dispatch) => {
     const t: Token = REDUX_STORE.getState().token;
     return userPrivateApi.logout(t.accessToken, t.refreshToken).then(() => {
-        dispatch(onGlobalToast('您已退出登录'));
+        dispatch(onGlobalToast('您已退出登录', TOAST_FAST));
         dispatch({type: ACTION_USER_LOGOUT_SUCCESS});
         dispatch(saveUserRefreshToken(''));
     }).catch((err) => {
@@ -80,7 +81,7 @@ export const apiUserLogout = (): Dispatchable => (dispatch) => {
 export const apiAccountSmsCode = (p: smsCodeParams): Dispatchable => (dispatch) => {
     return accountApi.smsCode(p.scene, p.phone, p.captchaId, p.captchaCode)
         .then(() => {
-            dispatch(onGlobalToast('已发送'));
+            dispatch(onGlobalToast('已发送', TOAST_FAST));
         }).catch((err) => {
             dispatch(onApiError(err, accountApiHost + '/smsCode'));
         });
@@ -117,7 +118,7 @@ export const apiAccountSmsSignup = (p: smsSignupParams): Dispatchable => (dispat
 export const apiAccountResetPassword = (p: resetPasswordParams, onSuccess: () => void): Dispatchable => (dispatch) => {
     return accountApi.resetPassword(p.phone, p.smsCode, p.newPassword)
         .then(() => {
-            dispatch(onGlobalToast('密码重置成功'));
+            dispatch(onGlobalToast('密码重置成功', TOAST_FAST));
             onSuccess();
         }).catch((err) => {
             dispatch(onApiError(err, accountApiHost + '/resetPassword'));
@@ -143,7 +144,7 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
                 .then((data: Token) => {
                     dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
                     dispatch(saveUserRefreshToken(data.refreshToken));
-                    dispatch(onGlobalToast('登录成功'));
+                    dispatch(onGlobalToast('登录成功', TOAST_FAST));
                 })
                 .catch((err) => {
                     console.log('autoLogin', 'userPrivateApi.refreshToken', err); // todo: more

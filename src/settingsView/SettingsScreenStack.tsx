@@ -2,7 +2,9 @@ import * as React from 'react';
 import { Image, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { commonStyles, defaultHeaderTintColor } from '../commonStyles';
+import AboutScreen from './AboutScreen';
 import AccountSettingsScreen from './AccountSettingsScreen';
+import HelpScreen from './HelpScreen';
 import SettingsScreen from './SettingsScreen';
 import UserNameScreen from './UserNameScreen';
 
@@ -28,8 +30,8 @@ export const SettingsScreenStack = StackNavigator({
             headerTintColor: defaultHeaderTintColor,
             headerTitle: '帐号设置',
             headerTitleStyle: [commonStyles.stackHeaderText],
-            tabBarVisible: false,
             headerStyle: [commonStyles.stackHeader],
+            tabBarVisible: false,
             swipeEnabled: false
         }
     },
@@ -39,8 +41,30 @@ export const SettingsScreenStack = StackNavigator({
             headerTintColor: defaultHeaderTintColor,
             headerTitle: '更改名字',
             headerTitleStyle: [commonStyles.stackHeaderText],
-            tabBarVisible: false,
             headerStyle: [commonStyles.stackHeader],
+            tabBarVisible: false,
+            swipeEnabled: false
+        }
+    },
+    HelpScreen: {
+        screen: HelpScreen,
+        navigationOptions: {
+            headerTintColor: defaultHeaderTintColor,
+            headerTitle: '一个AI',
+            headerTitleStyle: [commonStyles.stackHeaderText],
+            headerStyle: [commonStyles.stackHeader],
+            tabBarVisible: false,
+            swipeEnabled: false
+        }
+    },
+    AboutScreen: {
+        screen: AboutScreen,
+        navigationOptions: {
+            headerTintColor: defaultHeaderTintColor,
+            headerTitle: '关于火星计划',
+            headerTitleStyle: [commonStyles.stackHeaderText],
+            headerStyle: [commonStyles.stackHeader],
+            tabBarVisible: false,
             swipeEnabled: false
         }
     }
