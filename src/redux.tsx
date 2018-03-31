@@ -83,6 +83,7 @@ export const apiTodoAddTodo = (p: TodoItem, onSuccess: () => void): Dispatchable
     return apiCall(() => {
         return todoPrivateApi.addTodo(p).then(() => {
             dispatch(onGlobalToast('已添加', TOAST_FAST));
+            dispatch(apiTodoGetTodoListByCategory({})); // refresh
             onSuccess();
         });
     });
@@ -102,7 +103,7 @@ export const apiTodoUpdate = (todoId: string, todoItem: TodoItem, onSuccess: () 
     return apiCall(() => {
         return todoPrivateApi.updateTodo(todoId, todoItem).then(() => {
             dispatch(onGlobalToast('已更新' , TOAST_FAST));
-            dispatch(apiTodoGetTodoListByCategory({}));
+            dispatch(apiTodoGetTodoListByCategory({})); // refresh
             onSuccess();
         });
     });

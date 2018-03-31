@@ -83,11 +83,11 @@ export const commonStyles = StyleSheet.create({
         color: '#555',
         fontSize: 14,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: '#F8F8F8',
     },
     line: {
         height: 1,
-        backgroundColor: '#F4F4F4'
+        backgroundColor: '#F8F8F8'
     },
     contentWidth: {
         width: 300

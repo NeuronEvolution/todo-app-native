@@ -22,22 +22,22 @@ class FriendListScreen extends React.Component<Props> {
         return item.userID ? item.userID : index.toString();
     }
 
-    private static renderSeparatorLine(): JSX.Element {
+    private static renderSeparatorLine() {
         return (<View style={[commonStyles.line]}/>);
     }
 
-    private static renderTodoSummery(friendInfo: FriendInfo): JSX.Element {
+    private static renderTodoSummery(friendInfo: FriendInfo) {
         const {todoCount, todoVisibility} = friendInfo;
 
         return (
             <View style={[{width: 120}]}>
                 <View style={[commonStyles.flexRowSpaceBetween, {height: 24}]}>
                     <Text style={[{fontSize: 12, color: '#888'}]}>总计划数：</Text>
-                    <Text style={[{fontSize: 12, color: '#888'}]}>{todoCount}</Text>
+                    <Text style={[{fontSize: 12, color: '#FF8800'}]}>{todoCount}</Text>
                 </View>
                 <View style={[commonStyles.flexRowSpaceBetween, {height: 24}]}>
                     <Text style={[{fontSize: 12, color: '#888'}]}>是否公开：</Text>
-                    <Text style={[{fontSize: 12, color: '#888'}]}>
+                    <Text style={[{fontSize: 12, color: '#FF8800'}]}>
                         {getTodoVisibilityName(todoVisibility)}
                     </Text>
                 </View>
@@ -66,7 +66,7 @@ class FriendListScreen extends React.Component<Props> {
         );
     }
 
-    private renderFriendInfo(info: ListRenderItemInfo<FriendInfo>): JSX.Element {
+    private renderFriendInfo(info: ListRenderItemInfo<FriendInfo>) {
         const friendInfo = info.item;
 
         return (
@@ -87,8 +87,8 @@ class FriendListScreen extends React.Component<Props> {
 
         return (
             <View style={[commonStyles.flexRowLeft]}>
-                <Text style={[commonStyles.text]}>{userName}</Text>
-                <Text style={[{color: '#0088FF', fontSize: 10, marginLeft: 4}]}>{self}</Text>
+                <Text style={[{fontSize: 14, color: '#008888'}]}>{userName}</Text>
+                <Text style={[{color: '#FF8800', fontSize: 10, marginLeft: 4}]}>{self}</Text>
             </View>
         );
     }

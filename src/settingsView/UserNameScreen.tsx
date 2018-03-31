@@ -7,6 +7,7 @@ import { fastClick } from '../_common/fastClick';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUserProfileUpdateUserName, RootState } from '../redux';
 import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
+import {MAX_USER_NAME_LENGTH} from "../GlobalConstants";
 
 export interface Props extends NavigationScreenProps<void> {
     userName: string;
@@ -49,7 +50,10 @@ class UserNameScreen extends React.Component<Props, State> {
                 autoFocus={true}
                 style={[commonStyles.textInput]}
                 value={this.state.userName}
-                onChangeText={this.onChangeText}/>
+                onChangeText={this.onChangeText}
+                placeholder={'最多' + MAX_USER_NAME_LENGTH + '个字符'}
+                maxLength={MAX_USER_NAME_LENGTH}
+            />
         );
     }
 

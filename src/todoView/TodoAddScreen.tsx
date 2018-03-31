@@ -4,17 +4,16 @@ import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { fastClick } from '../_common/fastClick';
-import { getTodoListParams, TodoItem, TodoStatus } from '../api/todo-private/gen';
+import { TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
-import { apiTodoAddTodo, apiTodoGetTodoListByCategory } from '../redux';
+import { apiTodoAddTodo} from '../redux';
 import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 import { TodoEditCategoryScreenNavigationParams } from './TodoEditCategoryScreen';
 
 export interface Props extends NavigationScreenProps<void> {
     onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
     apiTodoAddTodo: (p: TodoItem, onSuccess: () => void) => Dispatchable;
-    apiTodoGetTodoListByCategory: (p: getTodoListParams) => Dispatchable;
     apiTodoGetCategoryNameList: () => Dispatchable;
 }
 
@@ -65,7 +64,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                     style={[styles.contentButton]}
                     onPress={this.onCategoryPress}
                 >
-                    <Text style={[commonStyles.text, {color}]}>
+                    <Text style={[{color, fontSize: 12}]}>
                         {text}
                     </Text>
                 </TouchableOpacity>
@@ -83,6 +82,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                     onChangeText={this.onTitleChanged}
                     value={this.state.title}
                     placeholder={'最多' + GlobalConstants.MAX_TITLE_NAME_LENGTH + '个字符'}
+                    maxLength={GlobalConstants.MAX_TITLE_NAME_LENGTH}
                 />
             </View>
         );
@@ -98,6 +98,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                     onChangeText={this.onDescChanged}
                     value={this.state.desc}
                     placeholder={'最多' + GlobalConstants.MAX_DESC_TEXT_LENGTH + '个字符'}
+                    maxLength={GlobalConstants.MAX_DESC_TEXT_LENGTH}
                 />
             </View>
         );
@@ -141,7 +142,6 @@ class TodoAddScreen extends React.Component<Props, State> {
     }
 
     private onAddSuccess() {
-        this.props.apiTodoGetTodoListByCategory({});
         this.props.navigation.goBack();
     }
 
@@ -172,8 +172,7 @@ class TodoAddScreen extends React.Component<Props, State> {
 
 export default connect(null, {
     onGlobalToast,
-    apiTodoAddTodo,
-    apiTodoGetTodoListByCategory
+    apiTodoAddTodo
 })(TodoAddScreen);
 
 const styles = StyleSheet.create({

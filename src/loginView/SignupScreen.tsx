@@ -7,7 +7,10 @@ import { countdown } from '../_common/countdown';
 import { fastClick } from '../_common/fastClick';
 import { smsCodeParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiAccountSmsCode, apiAccountSmsSignup } from '../redux_login';
+import {
+    apiAccountSmsCode, apiAccountSmsSignup, MAX_PASSWORD_LENGTH, MAX_PHONE_LENGTH,
+    MAX_SMS_CODE_LENGTH
+} from '../redux_login';
 import ToastView, { onGlobalToast } from '../ToastView';
 
 export interface Props {
@@ -30,7 +33,7 @@ const initialState = {
 };
 
 class SignupScreen extends React.Component<Props, State> {
-    private static renderTitle(): JSX.Element {
+    private static renderTitle() {
         return (<Text style={[styles.title]}>注册火星帐号</Text>);
     }
 
@@ -57,7 +60,7 @@ class SignupScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderPhone(): JSX.Element {
+    private renderPhone() {
         return (
             <View style={[commonStyles.flexRowCentered]}>
                 <Text style={[commonStyles.text, {width: 72}]}>手机号</Text>
@@ -66,12 +69,14 @@ class SignupScreen extends React.Component<Props, State> {
                     style={[commonStyles.textInput, {width: 180}]}
                     onChangeText={this.onPhoneChanged}
                     value={this.state.signupPhone}
-                    placeholder={'请输入手机号'}/>
+                    placeholder={'请输入手机号'}
+                    maxLength={MAX_PHONE_LENGTH}
+                />
             </View>
         );
     }
 
-    private renderSmsCode(): JSX.Element {
+    private renderSmsCode() {
         const {smsCodeCountdown} = this.state;
         const disabled = smsCodeCountdown > 0;
         const color = disabled ? '#888' : '#008888';
@@ -83,7 +88,9 @@ class SignupScreen extends React.Component<Props, State> {
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, {width: 60}]}
                     onChangeText={this.onSmsCodeChanged}
-                    value={this.state.signupSmsCode}/>
+                    value={this.state.signupSmsCode}
+                    maxLength={MAX_SMS_CODE_LENGTH}
+                />
                 <TouchableOpacity
                     disabled={disabled}
                     style={[commonStyles.button, {width: 120, backgroundColor: '#fff'}]}
@@ -96,7 +103,7 @@ class SignupScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderPassword(): JSX.Element {
+    private renderPassword() {
         return (
             <View style={[commonStyles.flexRowCentered]}>
                 <Text style={[commonStyles.text, {width: 72}]}>密码</Text>
@@ -106,12 +113,13 @@ class SignupScreen extends React.Component<Props, State> {
                     onChangeText={this.onPasswordChanged}
                     value={this.state.signupPassword}
                     placeholder={'请输入登录密码'}
+                    maxLength={MAX_PASSWORD_LENGTH}
                 />
             </View>
         );
     }
 
-    private renderSignupButton(): JSX.Element {
+    private renderSignupButton() {
         return (
             <TouchableOpacity
                 style={[commonStyles.windowButton, {marginTop: 12}]}

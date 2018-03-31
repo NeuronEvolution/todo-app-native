@@ -93,6 +93,7 @@ class TodoEditCategoryScreen extends React.Component<Props, State> {
                     onChangeText={this.onCategoryChanged}
                     value={this.state.category}
                     placeholder={'最多' + GlobalConstants.MAX_CATEGORY_NAME_LENGTH + '个字符'}
+                    maxLength={GlobalConstants.MAX_CATEGORY_NAME_LENGTH}
                 />
                 <FlatList
                     keyboardShouldPersistTaps={'always'}
@@ -126,7 +127,7 @@ class TodoEditCategoryScreen extends React.Component<Props, State> {
                     this.onCategoryChanged(category);
                 }}
             >
-                <Text style={commonStyles.text}>{category}</Text>
+                <Text style={[{fontSize: 14, color: '#008888'}]}>{category}</Text>
                 <Text style={styles.todoCountText}>{todoCount}个计划</Text>
             </TouchableOpacity>
         );
@@ -153,10 +154,10 @@ const styles = StyleSheet.create({
     },
     categoryItem: {
        borderBottomWidth: 1,
-       borderBottomColor: '#eee'
+       borderBottomColor: '#F8F8F8'
     },
     todoCountText: {
         fontSize: 12,
-        color: '#888'
+        color: '#FF8800'
     }
 });

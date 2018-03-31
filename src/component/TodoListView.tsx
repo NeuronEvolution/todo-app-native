@@ -243,13 +243,13 @@ export default class TodoListView extends React.Component<Props, State> {
                     >
                         <View style={[styles.filterTitleContainer]}>
                             <Text style={[styles.filterTitleText]}>选择状态:</Text>
-                            <Text style={[styles.filterTitleText]}>{currentStatus}</Text>
+                            <Text style={[styles.filterTitleValue]}>{currentStatus}</Text>
                         </View>
                         {this.renderFilterStatusContainer()}
                         <View style={commonStyles.line}/>
                         <View style={[styles.filterTitleContainer, {marginTop: 24}]}>
                             <Text style={[styles.filterTitleText]}>选择分类:</Text>
-                            <Text style={[styles.filterTitleText]}>{currentCategory}</Text>
+                            <Text style={[styles.filterTitleValue]}>{currentCategory}</Text>
                         </View>
                         <View style={commonStyles.line}/>
                         <FlatList
@@ -275,7 +275,7 @@ export default class TodoListView extends React.Component<Props, State> {
     private renderFilterStatus(todoStatus: TodoStatus) {
         const status = this.state.filterTodoStatusSelecting;
         const backgroundColor = status === todoStatus ? '#FF8800' : '#fff';
-        const color = status === todoStatus ? '#fff' : '#444';
+        const color = status === todoStatus ? '#fff' : '#008888';
 
         return (
             <TouchableOpacity
@@ -285,7 +285,7 @@ export default class TodoListView extends React.Component<Props, State> {
                     {
                         backgroundColor,
                         borderRightWidth: 1,
-                        borderRightColor: '#eee'
+                        borderRightColor: '#F8F8F8'
                     }
                 ]}
                 onPress={() => {
@@ -338,7 +338,8 @@ export default class TodoListView extends React.Component<Props, State> {
         const todoCount = todoItemList ? todoItemList.length : 0;
         const selected = this.state.filterTodoItemGroupSelecting === info.item;
         const backgroundColor = selected ? '#FF8800' : '#FFFFFFFF';
-        const color = selected ? {color: '#fff'} : null;
+        const color = selected ? '#fff' : '#008888';
+        const todoCountColor = selected ? '#fff' : '#FF8800';
 
         return (
             <TouchableHighlight
@@ -348,8 +349,10 @@ export default class TodoListView extends React.Component<Props, State> {
                 }}
             >
                 <View style={[styles.filterCategoryButton, {backgroundColor}]}>
-                    <Text style={[commonStyles.text, color]}>{category}</Text>
-                    <Text style={[commonStyles.text, color]}>{todoCount}个计划</Text>
+                    <Text style={[{fontSize: 14, color}]}>{category}</Text>
+                    <Text style={[{fontSize: 12, color: todoCountColor}]}>{todoCount}
+                        个计划
+                    </Text>
                 </View>
             </TouchableHighlight>
         );
@@ -459,13 +462,7 @@ export default class TodoListView extends React.Component<Props, State> {
                     <Text style={styles.categoryText}>
                         共
                         <Text style={styles.categoryValueText}>{todoCount}</Text>
-                        个计划,
-                        <Text style={styles.categoryValueText}>{ongoingCount}</Text>
-                        进行中,
-                        <Text style={styles.categoryValueText}>{completeCount}</Text>
-                        已完成,
-                        <Text style={styles.categoryValueText}>{discardCount}</Text>
-                        已放弃
+                        个计划
                     </Text>
                 </View>
             </View>
@@ -494,10 +491,10 @@ export default class TodoListView extends React.Component<Props, State> {
                         {
                             paddingHorizontal: 8,
                             borderBottomWidth: 1,
-                            borderBottomColor: '#eee'
+                            borderBottomColor: '#F8F8F8'
                         }
                     ]}>
-                    <Text style={[commonStyles.text]}>{todoItem.title}</Text>
+                    <Text style={[{fontSize: 14, color: '#008888'}]}>{todoItem.title}</Text>
                     <Text style={[{fontSize: 12}, getTodoStatusTextColor(todoItem.status)]}>
                         {getTodoStatusName(todoItem.status)}
                     </Text>
@@ -546,17 +543,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 24,
         paddingHorizontal: 8,
-        backgroundColor: '#eee',
+        backgroundColor: '#F8F8F8',
         justifyContent: 'space-between',
         alignItems: 'center'
     },
     categoryText: {
         fontSize: 12,
-        color: '#555'
+        color: '#888888'
     },
     categoryValueText: {
         fontSize: 12,
-        color: '#008888',
+        color: '#FF8800',
     },
     summary: {
         paddingHorizontal: 8,
@@ -598,7 +595,11 @@ const styles = StyleSheet.create({
     },
     filterTitleText: {
         fontSize: 12,
-        color: '#008888'
+        color: '#888888'
+    },
+    filterTitleValue: {
+        fontSize: 12,
+        color: '#FF8800'
     },
     filterCategoryButton: {
         backgroundColor: '#FFFFFFFF',

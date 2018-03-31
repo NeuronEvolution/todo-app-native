@@ -38,7 +38,7 @@ class RootView extends React.Component<Props, State> {
             () => {
                 this.setState({loading: false});
             },
-            1500);
+            2000);
 
         this.props.autoLogin();
     }

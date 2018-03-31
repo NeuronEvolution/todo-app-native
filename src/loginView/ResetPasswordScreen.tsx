@@ -8,7 +8,10 @@ import { countdown } from '../_common/countdown';
 import { fastClick } from '../_common/fastClick';
 import { resetPasswordParams, smsCodeParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
-import { apiAccountResetPassword, apiAccountSmsCode } from '../redux_login';
+import {
+    apiAccountResetPassword, apiAccountSmsCode, MAX_PASSWORD_LENGTH, MAX_PHONE_LENGTH,
+    MAX_SMS_CODE_LENGTH
+} from '../redux_login';
 import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 
 export interface Props extends NavigationScreenProps<any> {
@@ -54,7 +57,7 @@ class ResetPasswordScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderPhone(): JSX.Element {
+    private renderPhone() {
         return (
             <View style={[commonStyles.flexRowCentered, {marginTop: 80}]}>
                 <Text style={[commonStyles.text, {width: 80}]}>手机号</Text>
@@ -63,12 +66,14 @@ class ResetPasswordScreen extends React.Component<Props, State> {
                     style={[commonStyles.textInput, {width: 180}]}
                     onChangeText={this.onPhoneChanged}
                     value={this.state.inputPhone}
-                    placeholder={'请输入手机号'}/>
+                    placeholder={'请输入手机号'}
+                    maxLength={MAX_PHONE_LENGTH}
+                />
             </View>
         );
     }
 
-    private renderSmsCode(): JSX.Element {
+    private renderSmsCode() {
         const {smsCodeCountdown} = this.state;
         const disabled = smsCodeCountdown > 0;
         const color = disabled ? '#888' : '#008888';
@@ -80,7 +85,9 @@ class ResetPasswordScreen extends React.Component<Props, State> {
                     underlineColorAndroid={'transparent'}
                     style={[commonStyles.textInput, {width: 60}]}
                     onChangeText={this.onSmsCodeChanged}
-                    value={this.state.inputSmsCode}/>
+                    value={this.state.inputSmsCode}
+                    maxLength={MAX_SMS_CODE_LENGTH}
+                />
                 <TouchableOpacity
                     disabled={disabled}
                     style={[commonStyles.button, {width: 120, backgroundColor: '#fff'}]}
@@ -93,7 +100,7 @@ class ResetPasswordScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderPassword(): JSX.Element {
+    private renderPassword() {
         return (
             <View style={[commonStyles.flexRowCentered]}>
                 <Text style={[commonStyles.text, {width: 80}]}>新密码</Text>
@@ -102,12 +109,14 @@ class ResetPasswordScreen extends React.Component<Props, State> {
                     style={[commonStyles.textInput, {width: 180}]}
                     onChangeText={this.onPasswordChanged}
                     value={this.state.inputNewPassword}
-                    placeholder={'请输入新密码'}/>
+                    placeholder={'请输入新密码'}
+                    maxLength={MAX_PASSWORD_LENGTH}
+                />
             </View>
         );
     }
 
-    private renderResetButton(): JSX.Element {
+    private renderResetButton() {
         return (
             <TouchableOpacity
                 style={[commonStyles.windowButton, {marginTop: 12}]}

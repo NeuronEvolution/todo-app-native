@@ -20,7 +20,7 @@ export function getTodoStatusName(p?: TodoStatus | null): string {
 export function getTodoStatusTextColor(p?: TodoStatus): TextStyle {
     switch (p) {
         case TodoStatus.Ongoing:
-            return {color: '#777'};
+            return {color: '#FF8800'};
         case TodoStatus.Completed:
             return {color: '#ccc'};
         case TodoStatus.Discard:

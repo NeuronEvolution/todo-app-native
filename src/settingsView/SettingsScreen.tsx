@@ -8,7 +8,7 @@ import SelectionModal, { SelectionItem } from '../_react_native_common/Selection
 import { TodoVisibility, UserProfile } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUserProfileUpdateTodoVisibility, RootState } from '../redux';
-import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
+import ToastView, { onGlobalToast } from '../ToastView';
 import { getTodoVisibilityName } from '../utils';
 
 export interface Props extends NavigationScreenProps<void> {
@@ -89,7 +89,7 @@ class SettingsScreen extends React.Component<Props, State> {
             >
                 <View style={[commonStyles.flexRowSpaceBetween]}>
                     <Text style={[commonStyles.text]}>你的名字</Text>
-                    <Text style={[commonStyles.text]}>{userName}</Text>
+                    <Text style={[{fontSize: 14, color: '#FF8800'}]}>{userName}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -107,7 +107,7 @@ class SettingsScreen extends React.Component<Props, State> {
             >
                 <View style={[commonStyles.flexRowSpaceBetween]}>
                     <Text style={[commonStyles.text]}>计划是否公开</Text>
-                    <Text style={[commonStyles.text]}>{todoVisibility}</Text>
+                    <Text style={[{fontSize: 14, color: '#FF8800'}]}>{todoVisibility}</Text>
                 </View>
             </TouchableHighlight>
         );

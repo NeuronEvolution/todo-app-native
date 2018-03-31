@@ -9,7 +9,9 @@ import { fastClick } from '../_common/fastClick';
 import { loginParams, smsCodeParams, smsLoginParams, smsSignupParams } from '../api/account-private/gen';
 import { commonStyles } from '../commonStyles';
 import {
-    apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup
+    apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup, MAX_LOGIN_NAME_LENGTH,
+    MAX_PHONE_LENGTH,
+    MAX_PASSWORD_LENGTH, MAX_SMS_CODE_LENGTH
 } from '../redux_login';
 import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 
@@ -74,7 +76,7 @@ class LoginScreen extends React.Component<Props, State> {
         </View>;
     }
 
-    private renderLoginButton(): JSX.Element {
+    private renderLoginButton() {
         return (
             <TouchableOpacity
                 style={[commonStyles.button, commonStyles.contentWidth, {marginTop: 12}]}
@@ -84,7 +86,7 @@ class LoginScreen extends React.Component<Props, State> {
         );
     }
 
-    private renderLinks(): JSX.Element {
+    private renderLinks() {
         return (
             <View style={[styles.links]}>
                 <Text
@@ -140,6 +142,7 @@ class LoginScreen extends React.Component<Props, State> {
                         onChangeText={this.onLoginNameChanged}
                         value={this.state.loginName}
                         placeholder={'请输入手机号码'}
+                        maxLength={MAX_LOGIN_NAME_LENGTH}
                     />
                 </View>
                 <View style={[commonStyles.flexRowCentered]}>
@@ -150,6 +153,7 @@ class LoginScreen extends React.Component<Props, State> {
                         onChangeText={this.onLoginPasswordChanged}
                         value={this.state.loginPassword}
                         placeholder={'请输入密码'}
+                        maxLength={MAX_PASSWORD_LENGTH}
                     />
                 </View>
             </View>
@@ -178,7 +182,9 @@ class LoginScreen extends React.Component<Props, State> {
                         style={[commonStyles.textInput, {width: 220}]}
                         onChangeText={this.onPhoneChanged}
                         value={this.state.loginPhone}
-                        placeholder={'请输入手机号码'}/>
+                        placeholder={'请输入手机号码'}
+                        maxLength={MAX_PHONE_LENGTH}
+                    />
                 </View>
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 80}]}>验证码</Text>
@@ -186,7 +192,9 @@ class LoginScreen extends React.Component<Props, State> {
                         underlineColorAndroid={'transparent'}
                         style={[commonStyles.textInput, {width: 60}]}
                         onChangeText={this.onSmsCodeChanged}
-                        value={this.state.loginSmsCode}/>
+                        value={this.state.loginSmsCode}
+                        maxLength={MAX_SMS_CODE_LENGTH}
+                    />
                     <TouchableOpacity
                         disabled={disabled}
                         style={[commonStyles.button, {width: 160, backgroundColor: '#fff'}]}
