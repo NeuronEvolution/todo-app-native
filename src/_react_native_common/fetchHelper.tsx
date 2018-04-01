@@ -1,7 +1,6 @@
 import DeviceInfo from 'react-native-device-info';
 
-const userAgent = DeviceInfo.getApplicationName() + '_' + DeviceInfo.getBuildNumber()
-    + ' ' + DeviceInfo.getUserAgent();
+const userAgent =  'todo_app_v1.0.0' + ' ' + DeviceInfo.getUserAgent();
 
 export const getHeader = (): RequestInit => {
     return {
