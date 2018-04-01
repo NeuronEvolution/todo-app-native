@@ -67,7 +67,9 @@ class TodoEditCategoryScreen extends React.Component<Props, State> {
         const category = navigationParam && navigationParam.category;
         this.setState({category});
         categoryForNavigation = category;
+    }
 
+    public componentDidMount() {
         this.props.apiTodoGetCategoryNameList();
     }
 

@@ -2,6 +2,7 @@ import { AsyncStorage } from 'react-native';
 import { REDUX_STORE } from '../App';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
+import { getHeader } from './_react_native_common/fetchHelper';
 import {
     DefaultApiFactory as AccountApi,
     loginParams, resetPasswordParams,
@@ -47,15 +48,15 @@ export const onApiError = (err: any, message: string): Dispatchable => (dispatch
 };
 
 const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
-    return userPrivateApi.oauthState('fromApp')
+    return userPrivateApi.oauthState('fromApp', getHeader())
         .then((state: string) => {
-            return oauthPrivateApi.authorize(jwt, 'code', '100002', 'fromApp', 'BASIC', state)
+            return oauthPrivateApi.authorize(jwt, 'code', '100002', 'fromApp', 'BASIC', state, getHeader())
                 .then((authorizationCode: AuthorizationCode) => {
                     const authCode = authorizationCode.code;
                     if (authCode === undefined) {
                         return dispatch(onApiError('oauthPrivateApi.authorize code is null', ''));
                     }
-                    return userPrivateApi.oauthJump('fromApp', authCode, state)
+                    return userPrivateApi.oauthJump('fromApp', authCode, state, getHeader())
                         .then((oauthJumpResponseData: OauthJumpResponse) => {
                             dispatch(onGlobalToast('登录成功', TOAST_FAST));
                             dispatch({type: ACTION_USER_OAUTH_JUMP_SUCCESS, payload: oauthJumpResponseData});
@@ -74,17 +75,18 @@ const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
 
 export const apiUserLogout = (): Dispatchable => (dispatch) => {
     const t: Token = REDUX_STORE.getState().token;
-    return userPrivateApi.logout(t.accessToken, t.refreshToken).then(() => {
-        dispatch(onGlobalToast('您已退出登录', TOAST_FAST));
-        dispatch({type: ACTION_USER_LOGOUT_SUCCESS});
-        dispatch(saveUserRefreshToken(''));
-    }).catch((err) => {
-        dispatch(onApiError(err, userPrivateApiHost + '/logout'));
-    });
+    return userPrivateApi.logout(t.accessToken, t.refreshToken, getHeader())
+        .then(() => {
+            dispatch(onGlobalToast('您已退出登录', TOAST_FAST));
+            dispatch({type: ACTION_USER_LOGOUT_SUCCESS});
+            dispatch(saveUserRefreshToken(''));
+        }).catch((err) => {
+            dispatch(onApiError(err, userPrivateApiHost + '/logout'));
+        });
 };
 
 export const apiAccountSmsCode = (p: smsCodeParams): Dispatchable => (dispatch) => {
-    return accountApi.smsCode(p.scene, p.phone, p.captchaId, p.captchaCode)
+    return accountApi.smsCode(p.scene, p.phone, p.captchaId, p.captchaCode, getHeader())
         .then(() => {
             dispatch(onGlobalToast('已发送', TOAST_FAST));
         }).catch((err) => {
@@ -93,7 +95,7 @@ export const apiAccountSmsCode = (p: smsCodeParams): Dispatchable => (dispatch) 
 };
 
 export const apiAccountSmsLogin = (p: smsLoginParams): Dispatchable => (dispatch) => {
-    return accountApi.smsLogin(p.phone, p.smsCode)
+    return accountApi.smsLogin(p.phone, p.smsCode, getHeader())
         .then((jwt: string) => {
             dispatch(onAccountLoginSuccess(jwt));
         }).catch((err) => {
@@ -102,7 +104,7 @@ export const apiAccountSmsLogin = (p: smsLoginParams): Dispatchable => (dispatch
 };
 
 export const apiAccountLogin = (p: loginParams): Dispatchable => (dispatch) => {
-    return accountApi.login(p.name, p.password)
+    return accountApi.login(p.name, p.password, getHeader())
         .then((jwt: string) => {
             dispatch(onAccountLoginSuccess(jwt));
         }).catch((err) => {
@@ -111,7 +113,7 @@ export const apiAccountLogin = (p: loginParams): Dispatchable => (dispatch) => {
 };
 
 export const apiAccountSmsSignup = (p: smsSignupParams): Dispatchable => (dispatch) => {
-    return accountApi.smsSignup(p.phone, p.smsCode, p.password)
+    return accountApi.smsSignup(p.phone, p.smsCode, p.password, getHeader())
         .then((jwt: string) => {
             dispatch(onAccountLoginSuccess(jwt));
         })
@@ -121,7 +123,7 @@ export const apiAccountSmsSignup = (p: smsSignupParams): Dispatchable => (dispat
 };
 
 export const apiAccountResetPassword = (p: resetPasswordParams, onSuccess: () => void): Dispatchable => (dispatch) => {
-    return accountApi.resetPassword(p.phone, p.smsCode, p.newPassword)
+    return accountApi.resetPassword(p.phone, p.smsCode, p.newPassword, getHeader())
         .then(() => {
             dispatch(onGlobalToast('密码重置成功', TOAST_FAST));
             onSuccess();
@@ -145,7 +147,7 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
                 return;
             }
 
-            userPrivateApi.refreshToken(refreshToken)
+            userPrivateApi.refreshToken(refreshToken, getHeader())
                 .then((data: Token) => {
                     dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
                     dispatch(saveUserRefreshToken(data.refreshToken));
@@ -161,7 +163,7 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
 };
 
 const refreshUserToken = (refreshToken: string): Promise<void> => {
-    return userPrivateApi.refreshToken(refreshToken)
+    return userPrivateApi.refreshToken(refreshToken, getHeader())
         .then((data: Token) => {
             REDUX_STORE.dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
             REDUX_STORE.dispatch(saveUserRefreshToken(data.refreshToken));

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatchable } from './_common/action';
 import { Token } from './api/user-private/gen';
@@ -34,20 +34,27 @@ class RootView extends React.Component<Props, State> {
 
     public componentWillMount() {
         this.setState({loading: true});
+    }
+
+    public componentDidMount() {
         window.setInterval(
             () => {
                 this.setState({loading: false});
             },
             2000);
 
-        this.props.autoLogin();
+        const token = this.props.token;
+        const logged = token && token.accessToken && token.accessToken !== '';
+        if (!logged) {
+            this.props.autoLogin();
+        }
     }
 
     public render() {
         const token = this.props.token;
         const logged = token && token.accessToken && token.accessToken !== '';
 
-        if (this.state.loading) {
+        if (!logged && this.state.loading) {
             return RootView.renderLoading();
         }
 

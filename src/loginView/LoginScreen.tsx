@@ -10,8 +10,8 @@ import { loginParams, smsCodeParams, smsLoginParams, smsSignupParams } from '../
 import { commonStyles } from '../commonStyles';
 import {
     apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup, MAX_LOGIN_NAME_LENGTH,
-    MAX_PHONE_LENGTH,
-    MAX_PASSWORD_LENGTH, MAX_SMS_CODE_LENGTH
+    MAX_PASSWORD_LENGTH,
+    MAX_PHONE_LENGTH, MAX_SMS_CODE_LENGTH
 } from '../redux_login';
 import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 

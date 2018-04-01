@@ -7,7 +7,7 @@ import { fastClick } from '../_common/fastClick';
 import { TodoItem, TodoStatus } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import * as GlobalConstants from '../GlobalConstants';
-import { apiTodoAddTodo} from '../redux';
+import { apiTodoAddTodo } from '../redux';
 import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 import { TodoEditCategoryScreenNavigationParams } from './TodoEditCategoryScreen';
 

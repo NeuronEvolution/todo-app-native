@@ -11,6 +11,7 @@
     "portable-fetch": "^3.0.0",
     "react": "^16.2.0",
     "react-native": "^0.53.0",
+    "react-native-device-info": "^0.21.4",
     "react-navigation": "^1.0.3",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",

@@ -35,12 +35,15 @@ class FriendTodoListScreen extends React.Component<Props, State> {
     public static navigationOptions = navigationOptionsFunc;
 
     public componentWillMount() {
-        const friendInfo = this.props.navigation.state.params.friendInfo;
-        const friendID = friendInfo.userID;
-
         this.onItemPress = this.onItemPress.bind(this);
 
+        const friendInfo = this.props.navigation.state.params.friendInfo;
         this.setState({friendInfo});
+    }
+
+    public componentDidMount() {
+        const friendInfo = this.props.navigation.state.params.friendInfo;
+        const friendID = friendInfo.userID;
         this.props.apiTodoGetTodoListByCategory({friendID});
     }
 

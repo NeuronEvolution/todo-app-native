@@ -20,7 +20,9 @@ class TodoListScreen extends React.Component<Props> {
     public componentWillMount() {
         this.onItemPress = this.onItemPress.bind(this);
         this.onRemoveItem = this.onRemoveItem.bind(this);
+    }
 
+    public componentDidMount() {
         this.props.apiTodoGetTodoListByCategory({});
     }
 

@@ -47,6 +47,10 @@ class FriendListScreen extends React.Component<Props> {
 
     public componentWillMount() {
         this.renderFriendInfo = this.renderFriendInfo.bind(this);
+
+    }
+
+    public componentDidMount() {
         this.props.apiTodoGetFriendsList({pageToken: '', pageSize: 40});
     }
 

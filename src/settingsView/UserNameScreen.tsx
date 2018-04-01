@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { fastClick } from '../_common/fastClick';
 import { commonStyles } from '../commonStyles';
+import { MAX_USER_NAME_LENGTH } from '../GlobalConstants';
 import { apiTodoUserProfileUpdateUserName, RootState } from '../redux';
 import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
-import {MAX_USER_NAME_LENGTH} from "../GlobalConstants";
 
 export interface Props extends NavigationScreenProps<void> {
     userName: string;
