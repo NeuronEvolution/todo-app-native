@@ -64,7 +64,7 @@ class TodoAddScreen extends React.Component<Props, State> {
                     style={[styles.contentButton]}
                     onPress={this.onCategoryPress}
                 >
-                    <Text style={[{color, fontSize: 12}]}>
+                    <Text style={[{color, fontSize: 14}]}>
                         {text}
                     </Text>
                 </TouchableOpacity>
