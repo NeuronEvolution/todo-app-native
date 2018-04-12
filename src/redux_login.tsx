@@ -4,9 +4,8 @@ import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import { getHeader } from './_react_native_common/fetchHelper';
 import {
-    DefaultApiFactory as AccountApi, sendLoginSmsCodeParams, smsLoginParams, UserToken
+    DefaultApiFactory as AccountApi, sendLoginSmsCodeParams, smsLoginParams, UserInfo, UserToken
 } from './api/account/gen/';
-import {DefaultApiFactory as UserPrivateApi, UserInfo } from './api/user/gen';
 import { apiTodoGetUserProfile } from './redux';
 import { onGlobalToast, TOAST_FAST, TOAST_SLOW } from './ToastView';
 
@@ -18,14 +17,13 @@ export const MAX_PASSWORD_LENGTH = 20;
 export const MAX_SMS_CODE_LENGTH = 6;
 
 export const REQUIRE_LOGIN = 'REQUIRE_LOGIN';
-export const ACTION_USER_LOGIN_SUCCESS = 'ACTION_USER_LOGIN_SUCCESS';
-export const ACTION_USER_REFRESH_TOKEN = 'ACTION_USER_REFRESH_TOKEN';
-export const ACTION_USER_LOGOUT_SUCCESS = 'ACTION_USER_LOGOUT_SUCCESS';
+export const ACTION_ACCOUNT_LOGIN_SUCCESS = 'ACTION_ACCOUNT_LOGIN_SUCCESS';
+export const ACTION_ACCOUNT_LOGOUT_SUCCESS = 'ACTION_ACCOUNT_LOGOUT_SUCCESS';
+export const ACTION_ACCOUNT_REFRESH_TOKEN = 'ACTION_ACCOUNT_REFRESH_TOKEN';
+export const ACTION_ACCOUNT_GET_USER_INFO_SUCCESS = 'ACTION_ACCOUNT_GET_USER_INFO_SUCCESS';
 
 const accountApiHost = 'http://' + SERVER_IP + ':8080/api/v1/accounts';
 const accountApi = AccountApi(undefined, fetch, accountApiHost);
-const userApiHost = 'http://' + SERVER_IP + ':8080/api/v1/users';
-const userApi = UserPrivateApi(undefined, fetch, userApiHost);
 
 export const onApiError = (err: any, message: string): Dispatchable => (dispatch) => {
     const status = err && err.status ? err.status : 0;
@@ -40,25 +38,6 @@ export const onApiError = (err: any, message: string): Dispatchable => (dispatch
     dispatch(onGlobalToast(text, TOAST_SLOW));
 };
 
-const onAccountLoginSuccess = (userToken: UserToken): Dispatchable => (dispatch) => {
-    dispatch(onGlobalToast('登录成功', TOAST_FAST));
-    dispatch({type: ACTION_USER_LOGIN_SUCCESS, payload: userToken});
-    dispatch(saveUserRefreshToken(userToken.refreshToken));
-    dispatch(apiTodoGetUserProfile());
-};
-
-export const apiUserLogout = (): Dispatchable => (dispatch) => {
-    const t: UserToken = REDUX_STORE.getState().userToken;
-    return accountApi.logout(t.accessToken, t.refreshToken, getHeader())
-        .then(() => {
-            dispatch(onGlobalToast('您已退出登录', TOAST_FAST));
-            dispatch({type: ACTION_USER_LOGOUT_SUCCESS});
-            dispatch(saveUserRefreshToken(''));
-        }).catch((err) => {
-            dispatch(onApiError(err, accountApiHost + '/logout'));
-        });
-};
-
 export const apiAccountSendLoginSmsCode = (p: sendLoginSmsCodeParams): Dispatchable => (dispatch) => {
     return accountApi.sendLoginSmsCode(p.phone, p.captchaId, p.captchaCode, getHeader())
         .then(() => {
@@ -71,18 +50,32 @@ export const apiAccountSendLoginSmsCode = (p: sendLoginSmsCodeParams): Dispatcha
 export const apiAccountSmsLogin = (p: smsLoginParams): Dispatchable => (dispatch) => {
     return accountApi.smsLogin(p.phone, p.smsCode, getHeader())
         .then((userToken: UserToken) => {
-            dispatch(onAccountLoginSuccess(userToken));
+            dispatch({type: ACTION_ACCOUNT_LOGIN_SUCCESS, payload: userToken});
+            dispatch(saveUserRefreshToken(userToken.refreshToken));
+            dispatch(apiUserGetUserInfo());
+            dispatch(apiTodoGetUserProfile());
         }).catch((err) => {
             dispatch(onApiError(err, accountApiHost + '/smsLogin'));
         });
 };
 
-export const apiUserGetUserInfo = (): Dispatchable => (dispatch) => {
-    return userApi.getUserInfo(getHeader())
-        .then((userInfo: UserInfo) => {
-            dispatch({type: 'aaa', payload: userInfo});
+export const apiUserLogout = (): Dispatchable => (dispatch) => {
+    const t: UserToken = REDUX_STORE.getState().userToken;
+    return accountApi.logout(t.accessToken, t.refreshToken, getHeader())
+        .then(() => {
+            dispatch({type: ACTION_ACCOUNT_LOGOUT_SUCCESS});
+            dispatch(saveUserRefreshToken(''));
         }).catch((err) => {
-            dispatch(onApiError(err, userApiHost + '/getUserInfo'));
+            dispatch(onApiError(err, accountApiHost + '/logout'));
+        });
+};
+
+export const apiUserGetUserInfo = (): Dispatchable => (dispatch) => {
+    return accountApi.getUserInfo(getHeader())
+        .then((userInfo: UserInfo) => {
+            dispatch({type: ACTION_ACCOUNT_GET_USER_INFO_SUCCESS, payload: userInfo});
+        }).catch((err) => {
+            dispatch(onApiError(err, accountApiHost + '/getUserInfo'));
         });
 };
 
@@ -103,7 +96,7 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
 
             accountApi.refreshToken(refreshToken, getHeader())
                 .then((userToken: UserToken) => {
-                    dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: userToken});
+                    dispatch({type: ACTION_ACCOUNT_REFRESH_TOKEN, payload: userToken});
                     dispatch(saveUserRefreshToken(userToken.refreshToken));
                     dispatch(onGlobalToast('登录成功', TOAST_FAST));
                 })
@@ -119,7 +112,7 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
 const refreshUserToken = (refreshToken: string): Promise<void> => {
     return accountApi.refreshToken(refreshToken, getHeader())
         .then((data: UserToken) => {
-            REDUX_STORE.dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
+            REDUX_STORE.dispatch({type: ACTION_ACCOUNT_REFRESH_TOKEN, payload: data});
             REDUX_STORE.dispatch(saveUserRefreshToken(data.refreshToken));
         })
         .catch((err) => {
@@ -163,13 +156,13 @@ export const apiCall = (f: () => Promise<any>): void => {
 const initUserToken: UserToken = {accessToken: '', refreshToken: ''};
 export const userTokenReducer = (state: UserToken = initUserToken, action: StandardAction): UserToken => {
     switch (action.type) {
-        case ACTION_USER_LOGIN_SUCCESS:
+        case ACTION_ACCOUNT_LOGIN_SUCCESS:
             return action.payload;
-        case ACTION_USER_REFRESH_TOKEN:
+        case ACTION_ACCOUNT_REFRESH_TOKEN:
             return action.payload;
         case REQUIRE_LOGIN:
             return initUserToken;
-        case ACTION_USER_LOGOUT_SUCCESS:
+        case ACTION_ACCOUNT_LOGOUT_SUCCESS:
             return initUserToken;
         default:
             return state;

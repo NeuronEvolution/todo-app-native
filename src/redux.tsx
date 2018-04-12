@@ -3,14 +3,13 @@ import { combineReducers } from 'redux';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import { getHeader } from './_react_native_common/fetchHelper';
-import { UserToken } from './api/account/gen';
+import { UserInfo, UserToken } from './api/account/gen';
 import {
     CategoryInfo,
     DefaultApiFactory as TodoPrivateApi, FriendInfo,
     getFriendsListParams, getTodoListParams, TodoItem, TodoItemGroup,
     TodoVisibility, UserProfile
 } from './api/todo-private/gen';
-import { UserInfo } from './api/user/gen';
 import { apiCall, getAccessToken, userInfoReducer, userTokenReducer } from './redux_login';
 import { globalToast, onGlobalToast, TOAST_FAST, ToastInfo } from './ToastView';
 
@@ -45,8 +44,8 @@ export interface FriendsListWithPage {
 
 export const apiTodoGetUserProfile = (): Dispatchable => (dispatch) => {
     return apiCall(() => {
-        return todoPrivateApi.getUserProfile(getHeader()).then((data) => {
-            dispatch({type: ACTION_TODO_GET_USER_PROFILE_SUCCESS, payload: data});
+        return todoPrivateApi.getUserProfile(getHeader()).then((userProfile: UserProfile) => {
+            dispatch({type: ACTION_TODO_GET_USER_PROFILE_SUCCESS, payload: userProfile});
         });
     });
 };
@@ -144,7 +143,7 @@ export const apiTodoGetCategoryNameList = (): Dispatchable => (dispatch) => {
 };
 
 const initUserProfile: UserProfile = {userName: '', todoVisibility: TodoVisibility.Public};
-function userProfile(state: UserProfile= initUserProfile, action: StandardAction): UserProfile {
+function userProfileReducer(state: UserProfile= initUserProfile, action: StandardAction): UserProfile {
     switch (action.type) {
         case ACTION_TODO_GET_USER_PROFILE_SUCCESS:
             return action.payload;
@@ -205,7 +204,7 @@ export const rootReducer = combineReducers<RootState>({
     globalToast,
     userToken: userTokenReducer,
     userInfo: userInfoReducer,
-    userProfile,
+    userProfile: userProfileReducer,
     todoListByCategory,
     friendsList,
     friendTodoListByCategory,
