@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatchable } from './_common/action';
-import { Token } from './api/user-private/gen';
+import { UserToken } from './api/account/gen';
 import { commonStyles } from './commonStyles';
 import { LoginViewStack } from './loginView/LoginViewStack';
 import { MainTabs } from './MainTabs';
@@ -10,7 +10,7 @@ import { RootState } from './redux';
 import { autoLogin } from './redux_login';
 
 export interface Props {
-    token: Token;
+    userToken: UserToken;
     autoLogin: () => Dispatchable;
 }
 
@@ -43,16 +43,16 @@ class RootView extends React.Component<Props, State> {
             },
             2000);
 
-        const token = this.props.token;
-        const logged = token && token.accessToken && token.accessToken !== '';
+        const userToken = this.props.userToken;
+        const logged = userToken && userToken.accessToken && userToken.accessToken !== '';
         if (!logged) {
             this.props.autoLogin();
         }
     }
 
     public render() {
-        const token = this.props.token;
-        const logged = token && token.accessToken && token.accessToken !== '';
+        const userToken = this.props.userToken;
+        const logged = userToken && userToken.accessToken && userToken.accessToken !== '';
 
         if (!logged && this.state.loading) {
             return RootView.renderLoading();
@@ -62,7 +62,7 @@ class RootView extends React.Component<Props, State> {
     }
 }
 
-const selectProps = (rootState: RootState) => ({token: rootState.token});
+const selectProps = (rootState: RootState) => ({userToken: rootState.userToken});
 
 export default connect(selectProps, {
     autoLogin

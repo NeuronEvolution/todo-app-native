@@ -3,14 +3,15 @@ import { combineReducers } from 'redux';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import { getHeader } from './_react_native_common/fetchHelper';
+import { UserToken } from './api/account/gen';
 import {
     CategoryInfo,
     DefaultApiFactory as TodoPrivateApi, FriendInfo,
     getFriendsListParams, getTodoListParams, TodoItem, TodoItemGroup,
     TodoVisibility, UserProfile
 } from './api/todo-private/gen';
-import { Token } from './api/user-private/gen';
-import { apiCall, getAccessToken, token, userID } from './redux_login';
+import { UserInfo } from './api/user/gen';
+import { apiCall, getAccessToken, userInfoReducer, userTokenReducer } from './redux_login';
 import { globalToast, onGlobalToast, TOAST_FAST, ToastInfo } from './ToastView';
 
 export const ACTION_TODO_GET_USER_PROFILE_SUCCESS = 'ACTION_TODO_GET_USER_PROFILE_SUCCESS';
@@ -27,7 +28,8 @@ const todoPrivateApi = TodoPrivateApi(
 export interface RootState {
     globalToast: ToastInfo;
     userID: string;
-    token: Token;
+    userToken: UserToken;
+    userInfo: UserInfo;
     userProfile: UserProfile;
     todoListByCategory: TodoItemGroup[];
     friendsList: FriendsListWithPage;
@@ -201,8 +203,8 @@ function categoryNameList(state: string[]= [], action: StandardAction): string[]
 
 export const rootReducer = combineReducers<RootState>({
     globalToast,
-    token,
-    userID,
+    userToken: userTokenReducer,
+    userInfo: userInfoReducer,
     userProfile,
     todoListByCategory,
     friendsList,

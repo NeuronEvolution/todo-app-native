@@ -6,10 +6,10 @@ import { Dispatchable } from '../_common/action';
 import { checkPhone } from '../_common/common';
 import { countdown } from '../_common/countdown';
 import { fastClick } from '../_common/fastClick';
-import { loginParams, smsCodeParams, smsLoginParams, smsSignupParams } from '../api/account-private/gen';
+import { sendLoginSmsCodeParams, smsLoginParams } from '../api/account/gen';
 import { commonStyles } from '../commonStyles';
 import {
-    apiAccountLogin, apiAccountSmsCode, apiAccountSmsLogin, apiAccountSmsSignup, MAX_LOGIN_NAME_LENGTH,
+    apiAccountSendLoginSmsCode, apiAccountSmsLogin, MAX_LOGIN_NAME_LENGTH,
     MAX_PASSWORD_LENGTH,
     MAX_PHONE_LENGTH, MAX_SMS_CODE_LENGTH
 } from '../redux_login';
@@ -17,10 +17,8 @@ import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 
 export interface Props extends NavigationScreenProps<void> {
     onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
-    apiAccountLogin: (p: loginParams) => Dispatchable;
-    apiAccountSmsCode: (p: smsCodeParams) => Dispatchable;
+    apiAccountSendLoginSmsCode: (p: sendLoginSmsCodeParams) => Dispatchable;
     apiAccountSmsLogin: (p: smsLoginParams) => Dispatchable;
-    apiAccountSmsSignup: (p: smsSignupParams) => Dispatchable;
 }
 
 interface State {
@@ -235,37 +233,26 @@ class LoginScreen extends React.Component<Props, State> {
             this.setState({smsCodeCountdown: n});
         });
 
-        this.props.apiAccountSmsCode({scene: 'SMS_LOGIN', phone});
+        this.props.apiAccountSendLoginSmsCode({
+            phone,
+            captchaId: '1',
+            captchaCode: '2',
+        });
     }
 
     private onLoginPressed() {
-        if (this.state.tabIndex === 0) {
-            const {loginName, loginPassword} = this.state;
-            if (loginName === '') {
-                return this.props.onGlobalToast('请输入帐号', TOAST_SLOW);
-            }
-            if (loginPassword === '') {
-                return this.props.onGlobalToast('请输入密码', TOAST_SLOW);
-            }
-
-            if (fastClick()) {
-                return;
-            }
-            this.props.apiAccountLogin({name: loginName, password: loginPassword});
-        } else {
-            const {loginPhone, loginSmsCode} = this.state;
-            if (loginPhone === '') {
-                return this.props.onGlobalToast('请输入手机号', TOAST_SLOW);
-            }
-            if (loginSmsCode === '') {
-                return this.props.onGlobalToast('请输入验证码', TOAST_SLOW);
-            }
-
-            if (fastClick()) {
-                return;
-            }
-            this.props.apiAccountSmsLogin({phone: loginPhone, smsCode: loginSmsCode});
+        const {loginPhone, loginSmsCode} = this.state;
+        if (loginPhone === '') {
+            return this.props.onGlobalToast('请输入手机号', TOAST_SLOW);
         }
+        if (loginSmsCode === '') {
+            return this.props.onGlobalToast('请输入验证码', TOAST_SLOW);
+        }
+
+        if (fastClick()) {
+            return;
+        }
+        this.props.apiAccountSmsLogin({phone: loginPhone, smsCode: loginSmsCode});
     }
 
     private onSignupPressed() {
@@ -285,10 +272,8 @@ class LoginScreen extends React.Component<Props, State> {
 
 export default connect(null, {
     onGlobalToast,
-    apiAccountLogin,
-    apiAccountSmsCode,
     apiAccountSmsLogin,
-    apiAccountSmsSignup
+    apiAccountSendLoginSmsCode
 })(LoginScreen);
 
 const styles = StyleSheet.create({

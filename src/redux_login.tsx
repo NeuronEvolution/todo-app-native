@@ -4,14 +4,9 @@ import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import { getHeader } from './_react_native_common/fetchHelper';
 import {
-    DefaultApiFactory as AccountApi,
-    loginParams, resetPasswordParams,
-    smsCodeParams,
-    smsLoginParams,
-    smsSignupParams
-} from './api/account-private/gen/';
-import { AuthorizationCode, DefaultApiFactory as OauthPrivateApi } from './api/oauth-private/gen';
-import {DefaultApiFactory as UserPrivateApi, OauthJumpResponse, Token } from './api/user-private/gen';
+    DefaultApiFactory as AccountApi, sendLoginSmsCodeParams, smsLoginParams, UserToken
+} from './api/account/gen/';
+import {DefaultApiFactory as UserPrivateApi, UserInfo } from './api/user/gen';
 import { apiTodoGetUserProfile } from './redux';
 import { onGlobalToast, TOAST_FAST, TOAST_SLOW } from './ToastView';
 
@@ -23,16 +18,14 @@ export const MAX_PASSWORD_LENGTH = 20;
 export const MAX_SMS_CODE_LENGTH = 6;
 
 export const REQUIRE_LOGIN = 'REQUIRE_LOGIN';
-export const ACTION_USER_OAUTH_JUMP_SUCCESS = 'ACTION_USER_OAUTH_JUMP_SUCCESS';
+export const ACTION_USER_LOGIN_SUCCESS = 'ACTION_USER_LOGIN_SUCCESS';
 export const ACTION_USER_REFRESH_TOKEN = 'ACTION_USER_REFRESH_TOKEN';
 export const ACTION_USER_LOGOUT_SUCCESS = 'ACTION_USER_LOGOUT_SUCCESS';
 
-const accountApiHost = 'http://' + SERVER_IP + ':8080/api-private/v1/accounts';
+const accountApiHost = 'http://' + SERVER_IP + ':8080/api/v1/accounts';
 const accountApi = AccountApi(undefined, fetch, accountApiHost);
-const oauthPrivateApiHost = 'http://' + SERVER_IP + ':8080/api-private/v1/oauth';
-const oauthPrivateApi = OauthPrivateApi(undefined, fetch, oauthPrivateApiHost);
-const userPrivateApiHost = 'http://' + SERVER_IP + ':8080/api-private/v1/users';
-const userPrivateApi = UserPrivateApi(undefined, fetch, userPrivateApiHost);
+const userApiHost = 'http://' + SERVER_IP + ':8080/api/v1/users';
+const userApi = UserPrivateApi(undefined, fetch, userApiHost);
 
 export const onApiError = (err: any, message: string): Dispatchable => (dispatch) => {
     const status = err && err.status ? err.status : 0;
@@ -47,46 +40,27 @@ export const onApiError = (err: any, message: string): Dispatchable => (dispatch
     dispatch(onGlobalToast(text, TOAST_SLOW));
 };
 
-const onAccountLoginSuccess = (jwt: string): Dispatchable => (dispatch) => {
-    return userPrivateApi.oauthState('fromApp', getHeader())
-        .then((state: string) => {
-            return oauthPrivateApi.authorize(jwt, 'code', '100002', 'fromApp', 'BASIC', state, getHeader())
-                .then((authorizationCode: AuthorizationCode) => {
-                    const authCode = authorizationCode.code;
-                    if (authCode === undefined) {
-                        return dispatch(onApiError('oauthPrivateApi.authorize code is null', ''));
-                    }
-                    return userPrivateApi.oauthJump('fromApp', authCode, state, getHeader())
-                        .then((oauthJumpResponseData: OauthJumpResponse) => {
-                            dispatch(onGlobalToast('登录成功', TOAST_FAST));
-                            dispatch({type: ACTION_USER_OAUTH_JUMP_SUCCESS, payload: oauthJumpResponseData});
-                            dispatch(saveUserRefreshToken(oauthJumpResponseData.token.refreshToken));
-                            dispatch(apiTodoGetUserProfile());
-                        }).catch((err) => {
-                            dispatch(onApiError(err, userPrivateApiHost + '/oauthJump'));
-                        });
-                }).catch((err) => {
-                    dispatch(onApiError(err, oauthPrivateApiHost + '/authorize'));
-                });
-        }).catch((err) => {
-            dispatch(onApiError(err, userPrivateApiHost + '/oauthState'));
-        });
+const onAccountLoginSuccess = (userToken: UserToken): Dispatchable => (dispatch) => {
+    dispatch(onGlobalToast('登录成功', TOAST_FAST));
+    dispatch({type: ACTION_USER_LOGIN_SUCCESS, payload: userToken});
+    dispatch(saveUserRefreshToken(userToken.refreshToken));
+    dispatch(apiTodoGetUserProfile());
 };
 
 export const apiUserLogout = (): Dispatchable => (dispatch) => {
-    const t: Token = REDUX_STORE.getState().token;
-    return userPrivateApi.logout(t.accessToken, t.refreshToken, getHeader())
+    const t: UserToken = REDUX_STORE.getState().userToken;
+    return accountApi.logout(t.accessToken, t.refreshToken, getHeader())
         .then(() => {
             dispatch(onGlobalToast('您已退出登录', TOAST_FAST));
             dispatch({type: ACTION_USER_LOGOUT_SUCCESS});
             dispatch(saveUserRefreshToken(''));
         }).catch((err) => {
-            dispatch(onApiError(err, userPrivateApiHost + '/logout'));
+            dispatch(onApiError(err, accountApiHost + '/logout'));
         });
 };
 
-export const apiAccountSmsCode = (p: smsCodeParams): Dispatchable => (dispatch) => {
-    return accountApi.smsCode(p.scene, p.phone, p.captchaId, p.captchaCode, getHeader())
+export const apiAccountSendLoginSmsCode = (p: sendLoginSmsCodeParams): Dispatchable => (dispatch) => {
+    return accountApi.sendLoginSmsCode(p.phone, p.captchaId, p.captchaCode, getHeader())
         .then(() => {
             dispatch(onGlobalToast('已发送', TOAST_FAST));
         }).catch((err) => {
@@ -96,39 +70,19 @@ export const apiAccountSmsCode = (p: smsCodeParams): Dispatchable => (dispatch) 
 
 export const apiAccountSmsLogin = (p: smsLoginParams): Dispatchable => (dispatch) => {
     return accountApi.smsLogin(p.phone, p.smsCode, getHeader())
-        .then((jwt: string) => {
-            dispatch(onAccountLoginSuccess(jwt));
+        .then((userToken: UserToken) => {
+            dispatch(onAccountLoginSuccess(userToken));
         }).catch((err) => {
             dispatch(onApiError(err, accountApiHost + '/smsLogin'));
         });
 };
 
-export const apiAccountLogin = (p: loginParams): Dispatchable => (dispatch) => {
-    return accountApi.login(p.name, p.password, getHeader())
-        .then((jwt: string) => {
-            dispatch(onAccountLoginSuccess(jwt));
+export const apiUserGetUserInfo = (): Dispatchable => (dispatch) => {
+    return userApi.getUserInfo(getHeader())
+        .then((userInfo: UserInfo) => {
+            dispatch({type: 'aaa', payload: userInfo});
         }).catch((err) => {
-            dispatch(onApiError(err, accountApiHost + '/login'));
-        });
-};
-
-export const apiAccountSmsSignup = (p: smsSignupParams): Dispatchable => (dispatch) => {
-    return accountApi.smsSignup(p.phone, p.smsCode, p.password, getHeader())
-        .then((jwt: string) => {
-            dispatch(onAccountLoginSuccess(jwt));
-        })
-        .catch((err) => {
-            dispatch(onApiError(err, accountApiHost + '/smsSignup'));
-        });
-};
-
-export const apiAccountResetPassword = (p: resetPasswordParams, onSuccess: () => void): Dispatchable => (dispatch) => {
-    return accountApi.resetPassword(p.phone, p.smsCode, p.newPassword, getHeader())
-        .then(() => {
-            dispatch(onGlobalToast('密码重置成功', TOAST_FAST));
-            onSuccess();
-        }).catch((err) => {
-            dispatch(onApiError(err, accountApiHost + '/resetPassword'));
+            dispatch(onApiError(err, userApiHost + '/getUserInfo'));
         });
 };
 
@@ -147,10 +101,10 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
                 return;
             }
 
-            userPrivateApi.refreshToken(refreshToken, getHeader())
-                .then((data: Token) => {
-                    dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
-                    dispatch(saveUserRefreshToken(data.refreshToken));
+            accountApi.refreshToken(refreshToken, getHeader())
+                .then((userToken: UserToken) => {
+                    dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: userToken});
+                    dispatch(saveUserRefreshToken(userToken.refreshToken));
                     dispatch(onGlobalToast('登录成功', TOAST_FAST));
                 })
                 .catch((err) => {
@@ -163,13 +117,13 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
 };
 
 const refreshUserToken = (refreshToken: string): Promise<void> => {
-    return userPrivateApi.refreshToken(refreshToken, getHeader())
-        .then((data: Token) => {
+    return accountApi.refreshToken(refreshToken, getHeader())
+        .then((data: UserToken) => {
             REDUX_STORE.dispatch({type: ACTION_USER_REFRESH_TOKEN, payload: data});
             REDUX_STORE.dispatch(saveUserRefreshToken(data.refreshToken));
         })
         .catch((err) => {
-            REDUX_STORE.dispatch(onApiError(err, userPrivateApiHost + ' refreshToken'));
+            REDUX_STORE.dispatch(onApiError(err, accountApiHost + ' refreshToken'));
         });
 };
 
@@ -187,7 +141,7 @@ export const apiCall = (f: () => Promise<any>): void => {
             return;
         }
 
-        const refreshToken = REDUX_STORE.getState().token.refreshToken;
+        const refreshToken = REDUX_STORE.getState().userToken.refreshToken;
         if (!refreshToken) {
             REDUX_STORE.dispatch({type: REQUIRE_LOGIN});
             return null;
@@ -206,32 +160,31 @@ export const apiCall = (f: () => Promise<any>): void => {
     });
 };
 
-const initialToken: Token = {accessToken: '', refreshToken: ''};
-export const token = (state: Token = initialToken, action: StandardAction): Token => {
+const initUserToken: UserToken = {accessToken: '', refreshToken: ''};
+export const userTokenReducer = (state: UserToken = initUserToken, action: StandardAction): UserToken => {
     switch (action.type) {
-        case ACTION_USER_OAUTH_JUMP_SUCCESS:
-            return action.payload.token;
+        case ACTION_USER_LOGIN_SUCCESS:
+            return action.payload;
         case ACTION_USER_REFRESH_TOKEN:
             return action.payload;
         case REQUIRE_LOGIN:
-            return initialToken;
+            return initUserToken;
         case ACTION_USER_LOGOUT_SUCCESS:
-            return initialToken;
+            return initUserToken;
         default:
             return state;
     }
 };
 
-export const userID = (state: string= '', action: StandardAction): string => {
+const initUserInfo: UserInfo = {userId: '', name: '', icon: ''};
+export const userInfoReducer = (state: UserInfo = initUserInfo, action: StandardAction): UserInfo => {
     switch (action.type) {
-        case  ACTION_USER_OAUTH_JUMP_SUCCESS:
-            return action.payload.userID;
         default:
             return state;
     }
 };
 
 export const getAccessToken = (): string => {
-    const t = REDUX_STORE.getState().token;
+    const t = REDUX_STORE.getState().userToken;
     return t && t.accessToken ? t.accessToken : '';
 };
