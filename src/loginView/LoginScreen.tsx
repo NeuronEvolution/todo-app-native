@@ -33,6 +33,10 @@ const initialState = {
 };
 
 class LoginScreen extends React.Component<Props, State> {
+    private static renderTitle() {
+        return (<Text style={[styles.title]}>火星登录</Text>);
+    }
+
     public componentWillMount() {
         this.onLoginPressed = this.onLoginPressed.bind(this);
         this.onPhoneChanged = this.onPhoneChanged.bind(this);
@@ -43,10 +47,13 @@ class LoginScreen extends React.Component<Props, State> {
     }
 
     public render() {
-        return <View style={[commonStyles.screenCentered]}>
-            {this.renderSmsLogin()}
-            <ToastView/>
-        </View>;
+        return (
+            <View style={[commonStyles.screenCentered]}>
+                {LoginScreen.renderTitle()}
+                {this.renderSmsLogin()}
+                <ToastView/>
+            </View>
+        );
     }
 
     private renderSmsLogin() {
@@ -55,7 +62,7 @@ class LoginScreen extends React.Component<Props, State> {
         const color = disabled ? '#888' : '#008888';
 
         return (
-            <View style={[commonStyles.flexColumnCentered, {marginTop: 96}]}>
+            <View style={[commonStyles.flexColumnCentered, {marginTop: 48}]}>
                 <View style={[commonStyles.flexRowCentered]}>
                     <Text style={[commonStyles.text, {width: 80}]}>手机号</Text>
                     <TextInput
@@ -88,7 +95,7 @@ class LoginScreen extends React.Component<Props, State> {
                 <TouchableOpacity
                     style={[commonStyles.button, commonStyles.contentWidth, {marginTop: 12}]}
                     onPress={this.onLoginPressed}>
-                    <Text style={[commonStyles.buttonText]}>登录火星</Text>
+                    <Text style={[commonStyles.buttonText]}>登录</Text>
                 </TouchableOpacity>
             </View>
         );
