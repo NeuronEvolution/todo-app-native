@@ -169,7 +169,7 @@ export const userTokenReducer = (state: UserToken = initUserToken, action: Stand
     }
 };
 
-const initUserInfo: UserInfo = {userId: '', name: '', icon: ''};
+const initUserInfo: UserInfo = {userId: '', userName: '', userIcon: ''};
 export const userInfoReducer = (state: UserInfo = initUserInfo, action: StandardAction): UserInfo => {
     switch (action.type) {
         default:
