@@ -22,8 +22,13 @@ export const ACTION_ACCOUNT_LOGOUT_SUCCESS = 'ACTION_ACCOUNT_LOGOUT_SUCCESS';
 export const ACTION_ACCOUNT_REFRESH_TOKEN = 'ACTION_ACCOUNT_REFRESH_TOKEN';
 export const ACTION_ACCOUNT_GET_USER_INFO_SUCCESS = 'ACTION_ACCOUNT_GET_USER_INFO_SUCCESS';
 
+export const getAccessToken = (): string => {
+    const t = REDUX_STORE.getState().userToken;
+    return t && t.accessToken ? t.accessToken : '';
+};
+
 const accountApiHost = 'http://' + SERVER_IP + ':8080/api/v1/accounts';
-const accountApi = AccountApi(undefined, fetch, accountApiHost);
+const accountApi = AccountApi({apiKey: getAccessToken}, fetch, accountApiHost);
 
 export const onApiError = (err: any, message: string): Dispatchable => (dispatch) => {
     const status = err && err.status ? err.status : 0;
@@ -175,9 +180,4 @@ export const userInfoReducer = (state: UserInfo = initUserInfo, action: Standard
         default:
             return state;
     }
-};
-
-export const getAccessToken = (): string => {
-    const t = REDUX_STORE.getState().userToken;
-    return t && t.accessToken ? t.accessToken : '';
 };

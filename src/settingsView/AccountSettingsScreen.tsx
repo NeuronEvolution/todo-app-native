@@ -5,6 +5,7 @@ import { Dispatchable } from '../_common/action';
 import { fastClick } from '../_common/fastClick';
 import { commonStyles } from '../commonStyles';
 import { apiUserLogout } from '../redux_login';
+import ToastView from '../ToastView';
 
 export interface Props {
     apiUserLogout: () => Dispatchable;
@@ -19,6 +20,7 @@ class AccountSettingsScreen extends React.Component<Props> {
         return (
             <View style={[commonStyles.screenCentered]}>
                 {this.renderLogoutButton()}
+                <ToastView/>
             </View>
         );
     }
