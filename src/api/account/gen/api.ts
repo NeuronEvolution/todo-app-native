@@ -90,31 +90,31 @@ export interface AccountInfo {
      * @type {string}
      * @memberof AccountInfo
      */
-    userId?: string;
+    userId: string;
     /**
      * 
      * @type {string}
      * @memberof AccountInfo
      */
-    userName?: string;
+    userName: string;
     /**
      * 
      * @type {string}
      * @memberof AccountInfo
      */
-    userIcon?: string;
+    userIcon: string;
     /**
      * 
      * @type {string}
      * @memberof AccountInfo
      */
-    phoneBinded?: string;
+    phoneBinded: string;
     /**
      * 
      * @type {Array<OauthAccountInfo>}
      * @memberof AccountInfo
      */
-    oauthBindedList?: Array<OauthAccountInfo>;
+    oauthBindedList: Array<OauthAccountInfo>;
 }
 
 /**
@@ -128,31 +128,31 @@ export interface OauthAccountInfo {
      * @type {string}
      * @memberof OauthAccountInfo
      */
-    providerID?: string;
+    providerID: string;
     /**
      * 
      * @type {string}
      * @memberof OauthAccountInfo
      */
-    providerName?: string;
+    providerName: string;
     /**
      * 
      * @type {string}
      * @memberof OauthAccountInfo
      */
-    openID?: string;
+    openID: string;
     /**
      * 
      * @type {string}
      * @memberof OauthAccountInfo
      */
-    userName?: string;
+    userName: string;
     /**
      * 
      * @type {string}
      * @memberof OauthAccountInfo
      */
-    userIcon?: string;
+    userIcon: string;
 }
 
 /**
@@ -166,25 +166,25 @@ export interface Operation {
      * @type {string}
      * @memberof Operation
      */
-    operationId?: string;
+    operationId: string;
     /**
      * 
      * @type {string}
      * @memberof Operation
      */
-    userId?: string;
+    userId: string;
     /**
      * 
      * @type {OperationType}
      * @memberof Operation
      */
-    operationType?: OperationType;
+    operationType: OperationType;
     /**
      * 
      * @type {Date}
      * @memberof Operation
      */
-    operationTime?: Date;
+    operationTime: Date;
     /**
      * 
      * @type {string}
@@ -213,16 +213,16 @@ export interface Operation {
 export interface OperationListResponse {
     /**
      * 
-     * @type {string}
-     * @memberof OperationListResponse
-     */
-    nextPageToken?: string;
-    /**
-     * 
      * @type {Array<Operation>}
      * @memberof OperationListResponse
      */
-    items?: Array<Operation>;
+    items: Array<Operation>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OperationListResponse
+     */
+    nextPageToken: string;
 }
 
 /**
@@ -258,19 +258,19 @@ export interface UserInfo {
      * @type {string}
      * @memberof UserInfo
      */
-    userId?: string;
+    userId: string;
     /**
      * 
      * @type {string}
      * @memberof UserInfo
      */
-    userName?: string;
+    userName: string;
     /**
      * 
      * @type {string}
      * @memberof UserInfo
      */
-    userIcon?: string;
+    userIcon: string;
 }
 
 /**

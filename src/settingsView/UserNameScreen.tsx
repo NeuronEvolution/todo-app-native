@@ -6,13 +6,14 @@ import { Dispatchable } from '../_common/action';
 import { fastClick } from '../_common/fastClick';
 import { commonStyles } from '../commonStyles';
 import { MAX_USER_NAME_LENGTH } from '../GlobalConstants';
-import { apiTodoUserProfileUpdateUserName, RootState } from '../redux';
+import { RootState } from '../redux';
+import { apiAccountSetUserName } from '../redux_login';
 import ToastView, { onGlobalToast, TOAST_SLOW } from '../ToastView';
 
 export interface Props extends NavigationScreenProps<void> {
     userName: string;
     onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
-    apiTodoUserProfileUpdateUserName: (userName: string, onSuccess: () => void) => Dispatchable;
+    apiAccountSetUserName: (userName: string, onSuccess: () => void) => Dispatchable;
 }
 
 interface State {
@@ -93,17 +94,17 @@ class UserNameScreen extends React.Component<Props, State> {
             return this.props.onGlobalToast('名字不能为空', TOAST_SLOW);
         }
 
-        this.props.apiTodoUserProfileUpdateUserName(userName, this.onSaveSuccess);
+        this.props.apiAccountSetUserName(userName, this.onSaveSuccess);
     }
 }
 
 const selectProps = (rootState: RootState) => ({
-    userName: rootState.userProfile ? rootState.userProfile.userName : ''
+    userName: rootState.userInfo.userName
 });
 
 export default connect(selectProps, {
     onGlobalToast,
-    apiTodoUserProfileUpdateUserName
+    apiAccountSetUserName
 })(UserNameScreen);
 
 const styles = StyleSheet.create({

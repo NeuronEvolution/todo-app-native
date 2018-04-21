@@ -3,6 +3,7 @@ import { REDUX_STORE } from '../App';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import { getHeader } from './_react_native_common/fetchHelper';
+import { AccountInfo } from './api/account/gen';
 import {
     DefaultApiFactory as AccountApi, sendLoginSmsCodeParams, smsLoginParams, UserInfo, UserToken
 } from './api/account/gen/';
@@ -19,8 +20,9 @@ export const MAX_SMS_CODE_LENGTH = 6;
 export const REQUIRE_LOGIN = 'REQUIRE_LOGIN';
 export const ACTION_ACCOUNT_LOGIN_SUCCESS = 'ACTION_ACCOUNT_LOGIN_SUCCESS';
 export const ACTION_ACCOUNT_LOGOUT_SUCCESS = 'ACTION_ACCOUNT_LOGOUT_SUCCESS';
-export const ACTION_ACCOUNT_REFRESH_TOKEN = 'ACTION_ACCOUNT_REFRESH_TOKEN';
+export const ACTION_ACCOUNT_REFRESH_TOKEN_SUCCESS = 'ACTION_ACCOUNT_REFRESH_TOKEN_SUCCESS';
 export const ACTION_ACCOUNT_GET_USER_INFO_SUCCESS = 'ACTION_ACCOUNT_GET_USER_INFO_SUCCESS';
+export const ACTION_ACCOUNT_GET_ACCOUNT_INFO_SUCCESS = 'ACTION_ACCOUNT_GET_ACCOUNT_INFO_SUCCESS';
 
 export const getAccessToken = (): string => {
     const t = REDUX_STORE.getState().userToken;
@@ -57,14 +59,14 @@ export const apiAccountSmsLogin = (p: smsLoginParams): Dispatchable => (dispatch
         .then((userToken: UserToken) => {
             dispatch({type: ACTION_ACCOUNT_LOGIN_SUCCESS, payload: userToken});
             dispatch(saveUserRefreshToken(userToken.refreshToken));
-            dispatch(apiUserGetUserInfo());
+            dispatch(apiAccountGetUserInfo());
             dispatch(apiTodoGetUserProfile());
         }).catch((err) => {
             dispatch(onApiError(err, accountApiHost + '/smsLogin'));
         });
 };
 
-export const apiUserLogout = (): Dispatchable => (dispatch) => {
+export const apiAccountLogout = (): Dispatchable => (dispatch) => {
     const t: UserToken = REDUX_STORE.getState().userToken;
     return accountApi.logout(t.accessToken, t.refreshToken, getHeader())
         .then(() => {
@@ -75,13 +77,43 @@ export const apiUserLogout = (): Dispatchable => (dispatch) => {
         });
 };
 
-export const apiUserGetUserInfo = (): Dispatchable => (dispatch) => {
+export const apiAccountGetUserInfo = (): Dispatchable => (dispatch) => {
     return accountApi.getUserInfo(getHeader())
         .then((userInfo: UserInfo) => {
             dispatch({type: ACTION_ACCOUNT_GET_USER_INFO_SUCCESS, payload: userInfo});
         }).catch((err) => {
             dispatch(onApiError(err, accountApiHost + '/getUserInfo'));
         });
+};
+
+export const apiAccountSetUserName = (userName: string, onSuccess: () => void)
+    : Dispatchable => (dispatch) => {
+    return accountApi.setUserName(userName)
+        .then(() => {
+            onSuccess();
+            dispatch(apiAccountGetUserInfo());
+        }).catch((err) => {
+            dispatch(onApiError(err, accountApiHost + '/setUserName'));
+        });
+};
+
+export const apiAccountGetAccountInfo = (): Dispatchable => (dispatch) => {
+    return accountApi.getAccountInfo()
+        .then((accountInfo: AccountInfo) => {
+            dispatch({type: 'ACTION_ACCOUNT_GET_ACCOUNT_INFO_SUCCESS', payload: accountInfo});
+        }).catch((err) => {
+            dispatch(onApiError(err, accountApiHost + '/getAccountInfo'));
+        });
+};
+
+export const apiAccountSetUserIcon = (userIcon: string, onSuccess: () => void)
+    : Dispatchable => (dispatch) => {
+    return accountApi.setUserIcon(userIcon).then(() => {
+        onSuccess();
+        dispatch(apiAccountGetUserInfo());
+    }).catch((err) => {
+        dispatch(onApiError(err, accountApiHost + '/setUserIcon'));
+    });
 };
 
 const saveUserRefreshToken = (refreshToken: string): Dispatchable => (dispatch) => {
@@ -101,7 +133,7 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
 
             accountApi.refreshToken(refreshToken, getHeader())
                 .then((userToken: UserToken) => {
-                    dispatch({type: ACTION_ACCOUNT_REFRESH_TOKEN, payload: userToken});
+                    dispatch({type: ACTION_ACCOUNT_REFRESH_TOKEN_SUCCESS, payload: userToken});
                     dispatch(saveUserRefreshToken(userToken.refreshToken));
                     dispatch(onGlobalToast('登录成功', TOAST_FAST));
                 })
@@ -117,7 +149,7 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
 const refreshUserToken = (refreshToken: string): Promise<void> => {
     return accountApi.refreshToken(refreshToken, getHeader())
         .then((data: UserToken) => {
-            REDUX_STORE.dispatch({type: ACTION_ACCOUNT_REFRESH_TOKEN, payload: data});
+            REDUX_STORE.dispatch({type: ACTION_ACCOUNT_REFRESH_TOKEN_SUCCESS, payload: data});
             REDUX_STORE.dispatch(saveUserRefreshToken(data.refreshToken));
         })
         .catch((err) => {
@@ -158,12 +190,15 @@ export const apiCall = (f: () => Promise<any>): void => {
     });
 };
 
-const initUserToken: UserToken = {accessToken: '', refreshToken: ''};
+const initUserToken: UserToken = {
+    accessToken: '',
+    refreshToken: ''
+};
 export const userTokenReducer = (state: UserToken = initUserToken, action: StandardAction): UserToken => {
     switch (action.type) {
         case ACTION_ACCOUNT_LOGIN_SUCCESS:
             return action.payload;
-        case ACTION_ACCOUNT_REFRESH_TOKEN:
+        case ACTION_ACCOUNT_REFRESH_TOKEN_SUCCESS:
             return action.payload;
         case REQUIRE_LOGIN:
             return initUserToken;
@@ -174,9 +209,32 @@ export const userTokenReducer = (state: UserToken = initUserToken, action: Stand
     }
 };
 
-const initUserInfo: UserInfo = {userId: '', userName: '', userIcon: ''};
+const initUserInfo: UserInfo = {
+    userId: '',
+    userName: '',
+    userIcon: ''
+};
 export const userInfoReducer = (state: UserInfo = initUserInfo, action: StandardAction): UserInfo => {
     switch (action.type) {
+        case ACTION_ACCOUNT_GET_USER_INFO_SUCCESS:
+            return action.payload;
+        default:
+            return state;
+    }
+};
+
+const initAccountInfo: AccountInfo = {
+    userId: '',
+    userName: '',
+    userIcon: '',
+    phoneBinded: '',
+    oauthBindedList: [],
+};
+export const accountInfoReducer = (state: AccountInfo= initAccountInfo, action: StandardAction)
+    : AccountInfo => {
+    switch (action.type) {
+        case ACTION_ACCOUNT_GET_ACCOUNT_INFO_SUCCESS:
+            return action.payload;
         default:
             return state;
     }

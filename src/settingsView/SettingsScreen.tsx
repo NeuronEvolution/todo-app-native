@@ -24,7 +24,6 @@ interface State {
 class SettingsScreen extends React.Component<Props, State> {
     public componentWillMount() {
         this.onTodoVisibilitySelected = this.onTodoVisibilitySelected.bind(this);
-        this.onUserNamePressed = this.onUserNamePressed.bind(this);
         this.onAccountSettingsPressed = this.onAccountSettingsPressed.bind(this);
         this.showVisibilitySelectionPanel = this.showVisibilitySelectionPanel.bind(this);
         this.closeVisibilitySelectionPanel = this.closeVisibilitySelectionPanel.bind(this);
@@ -42,7 +41,6 @@ class SettingsScreen extends React.Component<Props, State> {
             <View style={[styles.screen]}>
                 {this.renderAccountSettings()}
                 <View style={[commonStyles.line]}/>
-                {this.renderNameSetting()}
                 {this.renderVisibilitySetting()}
                 {this.renderHelp()}
                 <View style={[commonStyles.line]}/>
@@ -73,23 +71,6 @@ class SettingsScreen extends React.Component<Props, State> {
             >
                 <View style={[commonStyles.flexRowSpaceBetween]}>
                     <Text style={[commonStyles.text]}>帐号与安全</Text>
-                </View>
-            </TouchableHighlight>
-        );
-    }
-
-    private renderNameSetting() {
-        const userName = this.props.userProfile.userName;
-
-        return (
-            <TouchableHighlight
-                underlayColor={underlayColor}
-                style={[styles.settingItem]}
-                onPress={this.onUserNamePressed}
-            >
-                <View style={[commonStyles.flexRowSpaceBetween]}>
-                    <Text style={[commonStyles.text]}>你的名字</Text>
-                    <Text style={[{fontSize: 14, color: '#FF8800'}]}>{userName}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -159,14 +140,6 @@ class SettingsScreen extends React.Component<Props, State> {
         }
 
         this.props.navigation.navigate('AccountSettings');
-    }
-
-    private onUserNamePressed() {
-        if (fastClick()) {
-            return;
-        }
-
-        this.props.navigation.navigate('UserName');
     }
 
     private onHelpPressed() {
