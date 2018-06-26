@@ -3,7 +3,7 @@ import { REDUX_STORE } from '../App';
 import { SERVER_IP } from '../ENV';
 import { Dispatchable, StandardAction } from './_common/action';
 import { getHeader } from './_react_native_common/fetchHelper';
-import { AccountInfo } from './api/account/gen';
+import { AccountInfo, bindPhoneParams, sendSmsCodeParams, unbindPhoneParams } from './api/account/gen';
 import {
     DefaultApiFactory as AccountApi, sendLoginSmsCodeParams, smsLoginParams, UserInfo, UserToken
 } from './api/account/gen/';
@@ -67,8 +67,7 @@ export const apiAccountSmsLogin = (p: smsLoginParams): Dispatchable => (dispatch
 };
 
 export const apiAccountLogout = (): Dispatchable => (dispatch) => {
-    const t: UserToken = REDUX_STORE.getState().userToken;
-    return accountApi.logout(t.accessToken, t.refreshToken, getHeader())
+    return accountApi.logout(getHeader())
         .then(() => {
             dispatch({type: ACTION_ACCOUNT_LOGOUT_SUCCESS});
             dispatch(saveUserRefreshToken(''));
@@ -97,6 +96,16 @@ export const apiAccountSetUserName = (userName: string, onSuccess: () => void)
         });
 };
 
+export const apiAccountSetUserIcon = (userIcon: string, onSuccess: () => void)
+    : Dispatchable => (dispatch) => {
+    return accountApi.setUserIcon(userIcon).then(() => {
+        onSuccess();
+        dispatch(apiAccountGetUserInfo());
+    }).catch((err) => {
+        dispatch(onApiError(err, accountApiHost + '/setUserIcon'));
+    });
+};
+
 export const apiAccountGetAccountInfo = (): Dispatchable => (dispatch) => {
     return accountApi.getAccountInfo()
         .then((accountInfo: AccountInfo) => {
@@ -106,13 +115,28 @@ export const apiAccountGetAccountInfo = (): Dispatchable => (dispatch) => {
         });
 };
 
-export const apiAccountSetUserIcon = (userIcon: string, onSuccess: () => void)
-    : Dispatchable => (dispatch) => {
-    return accountApi.setUserIcon(userIcon).then(() => {
-        onSuccess();
-        dispatch(apiAccountGetUserInfo());
+export const apiAccountSendSmsCode = (p: sendSmsCodeParams): Dispatchable => (dispatch) => {
+  return accountApi.sendSmsCode(p.scene, p.phone, p.captchaId, p.captchaCode).then(() => {
+      dispatch(onGlobalToast('已发送', TOAST_FAST));
+  }).catch((err) => {
+      dispatch(onApiError(err, accountApiHost + '/sendSmsCode'));
+  });
+};
+
+export const apiAccountBindPhone = (p: bindPhoneParams): Dispatchable => (dispatch) => {
+    return accountApi.bindPhone(p.phone, p.smsCode).then(() => {
+        dispatch(onGlobalToast('绑定成功', TOAST_FAST));
+        dispatch(apiAccountGetAccountInfo());
     }).catch((err) => {
-        dispatch(onApiError(err, accountApiHost + '/setUserIcon'));
+        dispatch(onApiError(err, accountApiHost + '/bindPhone'));
+    });
+};
+
+export const apiAccountUnbindPhone = (p: unbindPhoneParams): Dispatchable => (dispatch) => {
+    return accountApi.unbindPhone(p.phone, p.smsCode).then(() => {
+        dispatch(onGlobalToast('解除绑定成功', TOAST_FAST));
+    }).catch((err) => {
+        dispatch(onApiError(err, accountApiHost + '/unbindPhone'));
     });
 };
 
@@ -136,6 +160,7 @@ export const autoLogin = (): Dispatchable => (dispatch) => {
                     dispatch({type: ACTION_ACCOUNT_REFRESH_TOKEN_SUCCESS, payload: userToken});
                     dispatch(saveUserRefreshToken(userToken.refreshToken));
                     dispatch(onGlobalToast('登录成功', TOAST_FAST));
+                    dispatch(apiAccountGetUserInfo());
                 })
                 .catch((err) => {
                     console.log('autoLogin', 'userPrivateApi.refreshToken', err); // todo: more

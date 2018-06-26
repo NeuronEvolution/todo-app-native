@@ -4,13 +4,15 @@ import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatchable } from '../_common/action';
 import { fastClick } from '../_common/fastClick';
+import { AccountInfo, UserInfo } from '../api/account/gen';
 import { commonStyles } from '../commonStyles';
 import { RootState } from '../redux';
 import { apiAccountLogout } from '../redux_login';
 import ToastView from '../ToastView';
 
 export interface Props extends NavigationScreenProps<void> {
-    userName: string;
+    userInfo: UserInfo;
+    accountInfo: AccountInfo;
     apiAccountLogout: () => Dispatchable;
 }
 
@@ -33,7 +35,7 @@ class AccountSettingsScreen extends React.Component<Props> {
     }
 
     private renderNameSetting() {
-        const userName = this.props.userName;
+        const userName = this.props.userInfo.userName;
 
         return (
             <TouchableHighlight
@@ -83,7 +85,8 @@ class AccountSettingsScreen extends React.Component<Props> {
 }
 
 const selectProps = (rootState: RootState) => ({
-    userName: rootState.userInfo.userName
+    userInfo: rootState.userInfo,
+    accountInfo: rootState.accountInfo
 });
 
 export default connect(selectProps, {

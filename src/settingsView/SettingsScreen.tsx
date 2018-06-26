@@ -8,6 +8,7 @@ import SelectionModal, { SelectionItem } from '../_react_native_common/Selection
 import { TodoVisibility, UserProfile } from '../api/todo-private/gen';
 import { commonStyles } from '../commonStyles';
 import { apiTodoUserProfileUpdateTodoVisibility, RootState } from '../redux';
+import { apiAccountGetAccountInfo } from '../redux_login';
 import ToastView, { onGlobalToast } from '../ToastView';
 import { getTodoVisibilityName } from '../utils';
 
@@ -15,6 +16,7 @@ export interface Props extends NavigationScreenProps<void> {
     userProfile: UserProfile;
     onGlobalToast: (text: string, intervalMsec: number) => Dispatchable;
     apiTodoUserProfileUpdateTodoVisibility: (visibility: TodoVisibility) => Dispatchable;
+    apiAccountGetAccountInfo: () => Dispatchable;
 }
 
 interface State {
@@ -139,6 +141,7 @@ class SettingsScreen extends React.Component<Props, State> {
             return;
         }
 
+        this.props.apiAccountGetAccountInfo();
         this.props.navigation.navigate('AccountSettings');
     }
 
@@ -165,7 +168,8 @@ const selectProps = (rootState: RootState) => ({
 
 export default connect(selectProps, {
     onGlobalToast,
-    apiTodoUserProfileUpdateTodoVisibility
+    apiTodoUserProfileUpdateTodoVisibility,
+    apiAccountGetAccountInfo
 })(SettingsScreen);
 
 const underlayColor = '#bbb';
